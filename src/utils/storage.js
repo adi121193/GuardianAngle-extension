@@ -44,6 +44,13 @@ const DEFAULT_SETTINGS = {
  */
 export async function getSettings() {
   return new Promise((resolve, reject) => {
+    // Safety check for chrome.storage
+    if (typeof chrome === 'undefined' || !chrome?.storage?.local) {
+      console.warn('PII Guardian: chrome.storage not available, using defaults');
+      resolve(DEFAULT_SETTINGS);
+      return;
+    }
+
     chrome.storage.local.get(['settings'], (result) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
@@ -62,6 +69,13 @@ export async function getSettings() {
  */
 export async function saveSettings(settings) {
   return new Promise((resolve, reject) => {
+    // Safety check for chrome.storage
+    if (typeof chrome === 'undefined' || !chrome?.storage?.local) {
+      console.warn('PII Guardian: chrome.storage not available, cannot save settings');
+      resolve(); // Fail silently to avoid breaking the extension
+      return;
+    }
+
     chrome.storage.local.set({ settings }, () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);

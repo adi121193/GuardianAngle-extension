@@ -97,17 +97,17 @@ function updateStats(stats) {
 function updateProStatus(licenseStatus) {
   if (licenseStatus.active) {
     proBanner.style.display = 'none';
-    proStatus.style.display = 'flex';
+    proStatus.style.display = 'block';
 
     if (licenseStatus.daysRemaining <= 7) {
       proExpiryText.textContent = `Expires in ${licenseStatus.daysRemaining} days`;
-      proExpiryText.style.color = '#FF9800';
+      proExpiryText.style.fontWeight = '600';
     } else {
       proExpiryText.textContent = 'Active';
-      proExpiryText.style.color = '#4CAF50';
+      proExpiryText.style.fontWeight = 'normal';
     }
   } else {
-    proBanner.style.display = 'flex';
+    proBanner.style.display = 'block';
     proStatus.style.display = 'none';
   }
 }

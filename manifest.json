@@ -8,7 +8,12 @@
     "scripting",
     "activeTab",
     "notifications",
-    "alarms"
+    "alarms",
+    "tabs",
+    "webRequest",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback"
   ],
   "host_permissions": [
     "https://chat.openai.com/*",
@@ -19,20 +24,6 @@
   "background": {
     "service_worker": "background/serviceWorker.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://chat.openai.com/*",
-        "https://claude.ai/*",
-        "https://gemini.google.com/*",
-        "https://www.perplexity.ai/*"
-      ],
-      "js": [
-        "content/monitorInputs.js"
-      ],
-      "run_at": "document_idle"
-    }
-  ],
   "action": {
     "default_popup": "html/popup.html",
     "default_icon": {
