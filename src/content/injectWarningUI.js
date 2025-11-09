@@ -10,11 +10,33 @@ import { incrementMasked } from '../utils/storage.js';
 let activeModal = null;
 
 /**
- * Create warning modal HTML
+ * Generate suggestions based on PII type
+ */
+function getSuggestions(type) {
+  const suggestions = {
+    aadhaar: 'Consider using: "My Aadhaar number" without the actual digits',
+    pan: 'Consider using: "My PAN card" without the actual number',
+    phone: 'Consider saying: "I\'ll provide my phone number via secure channel"',
+    email: 'Consider using: "my email address" or a temporary email service',
+    creditCard: 'Never share full card numbers. Say: "I have a payment card"',
+    bankAccount: 'Never share account numbers publicly. Say: "I have a bank account"',
+    passport: 'Refer to it as: "my passport" without the number',
+    ssn: 'Never share SSN. Say: "I have a Social Security Number"',
+    dob: 'Consider using: "My birth year is..." instead of full date',
+    drivingLicense: 'Refer to it as: "my driver\'s license" without the number',
+    ifsc: 'Say: "I need to transfer money" instead of sharing IFSC',
+    gst: 'Refer to: "my GST registration" without the number'
+  };
+  return suggestions[type] || 'Consider removing or redacting this sensitive information';
+}
+
+/**
+ * Create warning modal HTML with detailed PII information
  * @param {Object} detectionResult - PII detection results
+ * @param {string} originalText - The original text containing PII
  * @returns {string} Modal HTML
  */
-function createModalHTML(detectionResult) {
+function createModalHTML(detectionResult, originalText = '') {
   const { types, matches, score, risk } = detectionResult;
 
   const riskColors = {
@@ -26,11 +48,36 @@ function createModalHTML(detectionResult) {
 
   const riskColor = riskColors[risk] || riskColors.medium;
 
-  const piiList = types.map(type => {
-    const matchCount = matches.filter(m => m.type === type).length;
-    const displayName = matches.find(m => m.type === type)?.name || type;
-    return `<li>${displayName} (${matchCount})</li>`;
+  // Create detailed PII list with actual detected values
+  const piiDetailsList = matches.map(match => {
+    const { type, value, name, confidence } = match;
+    const suggestion = getSuggestions(type);
+
+    return `
+      <li class="pii-detail-item">
+        <div class="pii-detail-header">
+          <span class="pii-detail-type">${name}</span>
+          <span class="pii-detail-confidence">${Math.round(confidence * 100)}%</span>
+        </div>
+        <div class="pii-detail-value">
+          <strong>Detected:</strong>
+          <code class="pii-detected-value">${escapeHtml(value)}</code>
+        </div>
+        <div class="pii-detail-suggestion">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          ${suggestion}
+        </div>
+      </li>
+    `;
   }).join('');
+
+  // Generate masked preview
+  const maskedPreview = maskText(originalText, matches);
+  const showPreview = originalText && originalText !== maskedPreview;
 
   return `
     <div class="pii-modal-overlay">
@@ -44,7 +91,7 @@ function createModalHTML(detectionResult) {
           <div>
             <h3>Sensitive Information Detected</h3>
             <p class="pii-risk-badge" style="background-color: ${riskColor}">
-              ${risk.toUpperCase()} RISK
+              ${risk.toUpperCase()} RISK - ${matches.length} ${matches.length === 1 ? 'item' : 'items'}
             </p>
           </div>
           <button class="pii-modal-close" id="pii-close-btn" aria-label="Close">
@@ -56,21 +103,39 @@ function createModalHTML(detectionResult) {
 
         <div class="pii-modal-body">
           <p class="pii-warning-text">
-            The following sensitive information was detected in your input:
+            <strong>⚠️ Warning:</strong> The following sensitive information was detected and blocked:
           </p>
-          <ul class="pii-list">
-            ${piiList}
-          </ul>
-          <p class="pii-confidence">
-            Detection confidence: <strong>${Math.round(score * 100)}%</strong>
-          </p>
+
+          <div class="pii-details-list">
+            ${piiDetailsList}
+          </div>
+
+          ${showPreview ? `
+            <div class="pii-preview-section">
+              <h4 class="pii-preview-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+                Preview of masked version:
+              </h4>
+              <div class="pii-preview-box">
+                ${escapeHtml(maskedPreview)}
+              </div>
+              <p class="pii-preview-hint">
+                Click "Mask & Continue" to send this version instead
+              </p>
+            </div>
+          ` : ''}
+
           <p class="pii-info">
-            Choose how to proceed:
+            <strong>Choose how to proceed:</strong>
           </p>
         </div>
 
         <div class="pii-modal-actions">
-          <button class="pii-btn pii-btn-primary" id="pii-mask-btn">
+          <button class="pii-btn pii-btn-primary" id="pii-mask-btn" title="Replace sensitive data with masked version">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
@@ -78,20 +143,29 @@ function createModalHTML(detectionResult) {
             </svg>
             Mask & Continue
           </button>
-          <button class="pii-btn pii-btn-secondary" id="pii-send-btn">
+          <button class="pii-btn pii-btn-secondary" id="pii-send-btn" title="Send original text with PII (not recommended)">
             Send Anyway
           </button>
-          <button class="pii-btn pii-btn-danger" id="pii-cancel-btn">
-            Cancel
+          <button class="pii-btn pii-btn-danger" id="pii-cancel-btn" title="Cancel and edit your message">
+            Cancel & Edit
           </button>
         </div>
 
         <div class="pii-modal-footer">
-          <small>🔒 PII Guardian - Protecting your privacy locally</small>
+          <small>🔒 PII Guardian v1.0.0 - Protecting your privacy locally</small>
         </div>
       </div>
     </div>
   `;
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 /**
@@ -121,9 +195,9 @@ export async function showWarningModal(detectionResult, targetElement) {
     style.textContent = getModalStyles();
     shadow.appendChild(style);
 
-    // Add modal HTML
+    // Add modal HTML with original text for preview
     const modalWrapper = document.createElement('div');
-    modalWrapper.innerHTML = createModalHTML(detectionResult);
+    modalWrapper.innerHTML = createModalHTML(detectionResult, targetElement.value || targetElement.textContent || '');
     shadow.appendChild(modalWrapper);
 
     activeModal = container;
@@ -324,6 +398,139 @@ function getModalStyles() {
     .pii-list li:before {
       content: "⚠️ ";
       margin-right: 8px;
+    }
+
+    /* Enhanced PII Details List */
+    .pii-details-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pii-detail-item {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 12px;
+      border-left: 3px solid #FF9800;
+    }
+
+    .pii-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pii-detail-type {
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-detail-confidence {
+      background: #2196F3;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pii-detail-value {
+      margin: 8px 0;
+      font-size: 13px;
+      color: #666;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-detail-value strong {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .pii-detected-value {
+      display: inline-block;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      font-size: 12px;
+      color: #856404;
+      margin-left: 6px;
+      word-break: break-all;
+    }
+
+    .pii-detail-suggestion {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1565c0;
+      line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-detail-suggestion svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: #2196F3;
+    }
+
+    /* Preview Section */
+    .pii-preview-section {
+      margin: 16px 0;
+      padding: 16px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .pii-preview-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-preview-title svg {
+      color: #2196F3;
+    }
+
+    .pii-preview-box {
+      background: white;
+      border: 2px solid #2196F3;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #333;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .pii-preview-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      font-style: italic;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     .pii-confidence {
