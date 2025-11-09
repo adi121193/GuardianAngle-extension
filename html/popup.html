@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian</title>
+  <link rel="stylesheet" href="../dist/styles/popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+        <h1>PII Guardian</h1>
+      </div>
+      <div class="status-indicator" id="statusIndicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Active</span>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalDetections">0</div>
+        <div class="stat-label">Detections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalMasked">0</div>
+        <div class="stat-label">Masked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalBlocked">0</div>
+        <div class="stat-label">Blocked</div>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <label class="toggle-label">
+        <span>Protection</span>
+        <div class="toggle-switch">
+          <input type="checkbox" id="enableToggle" checked>
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+    </div>
+
+    <div class="quick-actions">
+      <button class="btn btn-primary" id="dashboardBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </button>
+      <button class="btn btn-secondary" id="settingsBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"/>
+        </svg>
+        Settings
+      </button>
+    </div>
+
+    <div class="pro-banner" id="proBanner">
+      <div class="pro-icon">✨</div>
+      <div class="pro-content">
+        <div class="pro-title">Upgrade to Pro</div>
+        <div class="pro-description">Unlock image detection, auto-blur, and advanced features</div>
+      </div>
+      <button class="btn btn-upgrade" id="upgradeBtn">Upgrade</button>
+    </div>
+
+    <div class="pro-status" id="proStatus" style="display: none;">
+      <div class="pro-badge">PRO</div>
+      <div class="pro-info">
+        <div id="proExpiryText">Active</div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Protecting your privacy locally</p>
+      <p class="version">v1.0.0</p>
+    </footer>
+  </div>
+
+  <script src="../dist/ui/popup.js"></script>
+</body>
+</html>

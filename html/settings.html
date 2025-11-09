@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian - Settings</title>
+  <link rel="stylesheet" href="../dist/styles/settings.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Settings</h1>
+      <button class="btn-close" id="closeBtn">×</button>
+    </header>
+
+    <div class="settings-content">
+      <section class="settings-section">
+        <h2>General</h2>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="autoMask" checked>
+            Auto-mask detected PII
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="blockOnDetection">
+            Block submission on PII detection
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="notificationSound" checked>
+            Play notification sound
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Detection Confidence</h2>
+        <div class="setting-item">
+          <label for="minConfidence">Minimum Confidence: <span id="confidenceValue">60</span>%</label>
+          <input type="range" id="minConfidence" min="0" max="100" value="60" step="5">
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Enabled PII Types</h2>
+        <div class="pii-types-grid">
+          <label><input type="checkbox" class="pii-type" value="aadhaar" checked> Aadhaar</label>
+          <label><input type="checkbox" class="pii-type" value="pan" checked> PAN Card</label>
+          <label><input type="checkbox" class="pii-type" value="phone" checked> Phone</label>
+          <label><input type="checkbox" class="pii-type" value="email" checked> Email</label>
+          <label><input type="checkbox" class="pii-type" value="creditCard" checked> Credit Card</label>
+          <label><input type="checkbox" class="pii-type" value="bankAccount" checked> Bank Account</label>
+          <label><input type="checkbox" class="pii-type" value="passport" checked> Passport</label>
+          <label><input type="checkbox" class="pii-type" value="ssn" checked> SSN</label>
+          <label><input type="checkbox" class="pii-type" value="ifsc" checked> IFSC Code</label>
+          <label><input type="checkbox" class="pii-type" value="gst" checked> GST Number</label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Data Management</h2>
+        <button class="btn btn-secondary" id="resetStatsBtn">Reset Statistics</button>
+        <button class="btn btn-secondary" id="exportDataBtn">Export Data</button>
+        <button class="btn btn-danger" id="resetSettingsBtn">Reset to Defaults</button>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <button class="btn btn-primary" id="saveBtn">Save Settings</button>
+    </footer>
+  </div>
+
+  <script src="../dist/ui/settings.js"></script>
+</body>
+</html>

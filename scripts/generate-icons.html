@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian - Icon Generator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .icons-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .icon-card {
+      text-align: center;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+    .icon-card canvas {
+      display: block;
+      margin: 0 auto 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .icon-card label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .instructions {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+      color: #1976d2;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ PII Guardian Icon Generator</h1>
+    <p>Click the button below to generate and download placeholder icons for your extension.</p>
+
+    <div class="icons-grid">
+      <div class="icon-card">
+        <label>16x16</label>
+        <canvas id="icon16" width="16" height="16"></canvas>
+      </div>
+      <div class="icon-card">
+        <label>32x32</label>
+        <canvas id="icon32" width="32" height="32"></canvas>
+      </div>
+      <div class="icon-card">
+        <label>48x48</label>
+        <canvas id="icon48" width="48" height="48"></canvas>
+      </div>
+      <div class="icon-card">
+        <label>128x128</label>
+        <canvas id="icon128" width="128" height="128"></canvas>
+      </div>
+    </div>
+
+    <button onclick="generateAndDownloadIcons()">Generate & Download All Icons</button>
+
+    <div class="instructions">
+      <strong>📋 Instructions:</strong><br>
+      1. Click the button above to download all 4 icon sizes<br>
+      2. Extract the downloaded files<br>
+      3. Move them to <code>assets/icons/</code> folder in your extension<br>
+      4. Reload the extension in Chrome<br>
+      <br>
+      <strong>💡 Tip:</strong> These are basic placeholder icons. For production, consider using custom-designed icons from Figma or a designer.
+    </div>
+  </div>
+
+  <script>
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+
+      // Shield path (scaled to size)
+      const scale = size / 128;
+      ctx.save();
+      ctx.scale(scale, scale);
+
+      // Shield outline
+      ctx.beginPath();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 8;
+      ctx.moveTo(64, 20);
+      ctx.lineTo(100, 35);
+      ctx.lineTo(100, 70);
+      ctx.quadraticCurveTo(100, 90, 64, 108);
+      ctx.quadraticCurveTo(28, 90, 28, 70);
+      ctx.lineTo(28, 35);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Check mark
+      ctx.beginPath();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.moveTo(45, 64);
+      ctx.lineTo(58, 77);
+      ctx.lineTo(83, 52);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Draw all icons
+    drawIcon(document.getElementById('icon16'), 16);
+    drawIcon(document.getElementById('icon32'), 32);
+    drawIcon(document.getElementById('icon48'), 48);
+    drawIcon(document.getElementById('icon128'), 128);
+
+    function generateAndDownloadIcons() {
+      const sizes = [16, 32, 48, 128];
+
+      sizes.forEach(size => {
+        const canvas = document.getElementById(`icon${size}`);
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `icon${size}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      });
+
+      alert('Icons generated! Check your Downloads folder.\n\nMove them to: PII-Detection-Extension/assets/icons/');
+    }
+  </script>
+</body>
+</html>

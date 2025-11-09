@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian - Pro License</title>
+  <link rel="stylesheet" href="../dist/styles/settings.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Pro License</h1>
+      <button class="btn-close" id="closeBtn">×</button>
+    </header>
+
+    <div class="settings-content">
+      <section class="settings-section">
+        <h2>Activate Pro</h2>
+        <p style="margin-bottom: 16px; color: #666;">Enter your license key to unlock Pro features:</p>
+        <ul style="margin-bottom: 16px; color: #666; padding-left: 20px;">
+          <li>Image PII Detection with OCR</li>
+          <li>Auto-Blur Sensitive Image Areas</li>
+          <li>Advanced Analytics</li>
+          <li>Priority Support</li>
+        </ul>
+
+        <div class="setting-item">
+          <label for="licenseKeyInput">License Key</label>
+          <textarea id="licenseKeyInput" rows="3" placeholder="PIIGUARD::PRO::2026-01-01T00:00:00Z::..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; font-size: 12px;"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="activateBtn">Activate License</button>
+
+        <div id="statusMessage" style="margin-top: 16px; padding: 12px; border-radius: 6px; display: none;"></div>
+      </section>
+
+      <section class="settings-section" id="currentLicenseSection" style="display: none;">
+        <h2>Current License</h2>
+        <div style="background: #f9f9f9; padding: 16px; border-radius: 8px;">
+          <p><strong>Product:</strong> <span id="licenseProduct">-</span></p>
+          <p><strong>Expires:</strong> <span id="licenseExpiry">-</span></p>
+          <p><strong>Days Remaining:</strong> <span id="licenseDaysRemaining">-</span></p>
+        </div>
+        <button class="btn btn-danger" id="deactivateBtn" style="margin-top: 16px;">Deactivate License</button>
+      </section>
+    </div>
+  </div>
+
+  <script src="../dist/ui/license.js"></script>
+</body>
+</html>

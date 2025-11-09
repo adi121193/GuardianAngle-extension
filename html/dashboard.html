@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian - Dashboard</title>
+  <link rel="stylesheet" href="../dist/styles/settings.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Dashboard</h1>
+      <button class="btn-close" id="closeBtn">×</button>
+    </header>
+
+    <div class="settings-content">
+      <section class="settings-section">
+        <h2>Statistics Overview</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px;">
+            <div style="font-size: 32px; font-weight: bold;" id="totalDetections">0</div>
+            <div style="opacity: 0.9;">Total Detections</div>
+          </div>
+          <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px;">
+            <div style="font-size: 32px; font-weight: bold;" id="totalMasked">0</div>
+            <div style="opacity: 0.9;">Total Masked</div>
+          </div>
+          <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 12px;">
+            <div style="font-size: 32px; font-weight: bold;" id="totalBlocked">0</div>
+            <div style="opacity: 0.9;">Total Blocked</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Detections by Type</h2>
+        <div id="detectionsByType" style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
+          <p style="color: #666;">No detections yet</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="../dist/ui/dashboard.js"></script>
+</body>
+</html>
