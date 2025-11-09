@@ -113,11 +113,8 @@ async function build() {
     console.log('  → assets/');
     copyDirectory('assets', 'dist/assets');
 
-    // 5. Copy models (if they exist)
-    if (existsSync('src/models')) {
-      console.log('  → src/models/');
-      copyDirectory('src/models', 'dist/models');
-    }
+    // 5. Models directory removed - extension uses regex-only detection
+    // No ONNX models to copy
 
     console.log('\n✅ Build complete!\n');
     console.log('📂 Output directory: dist/');

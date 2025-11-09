@@ -126,8 +126,7 @@ async function handleInput(element) {
     // Full PII detection
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useONNX: false // Will be enabled when ONNX model is loaded
+      enabledTypes: settings.enabledPIITypes
     });
 
     // Update last checked value
@@ -204,8 +203,7 @@ async function handlePaste(event) {
     // Full PII detection on pasted content
     const detectionResult = await detectPII(pastedText, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useONNX: false
+      enabledTypes: settings.enabledPIITypes
     });
 
     if (detectionResult.piiDetected) {
@@ -324,8 +322,7 @@ async function handlePIIDetectionForEnterKey(element, text) {
     // Full PII detection
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useONNX: false
+      enabledTypes: settings.enabledPIITypes
     });
 
     // No PII? quickPIICheck was false positive - allow send
@@ -505,8 +502,7 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     // Full PII detection
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useONNX: false
+      enabledTypes: settings.enabledPIITypes
     });
 
     // No PII? quickPIICheck was false positive - allow click

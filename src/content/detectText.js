@@ -1,146 +1,42 @@
 /**
  * Text PII Detection Engine
- * Combines regex patterns and ONNX model for comprehensive detection
+ * Uses regex patterns for comprehensive PII detection
  */
 
 import { detectPIIWithRegex } from '../utils/regexPatterns.js';
 
-// ONNX model state
-let onnxSession = null;
-let modelLoaded = false;
-let modelLoadError = null;
-
 /**
- * Initialize ONNX model
- * @returns {Promise<boolean>}
- */
-async function initializeONNXModel() {
-  try {
-    // Only load in browsers that support onnxruntime-web
-    if (typeof ort === 'undefined') {
-      console.warn('ONNX Runtime not available, using regex-only detection');
-      return false;
-    }
-
-    const modelPath = chrome.runtime.getURL('src/models/pii-tiny.onnx');
-
-    // For now, we'll skip actual ONNX loading as we need the model file
-    // This is a placeholder for when the model is added
-    console.log('ONNX model path:', modelPath);
-
-    modelLoaded = false; // Set to true when actual model is loaded
-    return modelLoaded;
-  } catch (error) {
-    console.error('Failed to load ONNX model:', error);
-    modelLoadError = error;
-    return false;
-  }
-}
-
-/**
- * Detect PII using ONNX model
- * @param {string} text - Text to analyze
- * @returns {Promise<Object>} Detection results
- */
-async function detectWithONNX(text) {
-  if (!modelLoaded || !onnxSession) {
-    return {
-      piiDetected: false,
-      types: [],
-      score: 0,
-      method: 'onnx-unavailable'
-    };
-  }
-
-  try {
-    // Placeholder for actual ONNX inference
-    // This would involve:
-    // 1. Tokenize text
-    // 2. Convert to tensor
-    // 3. Run inference
-    // 4. Process output
-
-    // For now, return empty result
-    return {
-      piiDetected: false,
-      types: [],
-      score: 0,
-      method: 'onnx'
-    };
-  } catch (error) {
-    console.error('ONNX inference error:', error);
-    return {
-      piiDetected: false,
-      types: [],
-      score: 0,
-      method: 'onnx-error',
-      error: error.message
-    };
-  }
-}
-
-/**
- * Main detection function combining regex and ONNX
+ * Main detection function using regex patterns
  * @param {string} text - Text to analyze
  * @param {Object} options - Detection options
- * @returns {Promise<Object>} Combined detection results
+ * @returns {Promise<Object>} Detection results
  */
 export async function detectPII(text, options = {}) {
   const {
     minConfidence = 0.6,
-    useONNX = false,
     enabledTypes = null
   } = options;
 
-  // Start with regex detection (fast and reliable)
-  const regexResults = detectPIIWithRegex(text, minConfidence);
+  // Detect PII using regex patterns
+  const results = detectPIIWithRegex(text, minConfidence);
 
-  // If ONNX is requested and available, combine results
-  let onnxResults = null;
-  if (useONNX && modelLoaded) {
-    onnxResults = await detectWithONNX(text);
-  }
-
-  // Combine results
-  let combinedResults = {
-    piiDetected: regexResults.piiDetected,
-    types: [...regexResults.types],
-    matches: [...regexResults.matches],
-    score: regexResults.score,
-    methods: ['regex']
-  };
-
-  // Merge ONNX results if available
-  if (onnxResults && onnxResults.piiDetected) {
-    combinedResults.methods.push('onnx');
-
-    // Merge types
-    const allTypes = new Set([...combinedResults.types, ...onnxResults.types]);
-    combinedResults.types = Array.from(allTypes);
-
-    // Update detection flag
-    combinedResults.piiDetected = combinedResults.piiDetected || onnxResults.piiDetected;
-
-    // Combine scores (weighted average)
-    const regexWeight = 0.7;
-    const onnxWeight = 0.3;
-    combinedResults.score = (regexResults.score * regexWeight) + (onnxResults.score * onnxWeight);
-  }
+  // Add method marker
+  results.methods = ['regex'];
 
   // Filter by enabled types if specified
   if (enabledTypes && enabledTypes.length > 0) {
-    combinedResults.matches = combinedResults.matches.filter(
+    results.matches = results.matches.filter(
       match => enabledTypes.includes(match.type)
     );
 
-    combinedResults.types = combinedResults.types.filter(
+    results.types = results.types.filter(
       type => enabledTypes.includes(type)
     );
 
-    combinedResults.piiDetected = combinedResults.matches.length > 0;
+    results.piiDetected = results.matches.length > 0;
   }
 
-  return combinedResults;
+  return results;
 }
 
 /**
@@ -171,10 +67,8 @@ export function quickPIICheck(text) {
  */
 export function getDetectionStatus() {
   return {
-    modelLoaded,
-    modelLoadError: modelLoadError ? modelLoadError.message : null,
     regexAvailable: true,
-    onnxAvailable: modelLoaded
+    detectionMethod: 'regex'
   };
 }
 
@@ -253,11 +147,4 @@ function calculateRisk(detectionResult) {
   }
 
   return 'low';
-}
-
-// Initialize ONNX model on load (non-blocking)
-if (typeof window !== 'undefined') {
-  initializeONNXModel().catch(err => {
-    console.warn('ONNX model initialization failed:', err);
-  });
 }
