@@ -4,7 +4,7 @@
  */
 
 import { maskText } from '../utils/maskRules.js';
-import { incrementMasked, incrementBlocked } from '../utils/storage.js';
+import { incrementMasked } from '../utils/storage.js';
 
 // Track active modals to prevent duplicates
 let activeModal = null;
@@ -148,9 +148,8 @@ export async function showWarningModal(detectionResult, targetElement) {
       if (action === 'mask') {
         result.maskedText = maskText(targetElement.value, detectionResult.matches);
         await incrementMasked();
-      } else if (action === 'cancel') {
-        await incrementBlocked();
       }
+      // Note: incrementBlocked() is now called in monitorInputs.js only when actual blocking occurs
 
       resolve(result);
     };
@@ -204,7 +203,7 @@ function getModalStyles() {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 999999;
+      z-index: 2147483647;
       animation: fadeIn 0.2s ease-out;
     }
 

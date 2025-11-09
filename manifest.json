@@ -17,7 +17,7 @@
     "https://www.perplexity.ai/*"
   ],
   "background": {
-    "service_worker": "dist/background/serviceWorker.js"
+    "service_worker": "background/serviceWorker.js"
   },
   "content_scripts": [
     {
@@ -28,7 +28,7 @@
         "https://www.perplexity.ai/*"
       ],
       "js": [
-        "dist/content/monitorInputs.js"
+        "content/monitorInputs.js"
       ],
       "run_at": "document_idle"
     }
@@ -51,9 +51,9 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "dist/models/*",
-        "dist/styles/*",
-        "dist/assets/*"
+        "models/*",
+        "styles/*",
+        "assets/*"
       ],
       "matches": ["<all_urls>"]
     }

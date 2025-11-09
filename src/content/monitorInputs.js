@@ -5,7 +5,7 @@
 
 import { detectPII, quickPIICheck } from './detectText.js';
 import { showWarningModal, isModalActive } from './injectWarningUI.js';
-import { getSettings, incrementDetection, isEnabled } from '../utils/storage.js';
+import { getSettings, incrementDetection, incrementBlocked, isEnabled } from '../utils/storage.js';
 
 // Debounce timers
 const debounceTimers = new WeakMap();
@@ -44,16 +44,28 @@ function isAIChatInput(element) {
     'message',
     'input',
     'composer',
-    'editor'
+    'editor',
+    'ql-editor',        // Quill editor (Gemini)
+    'input-area',       // Gemini
+    'rich-textarea',    // Gemini
+    'textarea-content', // Generic
+    'editable',         // Generic
+    'ProseMirror'       // Some AI UIs use ProseMirror
   ];
 
   const className = element.className || '';
   const id = element.id || '';
   const placeholder = element.placeholder || '';
+  const ariaLabel = element.getAttribute('aria-label') || '';
+  const role = element.getAttribute('role') || '';
 
   return aiInputPatterns.some(pattern => {
     const regex = new RegExp(pattern, 'i');
-    return regex.test(className) || regex.test(id) || regex.test(placeholder);
+    return regex.test(className) ||
+           regex.test(id) ||
+           regex.test(placeholder) ||
+           regex.test(ariaLabel) ||
+           regex.test(role);
   });
 }
 
@@ -266,19 +278,145 @@ function attachListeners(element) {
   // Paste event (immediate check)
   element.addEventListener('paste', handlePaste);
 
-  // Keyup event for immediate check on Enter
+  // Enter key event - CRITICAL: Block submission if PII detected
+  // NOTE: NOT async - must call preventDefault() synchronously!
   element.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
-      // Clear debounce timer
-      if (debounceTimers.has(element)) {
-        clearTimeout(debounceTimers.get(element));
-        debounceTimers.delete(element);
-      }
+      const text = getTextContent(event.target);
 
-      // Immediate check
-      handleInput(element);
+      // Quick PII check (synchronous)
+      if (quickPIICheck(text)) {
+        // BLOCK IMMEDIATELY - Must be synchronous!
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // Now handle async detection
+        handlePIIDetectionForEnterKey(event.target, text).catch(err => {
+          console.error('PII Guardian: Error during PII detection:', err);
+          // On error, allow the send (be permissive)
+          simulateEnterKey(event.target);
+        });
+      }
     }
+  }, true); // Use capture phase to intercept BEFORE other handlers
+}
+
+/**
+ * Handle PII detection for Enter key press (async operations)
+ * Called AFTER event is already blocked synchronously
+ * @param {HTMLElement} element - Input element
+ * @param {string} text - Text content
+ */
+async function handlePIIDetectionForEnterKey(element, text) {
+  try {
+    // Check if extension is enabled
+    const enabled = await isEnabled();
+    if (!enabled) {
+      // Extension disabled - allow the blocked action
+      simulateEnterKey(element);
+      return;
+    }
+
+    // Get settings
+    const settings = await getSettings();
+
+    // Full PII detection
+    const detectionResult = await detectPII(text, {
+      minConfidence: settings.minConfidence,
+      enabledTypes: settings.enabledPIITypes,
+      useONNX: false
+    });
+
+    // No PII? quickPIICheck was false positive - allow send
+    if (!detectionResult.piiDetected) {
+      simulateEnterKey(element);
+      return;
+    }
+
+    // PII detected - increment stats
+    for (const type of detectionResult.types) {
+      await incrementDetection(type);
+    }
+
+    // Show modal and get decision
+    const decision = await showWarningModal(detectionResult, element);
+
+    // Handle user decision
+    switch (decision.action) {
+      case 'mask':
+        if (decision.maskedText) {
+          setTextContent(element, decision.maskedText);
+          // Optionally auto-send masked version
+          // simulateEnterKey(element);
+        }
+        break;
+
+      case 'send':
+        // User chose to send anyway - actually send it
+        simulateEnterKey(element);
+        break;
+
+      case 'cancel':
+        // User cancelled
+        if (settings.blockOnDetection) {
+          setTextContent(element, '');
+        }
+        await incrementBlocked();
+        break;
+    }
+  } catch (error) {
+    console.error('PII Guardian: Error in handlePIIDetectionForEnterKey:', error);
+    // On error, be permissive and allow send
+    simulateEnterKey(element);
+  }
+}
+
+/**
+ * Simulate Enter key press to send message
+ * @param {HTMLElement} element - Input element
+ */
+function simulateEnterKey(element) {
+  // Try to find and click the send button (more reliable)
+  const sendButton = findSendButton();
+  if (sendButton) {
+    sendButton.click();
+    return;
+  }
+
+  // Fallback: Dispatch Enter key event
+  const enterEvent = new KeyboardEvent('keydown', {
+    key: 'Enter',
+    code: 'Enter',
+    keyCode: 13,
+    which: 13,
+    bubbles: true,
+    cancelable: true
   });
+
+  element.dispatchEvent(enterEvent);
+}
+
+/**
+ * Find the send button on the page
+ * @returns {HTMLElement|null}
+ */
+function findSendButton() {
+  const selectors = [
+    '[aria-label*="Send" i]',
+    '[aria-label*="Submit" i]',
+    '[data-test-id*="send" i]',
+    'button[type="submit"]',
+    '.send-button',
+    'button[class*="send" i]'
+  ];
+
+  for (const selector of selectors) {
+    const button = document.querySelector(selector);
+    if (button) return button;
+  }
+
+  return null;
 }
 
 /**
@@ -296,11 +434,143 @@ function monitorAllInputs() {
 }
 
 /**
+ * Block send button clicks if PII detected
+ */
+function blockSendButton() {
+  const sendButtons = document.querySelectorAll([
+    '[aria-label*="Send" i]',
+    '[aria-label*="Submit" i]',
+    '[data-test-id*="send" i]',
+    'button[type="submit"]',
+    '.send-button',
+    'button[class*="send" i]'
+  ].join(','));
+
+  sendButtons.forEach(button => {
+    // Skip if already monitored
+    if (monitoredElements.has(button)) {
+      return;
+    }
+
+    monitoredElements.add(button);
+
+    button.addEventListener('click', (event) => {
+      // Find the input element
+      const input = document.querySelector('[contenteditable="true"]') ||
+                    document.querySelector('textarea') ||
+                    document.querySelector('input[type="text"]');
+
+      if (!input || !isAIChatInput(input)) return;
+
+      const text = getTextContent(input);
+
+      // Quick PII check (synchronous)
+      if (quickPIICheck(text)) {
+        // BLOCK IMMEDIATELY - Must be synchronous!
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // Handle async detection
+        handlePIIDetectionForSendButton(input, text, event.target).catch(err => {
+          console.error('PII Guardian: Error during send button PII detection:', err);
+          // On error, allow the click
+          event.target.click();
+        });
+      }
+    }, true); // Use capture phase
+  });
+}
+
+/**
+ * Handle PII detection for send button click (async operations)
+ * Called AFTER event is already blocked synchronously
+ * @param {HTMLElement} input - Input element
+ * @param {string} text - Text content
+ * @param {HTMLElement} button - Send button that was clicked
+ */
+async function handlePIIDetectionForSendButton(input, text, button) {
+  try {
+    // Check if extension is enabled
+    const enabled = await isEnabled();
+    if (!enabled) {
+      // Extension disabled - allow the click
+      button.click();
+      return;
+    }
+
+    // Get settings
+    const settings = await getSettings();
+
+    // Full PII detection
+    const detectionResult = await detectPII(text, {
+      minConfidence: settings.minConfidence,
+      enabledTypes: settings.enabledPIITypes,
+      useONNX: false
+    });
+
+    // No PII? quickPIICheck was false positive - allow click
+    if (!detectionResult.piiDetected) {
+      button.click();
+      return;
+    }
+
+    // PII detected - increment stats
+    for (const type of detectionResult.types) {
+      await incrementDetection(type);
+    }
+
+    // Show modal and get decision
+    const decision = await showWarningModal(detectionResult, input);
+
+    // Handle user decision
+    switch (decision.action) {
+      case 'mask':
+        if (decision.maskedText) {
+          setTextContent(input, decision.maskedText);
+          // Optionally auto-send masked version
+          // button.click();
+        }
+        break;
+
+      case 'send':
+        // User chose to send anyway - click the button
+        button.click();
+        break;
+
+      case 'cancel':
+        // User cancelled
+        if (settings.blockOnDetection) {
+          setTextContent(input, '');
+        }
+        await incrementBlocked();
+        break;
+    }
+  } catch (error) {
+    console.error('PII Guardian: Error in handlePIIDetectionForSendButton:', error);
+    // On error, be permissive and allow click
+    button.click();
+  }
+}
+
+/**
  * Initialize monitoring
  */
 function initialize() {
+  // Safety check: Ensure chrome APIs are available
+  if (typeof chrome === 'undefined' || !chrome.storage) {
+    console.error('PII Guardian: Chrome APIs not available, retrying in 100ms...');
+    setTimeout(initialize, 100);
+    return;
+  }
+
+  console.log('PII Guardian: Input monitoring initialized');
+
   // Monitor existing inputs
   monitorAllInputs();
+
+  // Monitor send buttons
+  blockSendButton();
 
   // Watch for dynamically added inputs
   const observer = new MutationObserver((mutations) => {
@@ -320,6 +590,9 @@ function initialize() {
                 attachListeners(element);
               }
             });
+
+            // Re-scan for send buttons
+            blockSendButton();
           }
         });
       }
@@ -331,8 +604,6 @@ function initialize() {
     childList: true,
     subtree: true
   });
-
-  console.log('PII Guardian: Input monitoring initialized');
 }
 
 // Initialize when DOM is ready
@@ -342,5 +613,8 @@ if (document.readyState === 'loading') {
   initialize();
 }
 
-// Re-scan periodically for inputs (fallback for complex SPAs)
-setInterval(monitorAllInputs, 3000);
+// Re-scan periodically for inputs and buttons (fallback for complex SPAs)
+setInterval(() => {
+  monitorAllInputs();
+  blockSendButton();
+}, 3000);

@@ -157,7 +157,7 @@ export function quickPIICheck(text) {
   const quickPatterns = [
     /\b\d{4}\s?\d{4}\s?\d{4}\b/,        // Aadhaar-like
     /\b[A-Z]{5}\d{4}[A-Z]\b/,           // PAN-like
-    /\b\d{10}\b/,                        // Phone-like
+    /(?:^|[^\d])\d{10}(?:[^\d]|$)/,     // Phone-like (fixed to handle punctuation)
     /\b[\w.]+@[\w.]+\.\w{2,}\b/,        // Email
     /\b(?:\d{4}[\s\-]?){3}\d{4}\b/     // Credit card-like
   ];
