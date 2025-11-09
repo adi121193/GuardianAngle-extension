@@ -152,7 +152,7 @@ function createModalHTML(detectionResult, originalText = '') {
         </div>
 
         <div class="pii-modal-footer">
-          <small>🔒 PII Guardian v1.0.0 - Protecting your privacy locally</small>
+          <small>🔒 PII Guardian v1.1.0 - Protecting your privacy locally</small>
         </div>
       </div>
     </div>
