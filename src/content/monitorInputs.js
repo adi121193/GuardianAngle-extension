@@ -6,6 +6,8 @@
 import { detectPII, quickPIICheck } from './detectText.js';
 import { showWarningModal, isModalActive } from './injectWarningUI.js';
 import { getSettings, incrementDetection, incrementBlocked, isEnabled } from '../utils/storage.js';
+import { initializeInlineHighlighting, injectHighlightStyles } from './inlineHighlighter.js';
+import { initializeFloatingButton, injectFloatingButtonStyles } from './floatingButton.js';
 
 // Debounce timers
 const debounceTimers = new WeakMap();
@@ -50,7 +52,13 @@ function isAIChatInput(element) {
     'rich-textarea',    // Gemini
     'textarea-content', // Generic
     'editable',         // Generic
-    'ProseMirror'       // Some AI UIs use ProseMirror
+    'ProseMirror',      // ChatGPT, Claude (ProseMirror editor)
+    'DraftEditor',      // X/Twitter Grok
+    'public-DraftEditor', // X/Twitter
+    'notranslate',      // X/Twitter
+    'tweet',            // X/Twitter
+    'text-input',       // Generic
+    'contenteditable'   // Generic contenteditable
   ];
 
   const className = element.className || '';
@@ -256,6 +264,14 @@ function attachListeners(element) {
   }
 
   monitoredElements.add(element);
+
+  // Initialize Grammarly-style floating button
+  initializeFloatingButton(element);
+
+  // Initialize inline highlighting for contenteditable elements (backup feature)
+  // if (element.contentEditable === 'true') {
+  //   initializeInlineHighlighting(element);
+  // }
 
   // Input event with debounce
   element.addEventListener('input', (event) => {
@@ -561,6 +577,12 @@ function initialize() {
   }
 
   console.log('PII Guardian: Input monitoring initialized');
+
+  // Inject floating button styles (Grammarly-style)
+  injectFloatingButtonStyles();
+
+  // Inject highlight styles (backup feature)
+  // injectHighlightStyles();
 
   // Monitor existing inputs
   monitorAllInputs();

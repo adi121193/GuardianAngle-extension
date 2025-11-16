@@ -19,7 +19,7 @@
           </div>
           <div class="logo-text">
             <h1>PII Guardian</h1>
-            <span class="version-badge">v1.1.0</span>
+            <span class="version-badge">v1.2.0</span>
           </div>
         </div>
         <div class="status-indicator" id="statusIndicator">
@@ -95,6 +95,31 @@
         </div>
       </div>
 
+      <!-- Recent Detections Section -->
+      <section class="recent-detections-section">
+        <div class="section-header">
+          <h2>Recent Detections</h2>
+          <button id="viewAllHistoryBtn" class="view-all-btn" title="View full history">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div id="recentDetectionsList" class="detections-list">
+          <!-- Dynamically populated by popup.js -->
+          <div class="detections-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>No detections yet</p>
+            <small>PII detections will appear here</small>
+          </div>
+        </div>
+      </section>
+
       <!-- Pro Status or Upgrade Banner -->
       <div class="pro-banner" id="proBanner">
         <div class="pro-banner-content">
@@ -153,6 +178,107 @@
         </div>
       </div>
 
+      <!-- Help & Documentation -->
+      <div class="help-section">
+        <button class="help-toggle" id="helpToggle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>How to Use PII Guardian</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <div class="help-content" id="helpContent" style="display: none;">
+          <div class="help-item">
+            <div class="help-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div class="help-text">
+              <strong>Real-time Detection</strong>
+              <p>PII is automatically detected and highlighted with colored underlines as you type in ChatGPT, Claude, Gemini, Perplexity, or Grok.</p>
+            </div>
+          </div>
+
+          <div class="help-item">
+            <div class="help-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <text x="12" y="16" text-anchor="middle" font-size="12" fill="currentColor">!</text>
+              </svg>
+            </div>
+            <div class="help-text">
+              <strong>Floating Button</strong>
+              <p>Click the shield button in the bottom-right of your input to see all detected PII and take action.</p>
+            </div>
+          </div>
+
+          <div class="help-item">
+            <div class="help-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </div>
+            <div class="help-text">
+              <strong>Mask or Remove PII</strong>
+              <p>Choose to mask individual items (e.g., "XXXX 5432") or remove them entirely from your text.</p>
+            </div>
+          </div>
+
+          <div class="help-item">
+            <div class="help-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="help-text">
+              <strong>Toggle Protection</strong>
+              <p>Use the toggle above to enable/disable PII detection. When inactive, no monitoring occurs.</p>
+            </div>
+          </div>
+
+          <div class="help-item">
+            <div class="help-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="help-text">
+              <strong>View History</strong>
+              <p>Click "Recent Detections" or the arrow button to see all past PII detections across different sessions.</p>
+            </div>
+          </div>
+
+          <div class="help-supported">
+            <strong>Supported PII Types:</strong>
+            <div class="pii-types-grid">
+              <span class="pii-type-pill">Aadhaar</span>
+              <span class="pii-type-pill">PAN Card</span>
+              <span class="pii-type-pill">Phone Number</span>
+              <span class="pii-type-pill">Email</span>
+              <span class="pii-type-pill">Bank Account</span>
+              <span class="pii-type-pill">IFSC Code</span>
+              <span class="pii-type-pill">Credit Card</span>
+              <span class="pii-type-pill">GST Number</span>
+              <span class="pii-type-pill">Passport</span>
+              <span class="pii-type-pill">SSN</span>
+              <span class="pii-type-pill">DOB</span>
+              <span class="pii-type-pill">IP Address</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
       <div class="quick-actions">
         <button class="btn btn-primary" id="dashboardBtn">
@@ -187,6 +313,6 @@
     </footer>
   </div>
 
-  <script src="../ui/popup.js"></script>
+  <script src="/dist/ui/popup.js"></script>
 </body>
 </html>

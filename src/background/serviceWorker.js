@@ -23,9 +23,12 @@ const DEFAULT_SETTINGS = {
 // Supported AI platforms
 const AI_PLATFORMS = [
   'chat.openai.com',
+  'chatgpt.com',
   'claude.ai',
   'gemini.google.com',
-  'www.perplexity.ai'
+  'www.perplexity.ai',
+  'x.com',
+  'twitter.com'
 ];
 
 // PII detection patterns (copied from detectText.js for service worker use)
@@ -142,7 +145,7 @@ async function injectContentScript(tabId) {
 }
 
 // Extension installation
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('PII Guardian installed/updated');
 
   if (details.reason === 'install') {
@@ -187,6 +190,17 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
   } else if (details.reason === 'update') {
     console.log('Extension updated from', details.previousVersion);
+  }
+
+  // Inject into existing tabs (on both install and update)
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    if (tab.url && isAIPlatform(tab.url) && tab.id) {
+      // Small delay to ensure page is ready
+      setTimeout(() => {
+        injectContentScript(tab.id);
+      }, 1000);
+    }
   }
 });
 
@@ -238,6 +252,64 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true });
       return false;
 
+    case 'INCREMENT_DETECTION':
+      chrome.storage.local.get(['settings'], (result) => {
+        const settings = result.settings || DEFAULT_SETTINGS;
+
+        if (!settings.stats) {
+          settings.stats = DEFAULT_SETTINGS.stats;
+        }
+
+        // Increment total
+        settings.stats.totalDetections++;
+
+        // Increment by type
+        const piiType = message.piiType;
+        if (piiType) {
+          if (!settings.stats.detectionsByType[piiType]) {
+            settings.stats.detectionsByType[piiType] = 0;
+          }
+          settings.stats.detectionsByType[piiType]++;
+        }
+
+        chrome.storage.local.set({ settings }, () => {
+          sendResponse({ success: true, totalDetections: settings.stats.totalDetections });
+        });
+      });
+      return true;
+
+    case 'INCREMENT_MASKED':
+      chrome.storage.local.get(['settings'], (result) => {
+        const settings = result.settings || DEFAULT_SETTINGS;
+
+        if (!settings.stats) {
+          settings.stats = DEFAULT_SETTINGS.stats;
+        }
+
+        settings.stats.totalMasked++;
+
+        chrome.storage.local.set({ settings }, () => {
+          sendResponse({ success: true, totalMasked: settings.stats.totalMasked });
+        });
+      });
+      return true;
+
+    case 'INCREMENT_BLOCKED':
+      chrome.storage.local.get(['settings'], (result) => {
+        const settings = result.settings || DEFAULT_SETTINGS;
+
+        if (!settings.stats) {
+          settings.stats = DEFAULT_SETTINGS.stats;
+        }
+
+        settings.stats.totalBlocked++;
+
+        chrome.storage.local.set({ settings }, () => {
+          sendResponse({ success: true, totalBlocked: settings.stats.totalBlocked });
+        });
+      });
+      return true;
+
     default:
       console.warn('Unknown message type:', message.type);
       sendResponse({ error: 'Unknown message type' });
@@ -285,41 +357,37 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-// Periodic license check (every hour)
-setInterval(async () => {
-  const result = await chrome.storage.local.get(['settings']);
-  const settings = result.settings;
-
-  if (settings?.proEnabled && settings?.licenseExpiry) {
-    const expiryDate = new Date(settings.licenseExpiry);
-    const now = new Date();
-
-    // If license expired, disable Pro
-    if (now > expiryDate) {
-      settings.proEnabled = false;
-      settings.imageDetection = false;
-      settings.autoBlur = false;
-      await chrome.storage.local.set({ settings });
-
-      console.log('License expired - Pro features disabled');
-
-      // Show notification
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: chrome.runtime.getURL('assets/icons/icon128.png'),
-        title: 'PII Guardian - License Expired',
-        message: 'Your Pro license has expired. Please renew to continue using Pro features.'
-      });
-    }
-  }
-}, 60 * 60 * 1000); // Check every hour
-
 // Handle alarm for periodic tasks
-chrome.alarms.onAlarm.addListener((alarm) => {
+chrome.alarms.onAlarm.addListener(async (alarm) => {
   console.log('Alarm triggered:', alarm.name);
 
   if (alarm.name === 'license-check') {
-    // Trigger license check
+    // Perform license check
+    const result = await chrome.storage.local.get(['settings']);
+    const settings = result.settings;
+
+    if (settings?.proEnabled && settings?.licenseExpiry) {
+      const expiryDate = new Date(settings.licenseExpiry);
+      const now = new Date();
+
+      // If license expired, disable Pro
+      if (now > expiryDate) {
+        settings.proEnabled = false;
+        settings.imageDetection = false;
+        settings.autoBlur = false;
+        await chrome.storage.local.set({ settings });
+
+        console.log('License expired - Pro features disabled');
+
+        // Show notification
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('assets/icons/icon128.png'),
+          title: 'PII Guardian - License Expired',
+          message: 'Your Pro license has expired. Please renew to continue using Pro features.'
+        });
+      }
+    }
   }
 });
 
@@ -349,21 +417,6 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 // Clean up injected tabs when tab is closed
 chrome.tabs.onRemoved.addListener((tabId) => {
   injectedTabs.delete(tabId);
-});
-
-// Inject into existing tabs on extension load/reload
-chrome.runtime.onInstalled.addListener(async () => {
-  // Get all tabs
-  const tabs = await chrome.tabs.query({});
-
-  for (const tab of tabs) {
-    if (tab.url && isAIPlatform(tab.url) && tab.id) {
-      // Small delay to ensure page is ready
-      setTimeout(() => {
-        injectContentScript(tab.id);
-      }, 1000);
-    }
-  }
 });
 
 // Network interception - Monitor outgoing requests to AI platforms

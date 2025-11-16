@@ -30,6 +30,7 @@ const buildOptions = {
     'ui/settings': 'src/ui/settings.js',
     'ui/dashboard': 'src/ui/dashboard.js',
     'ui/license': 'src/ui/license.js',
+    'ui/history': 'src/ui/history.js',
 
     // Background script
     'background/serviceWorker': 'src/background/serviceWorker.js'

@@ -137,55 +137,85 @@ export async function setProStatus(enabled, licenseKey = null, expiry = null) {
 }
 
 /**
- * Increment detection counter
+ * Increment detection counter (message-based to avoid race conditions)
  * @param {string} type - PII type detected
  * @returns {Promise<void>}
  */
 export async function incrementDetection(type) {
-  const settings = await getSettings();
+  return new Promise((resolve, reject) => {
+    // Safety check for chrome.runtime
+    if (typeof chrome === 'undefined' || !chrome?.runtime?.sendMessage) {
+      console.warn('PII Guardian: chrome.runtime not available');
+      resolve(); // Fail silently to avoid breaking the extension
+      return;
+    }
 
-  if (!settings.stats) {
-    settings.stats = DEFAULT_SETTINGS.stats;
-  }
-
-  settings.stats.totalDetections++;
-
-  if (!settings.stats.detectionsByType[type]) {
-    settings.stats.detectionsByType[type] = 0;
-  }
-  settings.stats.detectionsByType[type]++;
-
-  await saveSettings(settings);
+    chrome.runtime.sendMessage(
+      { type: 'INCREMENT_DETECTION', piiType: type },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Failed to increment detection:', chrome.runtime.lastError);
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
 }
 
 /**
- * Increment masked counter
+ * Increment masked counter (message-based to avoid race conditions)
  * @returns {Promise<void>}
  */
 export async function incrementMasked() {
-  const settings = await getSettings();
+  return new Promise((resolve, reject) => {
+    // Safety check for chrome.runtime
+    if (typeof chrome === 'undefined' || !chrome?.runtime?.sendMessage) {
+      console.warn('PII Guardian: chrome.runtime not available');
+      resolve();
+      return;
+    }
 
-  if (!settings.stats) {
-    settings.stats = DEFAULT_SETTINGS.stats;
-  }
-
-  settings.stats.totalMasked++;
-  await saveSettings(settings);
+    chrome.runtime.sendMessage(
+      { type: 'INCREMENT_MASKED' },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Failed to increment masked:', chrome.runtime.lastError);
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
 }
 
 /**
- * Increment blocked counter
+ * Increment blocked counter (message-based to avoid race conditions)
  * @returns {Promise<void>}
  */
 export async function incrementBlocked() {
-  const settings = await getSettings();
+  return new Promise((resolve, reject) => {
+    // Safety check for chrome.runtime
+    if (typeof chrome === 'undefined' || !chrome?.runtime?.sendMessage) {
+      console.warn('PII Guardian: chrome.runtime not available');
+      resolve();
+      return;
+    }
 
-  if (!settings.stats) {
-    settings.stats = DEFAULT_SETTINGS.stats;
-  }
-
-  settings.stats.totalBlocked++;
-  await saveSettings(settings);
+    chrome.runtime.sendMessage(
+      { type: 'INCREMENT_BLOCKED' },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Failed to increment blocked:', chrome.runtime.lastError);
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
 }
 
 /**
@@ -346,4 +376,61 @@ export function onStorageChanged(callback) {
  */
 export function removeStorageListener(callback) {
   chrome.storage.onChanged.removeListener(callback);
+}
+
+/**
+ * Get detection history with optional filtering and limiting
+ * @param {Object} options - Query options
+ * @param {number} options.limit - Maximum number of events to return
+ * @param {number} options.offset - Number of events to skip
+ * @param {string} options.platform - Filter by platform name
+ * @param {string} options.riskLevel - Filter by risk level
+ * @returns {Promise<Array>} Array of detection events
+ */
+export async function getDetectionHistory(options = {}) {
+  const { limit = 50, offset = 0, platform = null, riskLevel = null } = options;
+
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(['detectionHistory'], (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+        return;
+      }
+
+      let history = result.detectionHistory || [];
+
+      // Apply filters
+      if (platform) {
+        history = history.filter(event => event.platform === platform);
+      }
+
+      if (riskLevel) {
+        history = history.filter(event => event.riskLevel === riskLevel);
+      }
+
+      // Sort by timestamp descending (most recent first)
+      history.sort((a, b) => b.timestamp - a.timestamp);
+
+      // Apply pagination
+      const paginatedHistory = history.slice(offset, offset + limit);
+
+      resolve(paginatedHistory);
+    });
+  });
+}
+
+/**
+ * Clear all detection history
+ * @returns {Promise<void>}
+ */
+export async function clearHistory() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ detectionHistory: [] }, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve();
+      }
+    });
+  });
 }

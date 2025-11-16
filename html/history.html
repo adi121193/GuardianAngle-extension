@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Guardian - Detection History</title>
+  <link rel="stylesheet" href="../styles/history.css">
+</head>
+<body>
+  <div class="history-container">
+    <!-- Header -->
+    <header class="history-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button id="backBtn" class="back-btn" title="Back to popup">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h1>Detection History</h1>
+        </div>
+        <div class="header-right">
+          <button id="exportBtn" class="action-btn" title="Export to CSV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
+          </button>
+          <button id="clearHistoryBtn" class="action-btn danger" title="Clear all history">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Clear History
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Summary -->
+    <section class="stats-summary">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <span class="stat-label">Total Events</span>
+          <span class="stat-value" id="totalEvents">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-content">
+          <span class="stat-label">Critical</span>
+          <span class="stat-value critical" id="criticalCount">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-content">
+          <span class="stat-label">High Risk</span>
+          <span class="stat-value high" id="highCount">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-content">
+          <span class="stat-label">Blocked</span>
+          <span class="stat-value" id="blockedCount">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label for="platformFilter">Platform</label>
+          <select id="platformFilter" class="filter-select">
+            <option value="">All Platforms</option>
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Claude">Claude</option>
+            <option value="Gemini">Gemini</option>
+            <option value="Perplexity">Perplexity</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="riskFilter">Risk Level</label>
+          <select id="riskFilter" class="filter-select">
+            <option value="">All Levels</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="actionFilter">Action</label>
+          <select id="actionFilter" class="filter-select">
+            <option value="">All Actions</option>
+            <option value="blocked">Blocked</option>
+            <option value="masked">Masked</option>
+            <option value="sent">Sent</option>
+            <option value="detected">Detected</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="dateFilter">Date Range</label>
+          <select id="dateFilter" class="filter-select">
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month">Last 30 Days</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <button id="resetFiltersBtn" class="reset-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            </svg>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search in detection history..." />
+        </div>
+      </div>
+    </section>
+
+    <!-- History Table -->
+    <section class="history-section">
+      <div id="historyTable" class="history-table">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h2>No detections found</h2>
+        <p>No detection events match your filters</p>
+      </div>
+    </section>
+
+    <!-- Pagination -->
+    <section class="pagination-section" id="paginationSection">
+      <div class="pagination-info">
+        Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> events
+      </div>
+      <div class="pagination-controls">
+        <button id="prevPageBtn" class="page-btn" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Previous
+        </button>
+        <span id="pageInfo" class="page-info">Page 1</span>
+        <button id="nextPageBtn" class="page-btn" disabled>
+          Next
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Clear Detection History?</h3>
+      <p>This will permanently delete all detection events. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button id="confirmClearBtn" class="modal-btn danger">Clear History</button>
+        <button id="cancelClearBtn" class="modal-btn secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/dist/ui/history.js"></script>
+</body>
+</html>
