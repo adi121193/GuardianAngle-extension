@@ -2,6 +2,9 @@
 
 ## Release Date: 2025-11-16
 
+## Update Summary
+Complete overhaul of PII detection UX with Grammarly-style highlighting, instant detection, and fully functional popup UI with built-in documentation.
+
 ## Major Features
 
 ### ✨ Grammarly-Style PII Highlighting
@@ -48,12 +51,22 @@
 - Clean text extraction that ignores highlight HTML
 - Proper cursor position restoration after masking
 
+### 📱 Enhanced Popup UI
+- **Built-in Help Documentation** with expandable accordion
+- **Active/Inactive Toggle** that actually works
+- **Real-time Statistics** that update instantly
+- **Session History** showing recent detections across platforms
+- **Working Quick Actions** for Dashboard, Settings, and History
+- **Version Display** updated to v1.2.0
+- **All buttons functional** - no more "useless UI"
+
 ## Bug Fixes
 - ✅ Fixed extra spaces being added/removed during masking
 - ✅ Fixed random numbers appearing in highlighted text
 - ✅ Fixed panel being cut off with multiple PII items
 - ✅ Fixed masking not working with highlighted text
 - ✅ Fixed spacing preservation in contentEditable elements
+- ✅ Fixed panel positioning to stay within viewport
 
 ## Platform Support
 - ChatGPT (chat.openai.com, chatgpt.com)

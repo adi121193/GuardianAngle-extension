@@ -29,11 +29,21 @@ const DEFAULT_SETTINGS = {
   licenseExpiry: null,
   imageDetection: false,
   autoBlur: false,
+  // NER/ML Detection Settings
+  nerEnabled: true,              // Enable NER-based detection
+  detectionMode: 'hybrid',        // 'regex_only', 'ner_only', 'hybrid'
+  nerAutoInit: false,             // Auto-initialize NER on startup (false = lazy load)
   stats: {
     totalDetections: 0,
     totalMasked: 0,
     totalBlocked: 0,
     detectionsByType: {},
+    // NER-specific stats
+    nerDetections: 0,
+    regexDetections: 0,
+    hybridDetections: 0,
+    nerCacheHits: 0,
+    avgNerLatency: 0,
     lastReset: Date.now()
   }
 };

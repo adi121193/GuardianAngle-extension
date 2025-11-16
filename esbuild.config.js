@@ -24,6 +24,7 @@ const buildOptions = {
   entryPoints: {
     // Content scripts - monitorInputs imports the other two
     'content/monitorInputs': 'src/content/monitorInputs.js',
+    'content/detectText': 'src/content/detectText.js',
 
     // UI scripts
     'ui/popup': 'src/ui/popup.js',
@@ -33,7 +34,16 @@ const buildOptions = {
     'ui/history': 'src/ui/history.js',
 
     // Background script
-    'background/serviceWorker': 'src/background/serviceWorker.js'
+    'background/serviceWorker': 'src/background/serviceWorker.js',
+
+    // ML inference worker (offscreen document)
+    'ml/offscreen': 'src/ml/offscreen.js',
+
+    // ML test page
+    'ml-test/test': 'src/ml-test/test.js',
+
+    // Detection modules
+    'detection/hybridDetector': 'src/detection/hybridDetector.js'
   },
   bundle: true,
   outdir: 'dist',
@@ -114,8 +124,20 @@ async function build() {
     console.log('  → assets/');
     copyDirectory('assets', 'dist/assets');
 
-    // 5. Models directory removed - extension uses regex-only detection
-    // No ONNX models to copy
+    // 5. Copy ML models
+    console.log('  → models/');
+    copyDirectory('models', 'dist/models');
+
+    // 6. Copy ONNX Runtime WASM files from node_modules
+    console.log('  → onnxruntime-web WASM files');
+    const ortWasmDir = 'node_modules/onnxruntime-web/dist';
+    if (existsSync(ortWasmDir)) {
+      mkdirSync('dist/onnxruntime-web', { recursive: true });
+      const wasmFiles = readdirSync(ortWasmDir).filter(f => f.endsWith('.wasm'));
+      for (const file of wasmFiles) {
+        copyFileSync(join(ortWasmDir, file), join('dist/onnxruntime-web', file));
+      }
+    }
 
     console.log('\n✅ Build complete!\n');
     console.log('📂 Output directory: dist/');

@@ -233,13 +233,12 @@ export function maskText(text, matches) {
     return text;
   }
 
-  // Sort matches by position (descending) to avoid index shifts
-  const sortedMatches = [...matches].sort((a, b) => b.position - a.position);
-
+  // CRITICAL FIX BUG003: Use value-based replacement instead of position-based
+  // This prevents masking wrong text when DOM positions change after highlighting
   let maskedText = text;
 
-  for (const match of sortedMatches) {
-    const { type, value, position } = match;
+  for (const match of matches) {
+    const { type, value } = match;
     let maskedValue;
 
     // Apply appropriate masking based on PII type
@@ -287,10 +286,9 @@ export function maskText(text, matches) {
         maskedValue = maskCompletely(value);
     }
 
-    // Replace in text
-    maskedText = maskedText.substring(0, position) +
-                 maskedValue +
-                 maskedText.substring(position + value.length);
+    // CRITICAL FIX BUG003: Replace by value, not position
+    // This works correctly even if DOM structure changed after highlighting
+    maskedText = maskedText.replace(value, maskedValue);
   }
 
   return maskedText;

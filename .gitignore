@@ -7,3 +7,13 @@ build/
 .vscode/
 *.crx
 *.pem
+
+# ML Models (large files)
+models/**/*.onnx
+model-prep/venv/
+model-prep/**/distilbert-ner-onnx/
+model-prep/**/distilbert-ner-int8/
+model-prep/**/distilbert-ner-uint4/
+model-prep/**/*.onnx
+*.pyc
+__pycache__/

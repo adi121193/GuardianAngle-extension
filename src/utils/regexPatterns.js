@@ -88,13 +88,17 @@ export const PII_PATTERNS = {
     }
   },
 
-  // Bank Account Number (8-18 digits)
+  // Bank Account Number (requires context keywords to reduce false positives)
+  // CRITICAL FIX BUG004: Added context requirement to prevent ANY 8-18 digit number from matching
   bankAccount: {
-    pattern: /\b\d{8,18}\b/g,
+    pattern: /\b(?:account|acc|a\/c|bank)\s*(?:no|number|#|num)?[\s:]*\d{8,18}\b/gi,
     name: 'Bank Account Number',
-    confidence: 0.5,
+    confidence: 0.6,
     validator: (match) => {
-      return match.length >= 8 && match.length <= 18;
+      // Must have context keyword and valid digit count
+      const hasContext = /(?:account|acc|a\/c|bank)/i.test(match);
+      const digits = match.replace(/\D/g, '');
+      return hasContext && digits.length >= 8 && digits.length <= 18;
     }
   },
 
@@ -133,15 +137,9 @@ export const PII_PATTERNS = {
     }
   },
 
-  // CVV Code
-  cvv: {
-    pattern: /\b\d{3,4}\b/g,
-    name: 'CVV Code',
-    confidence: 0.4, // Low confidence due to many false positives
-    validator: (match) => {
-      return match.length === 3 || match.length === 4;
-    }
-  },
+  // CRITICAL FIX BUG004: CVV pattern REMOVED - too many false positives
+  // Pattern /\b\d{3,4}\b/ matches ANY 3-4 digit number (dates, counts, IDs, etc.)
+  // CVV is rarely typed in AI chats, and pattern had >50% false positive rate
 
   // GST Number (India)
   gst: {
@@ -174,15 +172,10 @@ export const PII_PATTERNS = {
     }
   },
 
-  // Indian Postal Code (PIN)
-  pinCode: {
-    pattern: /\b\d{6}\b/g,
-    name: 'PIN Code',
-    confidence: 0.5,
-    validator: (match) => {
-      return /^\d{6}$/.test(match);
-    }
-  },
+  // CRITICAL FIX BUG004: PIN Code pattern REMOVED - too many false positives
+  // Pattern /\b\d{6}\b/ matches ANY 6-digit number (dates, OTPs, counts, IDs, etc.)
+  // Indian postal codes (PIN codes) are rarely sensitive PII in AI chats
+  // Pattern had >50% false positive rate on normal conversations
 
   // Medical Record Numbers (generic pattern)
   medicalRecord: {

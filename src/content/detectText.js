@@ -1,12 +1,27 @@
 /**
  * Text PII Detection Engine
- * Uses regex patterns for comprehensive PII detection
+ * Uses hybrid detection (regex + NER) for comprehensive PII detection
  */
 
 import { detectPIIWithRegex } from '../utils/regexPatterns.js';
+import { hybridDetector } from '../detection/hybridDetector.js';
+
+// Global flag for NER availability
+let nerEnabled = false;
 
 /**
- * Main detection function using regex patterns
+ * Enable NER detection (called when offscreen manager is ready)
+ */
+export function enableNER(offscreenManager) {
+  if (offscreenManager) {
+    hybridDetector.setOffscreenManager(offscreenManager);
+    nerEnabled = true;
+    console.log('[detectText] NER detection enabled');
+  }
+}
+
+/**
+ * Main detection function using hybrid approach
  * @param {string} text - Text to analyze
  * @param {Object} options - Detection options
  * @returns {Promise<Object>} Detection results
@@ -14,14 +29,40 @@ import { detectPIIWithRegex } from '../utils/regexPatterns.js';
 export async function detectPII(text, options = {}) {
   const {
     minConfidence = 0.6,
-    enabledTypes = null
+    enabledTypes = null,
+    useNER = nerEnabled
   } = options;
 
-  // Detect PII using regex patterns
-  const results = detectPIIWithRegex(text, minConfidence);
+  let results;
 
-  // Add method marker
-  results.methods = ['regex'];
+  // Use hybrid detection if NER is enabled
+  if (useNER && nerEnabled) {
+    const hybridResults = await hybridDetector.detect(text, options);
+
+    // Convert hybrid results to existing format
+    results = {
+      piiDetected: hybridResults.count > 0,
+      matches: hybridResults.detections.map(d => ({
+        type: d.type.toLowerCase(),
+        value: d.value,
+        confidence: d.confidence,
+        category: d.category,
+        source: d.source,
+        nerEntity: d.nerEntity
+      })),
+      types: [...new Set(hybridResults.detections.map(d => d.type.toLowerCase()))],
+      score: hybridResults.count > 0
+        ? hybridResults.detections.reduce((sum, d) => sum + d.confidence, 0) / hybridResults.count
+        : 0,
+      methods: ['regex', 'ner'],
+      performance: hybridResults.performance,
+      sources: hybridResults.sources
+    };
+  } else {
+    // Fallback to regex-only detection
+    results = detectPIIWithRegex(text, minConfidence);
+    results.methods = ['regex'];
+  }
 
   // Filter by enabled types if specified
   if (enabledTypes && enabledTypes.length > 0) {

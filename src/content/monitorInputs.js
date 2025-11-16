@@ -19,6 +19,10 @@ const monitoredElements = new WeakSet();
 // Track last checked values to avoid redundant checks
 const lastCheckedValues = new WeakMap();
 
+// CRITICAL FIX BUG005: Bypass flag for simulated interactions
+// This prevents infinite loops when we programmatically click send button or dispatch Enter key
+let isSimulatedInteraction = false;
+
 /**
  * Check if element is an AI chat input
  * @param {HTMLElement} element
@@ -295,6 +299,11 @@ function attachListeners(element) {
   // Enter key event - CRITICAL: Block submission if PII detected
   // NOTE: NOT async - must call preventDefault() synchronously!
   element.addEventListener('keydown', (event) => {
+    // CRITICAL FIX BUG005: Bypass if this is a simulated interaction
+    if (isSimulatedInteraction) {
+      return; // Allow through without blocking
+    }
+
     if (event.key === 'Enter' && !event.shiftKey) {
       const text = getTextContent(event.target);
 
@@ -390,10 +399,19 @@ async function handlePIIDetectionForEnterKey(element, text) {
  * @param {HTMLElement} element - Input element
  */
 function simulateEnterKey(element) {
+  // CRITICAL FIX BUG005: Set bypass flag to prevent infinite loop
+  console.info('PII Guardian: Simulating interaction (bypass blocking)');
+  isSimulatedInteraction = true;
+
   // Try to find and click the send button (more reliable)
   const sendButton = findSendButton();
   if (sendButton) {
     sendButton.click();
+
+    // Reset flag after small delay
+    setTimeout(() => {
+      isSimulatedInteraction = false;
+    }, 100);
     return;
   }
 
@@ -408,6 +426,11 @@ function simulateEnterKey(element) {
   });
 
   element.dispatchEvent(enterEvent);
+
+  // Reset flag after small delay
+  setTimeout(() => {
+    isSimulatedInteraction = false;
+  }, 100);
 }
 
 /**
@@ -468,6 +491,11 @@ function blockSendButton() {
     monitoredElements.add(button);
 
     button.addEventListener('click', (event) => {
+      // CRITICAL FIX BUG005: Bypass if this is a simulated interaction
+      if (isSimulatedInteraction) {
+        return; // Allow through without blocking
+      }
+
       // Find the input element
       const input = document.querySelector('[contenteditable="true"]') ||
                     document.querySelector('textarea') ||

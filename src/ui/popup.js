@@ -42,6 +42,8 @@ async function init() {
   proExpiryText = document.getElementById('proExpiryText');
   recentDetectionsList = document.getElementById('recentDetectionsList');
   viewAllHistoryBtn = document.getElementById('viewAllHistoryBtn');
+  helpToggle = document.getElementById('helpToggle');
+  helpContent = document.getElementById('helpContent');
 
   // Load current state
   await loadState();
@@ -398,6 +400,13 @@ function attachListeners() {
     chrome.tabs.create({
       url: chrome.runtime.getURL('html/history.html')
     });
+  });
+
+  // Help toggle
+  helpToggle.addEventListener('click', () => {
+    const isVisible = helpContent.style.display !== 'none';
+    helpContent.style.display = isVisible ? 'none' : 'block';
+    helpToggle.classList.toggle('active', !isVisible);
   });
 }
 

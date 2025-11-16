@@ -3,6 +3,8 @@
  * Handles background operations and extension lifecycle
  */
 
+import { offscreenManager } from '../ml/offscreenManager.js';
+
 // Track injected tabs to avoid duplicate injection
 const injectedTabs = new Set();
 
@@ -443,3 +445,61 @@ chrome.webRequest.onBeforeRequest.addListener(
 */
 
 console.log('PII Guardian service worker initialized');
+
+/**
+ * Initialize NER model (lazy loading)
+ * Model will be initialized when first needed
+ */
+async function initializeNER() {
+  try {
+    console.log('[ServiceWorker] Initializing NER model...');
+    const result = await offscreenManager.initializeModel();
+
+    if (result.success) {
+      console.log(`[ServiceWorker] NER model initialized in ${result.initTimeMs}ms`);
+
+      // Notify content scripts that NER is ready
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach(tab => {
+          if (tab.id && isAIPlatform(tab.url)) {
+            chrome.tabs.sendMessage(tab.id, {
+              type: 'NER_READY',
+              offscreenManager: true
+            }).catch(() => {
+              // Tab might not be ready yet, that's OK
+            });
+          }
+        });
+      });
+    } else {
+      console.error('[ServiceWorker] NER initialization failed:', result.error);
+    }
+  } catch (error) {
+    console.error('[ServiceWorker] NER initialization error:', error);
+  }
+}
+
+// Initialize NER on extension startup (lazy)
+// Uncomment to pre-load model on startup
+// initializeNER();
+
+// Handle messages requesting NER initialization and status
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'INIT_NER') {
+    initializeNER().then(() => {
+      sendResponse({ success: true });
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message });
+    });
+    return true; // Async response
+  }
+
+  if (message.type === 'NER_STATUS') {
+    offscreenManager.getStatus().then(status => {
+      sendResponse(status);
+    }).catch(error => {
+      sendResponse({ success: false, isReady: false, isInitializing: false });
+    });
+    return true; // Async response
+  }
+});

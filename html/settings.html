@@ -61,6 +61,45 @@
       </section>
 
       <section class="settings-section">
+        <h2>🤖 AI Detection (NER)</h2>
+        <p class="section-description">
+          Use AI-powered Named Entity Recognition to detect names, organizations, and locations in unstructured text.
+        </p>
+
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="nerEnabled" checked>
+            Enable AI Detection
+          </label>
+          <span class="setting-hint">Detects person names, organizations, and locations using on-device ML</span>
+        </div>
+
+        <div class="setting-item">
+          <label for="detectionMode">Detection Mode:</label>
+          <select id="detectionMode">
+            <option value="hybrid" selected>Hybrid (Regex + AI) - Recommended</option>
+            <option value="regex_only">Regex Only (Faster)</option>
+            <option value="ner_only">AI Only (Most Accurate)</option>
+          </select>
+          <span class="setting-hint">Hybrid combines speed of regex with accuracy of AI</span>
+        </div>
+
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="nerAutoInit">
+            Pre-load AI model on startup
+          </label>
+          <span class="setting-hint">Faster first detection but slower extension startup (~2-5s)</span>
+        </div>
+
+        <div class="ner-status" id="nerStatus">
+          <span class="status-label">AI Model Status:</span>
+          <span class="status-value" id="nerStatusValue">Not initialized</span>
+          <button class="btn btn-small" id="initNerBtn">Initialize Now</button>
+        </div>
+      </section>
+
+      <section class="settings-section">
         <h2>Data Management</h2>
         <button class="btn btn-secondary" id="resetStatsBtn">Reset Statistics</button>
         <button class="btn btn-secondary" id="exportDataBtn">Export Data</button>

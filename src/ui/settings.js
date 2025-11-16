@@ -15,6 +15,14 @@ async function init() {
     checkbox.checked = settings.enabledPIITypes.includes(checkbox.value);
   });
 
+  // Load NER settings
+  document.getElementById('nerEnabled').checked = settings.nerEnabled !== false;
+  document.getElementById('detectionMode').value = settings.detectionMode || 'hybrid';
+  document.getElementById('nerAutoInit').checked = settings.nerAutoInit || false;
+
+  // Check NER status
+  checkNERStatus();
+
   // Event listeners
   document.getElementById('minConfidence').addEventListener('input', (e) => {
     document.getElementById('confidenceValue').textContent = e.target.value;
@@ -28,6 +36,11 @@ async function init() {
     settings.notificationSound = document.getElementById('notificationSound').checked;
     settings.minConfidence = document.getElementById('minConfidence').value / 100;
     settings.enabledPIITypes = enabledTypes;
+
+    // Save NER settings
+    settings.nerEnabled = document.getElementById('nerEnabled').checked;
+    settings.detectionMode = document.getElementById('detectionMode').value;
+    settings.nerAutoInit = document.getElementById('nerAutoInit').checked;
 
     await saveSettings(settings);
     alert('Settings saved!');
@@ -61,6 +74,67 @@ async function init() {
   document.getElementById('closeBtn').addEventListener('click', () => {
     window.close();
   });
+
+  // NER initialization button
+  document.getElementById('initNerBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('initNerBtn');
+    const statusValue = document.getElementById('nerStatusValue');
+
+    btn.disabled = true;
+    btn.textContent = 'Initializing...';
+    statusValue.textContent = 'Initializing...';
+
+    try {
+      const response = await chrome.runtime.sendMessage({ type: 'INIT_NER' });
+
+      if (response && response.success) {
+        statusValue.textContent = 'Ready ✅';
+        btn.textContent = 'Initialized';
+        setTimeout(() => checkNERStatus(), 500);
+      } else {
+        statusValue.textContent = 'Failed ❌';
+        btn.disabled = false;
+        btn.textContent = 'Retry';
+      }
+    } catch (error) {
+      console.error('NER init error:', error);
+      statusValue.textContent = 'Error ❌';
+      btn.disabled = false;
+      btn.textContent = 'Retry';
+    }
+  });
+}
+
+/**
+ * Check NER model status
+ */
+async function checkNERStatus() {
+  const statusValue = document.getElementById('nerStatusValue');
+  const initBtn = document.getElementById('initNerBtn');
+
+  try {
+    // Try to get status from background script
+    const response = await chrome.runtime.sendMessage({ type: 'NER_STATUS' });
+
+    if (response && response.isReady) {
+      statusValue.textContent = 'Ready ✅';
+      statusValue.style.color = '#10b981';
+      initBtn.style.display = 'none';
+    } else if (response && response.isInitializing) {
+      statusValue.textContent = 'Initializing...';
+      statusValue.style.color = '#f59e0b';
+      initBtn.disabled = true;
+    } else {
+      statusValue.textContent = 'Not initialized';
+      statusValue.style.color = '#6b7280';
+      initBtn.style.display = 'inline-block';
+      initBtn.disabled = false;
+    }
+  } catch (error) {
+    // Background script might not have NER status handler yet
+    statusValue.textContent = 'Unknown';
+    statusValue.style.color = '#6b7280';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

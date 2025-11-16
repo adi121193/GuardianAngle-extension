@@ -10,10 +10,15 @@ import { maskText } from '../utils/maskRules.js';
 // Track button instances per element
 const buttonInstances = new WeakMap();
 const activePanels = new WeakMap();
+const detectionResults = new WeakMap(); // Store detection results per element
 
 // Debounce timer per element
 const detectionDebounceTimers = new WeakMap();
 const DETECTION_DEBOUNCE = 300; // ms - faster like Grammarly
+
+// CRITICAL FIX BUG002: Cleanup system to prevent memory leaks
+const cleanupFunctions = new WeakMap();
+const eventHandlers = new WeakMap(); // Store handler references for cleanup
 
 /**
  * Initialize floating button for an input element
@@ -24,20 +29,31 @@ export function initializeFloatingButton(element) {
     return; // Already initialized
   }
 
+  // CRITICAL FIX BUG002: Store event handlers for proper cleanup
+  const handlers = {
+    input: () => scheduleDetection(element),
+    focus: () => scheduleDetection(element, true),
+    paste: () => setTimeout(() => scheduleDetection(element, true), 50),
+    blur: () => {
+      removeHighlights(element);
+      scheduleDetection(element, true);
+    }
+  };
+
+  // Store handlers for cleanup
+  eventHandlers.set(element, handlers);
+
   // Listen for input changes (typing)
-  element.addEventListener('input', () => {
-    scheduleDetection(element);
-  });
+  element.addEventListener('input', handlers.input);
 
   // Listen for focus
-  element.addEventListener('focus', () => {
-    scheduleDetection(element, true); // Immediate on focus
-  });
+  element.addEventListener('focus', handlers.focus);
 
   // Listen for paste
-  element.addEventListener('paste', () => {
-    setTimeout(() => scheduleDetection(element, true), 50); // Immediate after paste
-  });
+  element.addEventListener('paste', handlers.paste);
+
+  // Listen for blur - re-run highlighting after user stops typing and clicks away
+  element.addEventListener('blur', handlers.blur);
 
   // Initial detection (immediate)
   scheduleDetection(element, true);
@@ -57,6 +73,60 @@ export function initializeFloatingButton(element) {
   if (!element._piiObserver) {
     element._piiObserver = observer;
   }
+
+  // CRITICAL FIX BUG002: Create cleanup function
+  const cleanup = () => {
+    console.info('PII Guardian: Cleaning up element', element);
+
+    // Disconnect observer
+    if (element._piiObserver) {
+      element._piiObserver.disconnect();
+      delete element._piiObserver;
+    }
+
+    // Remove all event listeners
+    const storedHandlers = eventHandlers.get(element);
+    if (storedHandlers) {
+      element.removeEventListener('input', storedHandlers.input);
+      element.removeEventListener('focus', storedHandlers.focus);
+      element.removeEventListener('paste', storedHandlers.paste);
+      element.removeEventListener('blur', storedHandlers.blur);
+      eventHandlers.delete(element);
+    }
+
+    // Clean button
+    const button = buttonInstances.get(element);
+    if (button) {
+      if (button._repositionHandler) {
+        window.removeEventListener('scroll', button._repositionHandler, true);
+        window.removeEventListener('resize', button._repositionHandler);
+      }
+      button.remove();
+      buttonInstances.delete(element);
+    }
+
+    // Clean panel
+    const panel = activePanels.get(element);
+    if (panel) {
+      panel.remove();
+      activePanels.delete(element);
+    }
+
+    // Clear timers
+    const timer = detectionDebounceTimers.get(element);
+    if (timer) {
+      clearTimeout(timer);
+      detectionDebounceTimers.delete(element);
+    }
+
+    // Clear detection results
+    detectionResults.delete(element);
+
+    console.info('PII Guardian: Cleanup complete');
+  };
+
+  // Store cleanup function
+  cleanupFunctions.set(element, cleanup);
 }
 
 /**
@@ -119,11 +189,17 @@ async function runDetection(element) {
       return;
     }
 
+    // Deduplicate matches for accurate count
+    const deduplicatedResult = deduplicateMatches(detectionResult);
+
+    // Store detection results for blur handler
+    detectionResults.set(element, deduplicatedResult);
+
     // Show button with detection count
-    showButton(element, detectionResult);
+    showButton(element, deduplicatedResult);
 
     // Highlight PII in the text
-    highlightPII(element, detectionResult);
+    highlightPII(element, deduplicatedResult);
 
   } catch (error) {
     console.error('PII Guardian: Error in floating button detection:', error);
@@ -147,6 +223,13 @@ function highlightPII(element, detectionResult) {
     return;
   }
 
+  // CRITICAL FIX BUG001: Skip highlighting if element has focus (user is actively typing)
+  // This prevents cursor position loss caused by innerHTML replacement during typing
+  if (document.activeElement === element) {
+    console.info('PII Guardian: Skipping highlight during active typing to prevent cursor loss');
+    return; // Only show floating button, no DOM manipulation
+  }
+
   // Check if already highlighted to avoid re-highlighting
   const existingHighlights = element.querySelectorAll('.pii-highlight');
   if (existingHighlights.length > 0) {
@@ -161,60 +244,76 @@ function highlightPII(element, detectionResult) {
     cursorPosition = getAbsoluteCursorPosition(element, range);
   }
 
-  // Get all text nodes in the element
-  const textNodes = getTextNodes(element);
+  try {
+    // Get current text representation that matches detection
+    const currentText = element.innerText || element.textContent || '';
 
-  // Sort matches by position (descending) to avoid position shifts
-  const sortedMatches = [...matches].sort((a, b) => b.position - a.position);
+    // Build a map of what needs to be highlighted
+    // Sort by position descending to handle replacements correctly
+    const sortedMatches = [...matches].sort((a, b) => b.position - a.position);
 
-  // Apply highlights to text nodes
-  for (const match of sortedMatches) {
-    const { value, position, confidence } = match;
+    // Deduplicate overlapping matches (keep higher confidence)
+    const deduplicatedMatches = [];
+    const usedRanges = [];
 
-    // Find the text node containing this match
-    let currentPos = 0;
-    for (let i = 0; i < textNodes.length; i++) {
-      const textNode = textNodes[i];
-      const nodeText = textNode.textContent;
-      const nodeLength = nodeText.length;
+    for (const match of sortedMatches) {
+      const start = match.position;
+      const end = match.position + match.value.length;
 
-      // Check if match is in this text node
-      if (position >= currentPos && position < currentPos + nodeLength) {
-        const offsetInNode = position - currentPos;
+      // Check if this range overlaps with any already added
+      const overlaps = usedRanges.some(range =>
+        (start >= range.start && start < range.end) ||
+        (end > range.start && end <= range.end) ||
+        (start <= range.start && end >= range.end)
+      );
 
-        // Check if the entire match is in this node
-        if (offsetInNode + value.length <= nodeLength) {
-          // Create the highlight span
-          const riskColor = getRiskColor(confidence);
-          const span = document.createElement('span');
-          span.className = 'pii-highlight';
-          span.style.cssText = `background: linear-gradient(to top, ${riskColor}30 0%, ${riskColor}30 2px, transparent 2px); border-bottom: 2px solid ${riskColor}; text-decoration: underline; text-decoration-color: ${riskColor}; text-decoration-style: wavy; text-underline-offset: 2px; color: inherit; border-radius: 0;`;
+      if (!overlaps) {
+        deduplicatedMatches.push(match);
+        usedRanges.push({ start, end });
+      }
+    }
 
-          // Split the text node and wrap the match
-          const beforeText = nodeText.substring(0, offsetInNode);
-          const matchText = nodeText.substring(offsetInNode, offsetInNode + value.length);
-          const afterText = nodeText.substring(offsetInNode + value.length);
+    // Re-sort ascending for text rebuilding
+    deduplicatedMatches.sort((a, b) => a.position - b.position);
 
-          span.textContent = matchText;
+    // Build highlighted HTML
+    let highlightedHTML = '';
+    let lastIndex = 0;
 
-          const parent = textNode.parentNode;
-          const fragment = document.createDocumentFragment();
+    for (const match of deduplicatedMatches) {
+      const { value, position, confidence } = match;
 
-          if (beforeText) {
-            fragment.appendChild(document.createTextNode(beforeText));
-          }
-          fragment.appendChild(span);
-          if (afterText) {
-            fragment.appendChild(document.createTextNode(afterText));
-          }
+      // Verify the match actually exists at this position
+      const actualValue = currentText.substring(position, position + value.length);
+      if (actualValue !== value) {
+        // Position mismatch - try to find it
+        const foundIndex = currentText.indexOf(value, Math.max(0, position - 50));
+        if (foundIndex === -1) continue; // Skip if can't find
 
-          parent.replaceChild(fragment, textNode);
-          break;
-        }
+        // Update position
+        match.position = foundIndex;
       }
 
-      currentPos += nodeLength;
+      // Add text before this match (escaped)
+      highlightedHTML += escapeHtml(currentText.substring(lastIndex, match.position));
+
+      // Add highlighted PII
+      const riskColor = getRiskColor(confidence);
+      highlightedHTML += `<span class="pii-highlight" style="background: linear-gradient(to top, ${riskColor}30 0%, ${riskColor}30 2px, transparent 2px); border-bottom: 2px solid ${riskColor}; text-decoration: underline; text-decoration-color: ${riskColor}; text-decoration-style: wavy; text-underline-offset: 2px; color: inherit; border-radius: 0;">${escapeHtml(value)}</span>`;
+
+      lastIndex = match.position + value.length;
     }
+
+    // Add remaining text
+    highlightedHTML += escapeHtml(currentText.substring(lastIndex));
+
+    // Only update if we actually have highlights
+    if (deduplicatedMatches.length > 0) {
+      element.innerHTML = highlightedHTML;
+    }
+
+  } catch (error) {
+    console.error('PII Guardian: Error highlighting text:', error);
   }
 
   // Restore cursor position
@@ -539,6 +638,54 @@ function hideButton(element) {
 }
 
 /**
+ * Deduplicate overlapping PII matches (keep higher confidence)
+ * @param {Object} detectionResult
+ * @returns {Object} Deduplicated result
+ */
+function deduplicateMatches(detectionResult) {
+  const { matches } = detectionResult;
+  if (!matches || matches.length === 0) {
+    return detectionResult;
+  }
+
+  // Sort by confidence descending, then by position
+  const sortedMatches = [...matches].sort((a, b) => {
+    if (b.confidence !== a.confidence) {
+      return b.confidence - a.confidence;
+    }
+    return a.position - b.position;
+  });
+
+  const deduplicatedMatches = [];
+  const usedRanges = [];
+
+  for (const match of sortedMatches) {
+    const start = match.position;
+    const end = match.position + match.value.length;
+
+    // Check if this range overlaps with any already added
+    const overlaps = usedRanges.some(range =>
+      (start >= range.start && start < range.end) ||
+      (end > range.start && end <= range.end) ||
+      (start <= range.start && end >= range.end)
+    );
+
+    if (!overlaps) {
+      deduplicatedMatches.push(match);
+      usedRanges.push({ start, end });
+    }
+  }
+
+  // Sort back by position
+  deduplicatedMatches.sort((a, b) => a.position - b.position);
+
+  return {
+    ...detectionResult,
+    matches: deduplicatedMatches
+  };
+}
+
+/**
  * Toggle suggestion panel
  * @param {HTMLElement} element - Input element
  * @param {HTMLElement} button - Button element
@@ -564,9 +711,12 @@ async function openPanel(element, button, detectionResult) {
   // Close any other open panels
   closeAllPanels();
 
+  // Deduplicate matches before showing panel
+  const deduplicatedResult = deduplicateMatches(detectionResult);
+
   const panel = document.createElement('div');
   panel.className = 'pii-guardian-panel';
-  panel.innerHTML = createPanelHTML(detectionResult);
+  panel.innerHTML = createPanelHTML(deduplicatedResult);
 
   // Position panel above button (FIXED positioning for better visibility)
   const buttonRect = button.getBoundingClientRect();
@@ -1255,4 +1405,40 @@ export function injectFloatingButtonStyles() {
   `;
 
   document.head.appendChild(style);
+}
+
+// CRITICAL FIX BUG002: Global observer to watch for removed DOM nodes
+// This prevents memory leaks by cleaning up observers/listeners when elements are removed
+const globalCleanupObserver = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.removedNodes) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        // Check if removed node or its children have cleanup functions
+        const elements = [node, ...node.querySelectorAll('*')];
+        for (const el of elements) {
+          const cleanup = cleanupFunctions.get(el);
+          if (cleanup) {
+            cleanup();
+            cleanupFunctions.delete(el);
+          }
+        }
+      }
+    }
+  }
+});
+
+// Start watching entire document for removed nodes
+if (document.body) {
+  globalCleanupObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+} else {
+  // Body not ready yet, wait for it
+  document.addEventListener('DOMContentLoaded', () => {
+    globalCleanupObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
 }

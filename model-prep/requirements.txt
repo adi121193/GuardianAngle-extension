@@ -1,0 +1,15 @@
+# Model Preparation Dependencies
+# Python 3.8+ required
+
+# Core ML libraries
+transformers>=4.35.0
+torch>=2.0.0
+onnx>=1.15.0
+onnxruntime>=1.16.0
+
+# Optimization
+optimum[onnxruntime]>=1.14.0
+
+# Utilities
+numpy>=1.24.0
+datasets>=2.14.0
