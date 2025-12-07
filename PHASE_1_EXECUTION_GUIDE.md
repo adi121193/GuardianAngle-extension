@@ -120,7 +120,6 @@ Output: ./distilbert-ner-onnx
 
 Step 1/4: Loading tokenizer...
 ✅ Tokenizer loaded (vocab size: 30522)
-
 Step 2/4: Loading PyTorch model...
 ✅ Model loaded (67.0M parameters)
 

@@ -128,13 +128,26 @@ export class NERModel {
   }
 
   /**
-   * Simple BERT tokenizer (word-piece tokenization)
+   * BERT-style tokenizer (improved word-piece tokenization)
+   * Handles punctuation and special characters better
    */
   tokenize(text) {
     const tokens = ['[CLS]'];
-    const words = text.toLowerCase().split(/\s+/);
 
-    for (const word of words) {
+    // Normalize whitespace and lowercase
+    const normalized = text.trim().replace(/\s+/g, ' ');
+
+    // Split on whitespace and punctuation while preserving punctuation
+    const rawWords = normalized.split(/(\s+|[.,!?;:()\[\]{}'"<>\/\\@#$%^&*+=|~`-])/g)
+      .filter(w => w.trim().length > 0);
+
+    for (let word of rawWords) {
+      // Skip pure whitespace
+      if (/^\s+$/.test(word)) continue;
+
+      // Lowercase for vocabulary lookup
+      word = word.toLowerCase();
+
       // Try full word first
       if (this.vocab.has(word)) {
         tokens.push(word);
@@ -159,13 +172,19 @@ export class NERModel {
           if (!found) {
             // Unknown token
             tokens.push('[UNK]');
-            break;
+            start++; // Move forward to avoid infinite loop
           }
         }
       }
     }
 
     tokens.push('[SEP]');
+
+    // Truncate to max sequence length (512 for BERT)
+    if (tokens.length > 512) {
+      return tokens.slice(0, 511).concat(['[SEP]']);
+    }
+
     return tokens;
   }
 
@@ -178,20 +197,39 @@ export class NERModel {
 
   /**
    * Prepare input tensors for ONNX model
+   * Uses int32 for better browser compatibility (BigInt64Array not supported in all browsers)
    */
   prepareInputs(inputIds) {
     const seqLength = inputIds.length;
 
+    // Try to use int64 with BigInt if supported, otherwise fall back to int32
+    let dtype = 'int32';
+    let createTensor;
+
+    try {
+      // Check if BigInt64Array is supported
+      if (typeof BigInt64Array !== 'undefined') {
+        dtype = 'int64';
+        createTensor = (data) => BigInt64Array.from(data.map(v => BigInt(v)));
+      } else {
+        createTensor = (data) => Int32Array.from(data);
+      }
+    } catch (e) {
+      // Fallback to int32
+      console.warn('[NERModel] BigInt not supported, using int32');
+      createTensor = (data) => Int32Array.from(data);
+    }
+
     // Input IDs
-    const inputIdsTensor = new ort.Tensor('int64', BigInt64Array.from(inputIds.map(id => BigInt(id))), [1, seqLength]);
+    const inputIdsTensor = new ort.Tensor(dtype, createTensor(inputIds), [1, seqLength]);
 
     // Attention mask (1 for real tokens, 0 for padding)
     const attentionMask = new Array(seqLength).fill(1);
-    const attentionMaskTensor = new ort.Tensor('int64', BigInt64Array.from(attentionMask.map(m => BigInt(m))), [1, seqLength]);
+    const attentionMaskTensor = new ort.Tensor(dtype, createTensor(attentionMask), [1, seqLength]);
 
     // Token type IDs (0 for first sequence)
     const tokenTypeIds = new Array(seqLength).fill(0);
-    const tokenTypeIdsTensor = new ort.Tensor('int64', BigInt64Array.from(tokenTypeIds.map(t => BigInt(t))), [1, seqLength]);
+    const tokenTypeIdsTensor = new ort.Tensor(dtype, createTensor(tokenTypeIds), [1, seqLength]);
 
     return {
       input_ids: inputIdsTensor,

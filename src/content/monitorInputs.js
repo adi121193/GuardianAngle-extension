@@ -3,7 +3,7 @@
  * Monitors text inputs and triggers PII detection
  */
 
-import { detectPII, quickPIICheck } from './detectText.js';
+import { detectPII, quickPIICheck, enableNER } from './detectText.js';
 import { showWarningModal, isModalActive } from './injectWarningUI.js';
 import { getSettings, incrementDetection, incrementBlocked, isEnabled } from '../utils/storage.js';
 import { initializeInlineHighlighting, injectHighlightStyles } from './inlineHighlighter.js';
@@ -22,6 +22,10 @@ const lastCheckedValues = new WeakMap();
 // CRITICAL FIX BUG005: Bypass flag for simulated interactions
 // This prevents infinite loops when we programmatically click send button or dispatch Enter key
 let isSimulatedInteraction = false;
+
+// NER initialization state
+let nerInitialized = false;
+let nerInitializationAttempted = false;
 
 /**
  * Check if element is an AI chat input
@@ -135,10 +139,12 @@ async function handleInput(element) {
     // Get settings
     const settings = await getSettings();
 
-    // Full PII detection
+    // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes
+      enabledTypes: settings.enabledPIITypes,
+      useNER: settings.nerEnabled !== false,
+      detectionMode: settings.detectionMode || 'hybrid'
     });
 
     // Update last checked value
@@ -149,6 +155,20 @@ async function handleInput(element) {
       // Increment detection counters
       for (const type of detectionResult.types) {
         await incrementDetection(type);
+      }
+
+      // Update hybrid stats if available
+      if (detectionResult.sources || detectionResult.performance) {
+        try {
+          await chrome.runtime.sendMessage({
+            type: 'UPDATE_HYBRID_STATS',
+            sources: detectionResult.sources,
+            performance: detectionResult.performance,
+            detectionMode: settings.detectionMode || 'hybrid'
+          });
+        } catch (error) {
+          console.error('PII Guardian: Failed to update hybrid stats:', error);
+        }
       }
 
       // Don't show modal if one is already active
@@ -212,10 +232,12 @@ async function handlePaste(event) {
     // Get settings
     const settings = await getSettings();
 
-    // Full PII detection on pasted content
+    // Full PII detection on pasted content with NER settings
     const detectionResult = await detectPII(pastedText, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes
+      enabledTypes: settings.enabledPIITypes,
+      useNER: settings.nerEnabled !== false,
+      detectionMode: settings.detectionMode || 'hybrid'
     });
 
     if (detectionResult.piiDetected) {
@@ -225,6 +247,20 @@ async function handlePaste(event) {
       // Increment detection counters
       for (const type of detectionResult.types) {
         await incrementDetection(type);
+      }
+
+      // Update hybrid stats if available
+      if (detectionResult.sources || detectionResult.performance) {
+        try {
+          await chrome.runtime.sendMessage({
+            type: 'UPDATE_HYBRID_STATS',
+            sources: detectionResult.sources,
+            performance: detectionResult.performance,
+            detectionMode: settings.detectionMode || 'hybrid'
+          });
+        } catch (error) {
+          console.error('PII Guardian: Failed to update hybrid stats:', error);
+        }
       }
 
       // Create temporary element to hold pasted text for modal
@@ -344,10 +380,12 @@ async function handlePIIDetectionForEnterKey(element, text) {
     // Get settings
     const settings = await getSettings();
 
-    // Full PII detection
+    // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes
+      enabledTypes: settings.enabledPIITypes,
+      useNER: settings.nerEnabled !== false,
+      detectionMode: settings.detectionMode || 'hybrid'
     });
 
     // No PII? quickPIICheck was false positive - allow send
@@ -359,6 +397,20 @@ async function handlePIIDetectionForEnterKey(element, text) {
     // PII detected - increment stats
     for (const type of detectionResult.types) {
       await incrementDetection(type);
+    }
+
+    // Update hybrid stats if available
+    if (detectionResult.sources || detectionResult.performance) {
+      try {
+        await chrome.runtime.sendMessage({
+          type: 'UPDATE_HYBRID_STATS',
+          sources: detectionResult.sources,
+          performance: detectionResult.performance,
+          detectionMode: settings.detectionMode || 'hybrid'
+        });
+      } catch (error) {
+        console.error('PII Guardian: Failed to update hybrid stats:', error);
+      }
     }
 
     // Show modal and get decision
@@ -543,10 +595,12 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     // Get settings
     const settings = await getSettings();
 
-    // Full PII detection
+    // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes
+      enabledTypes: settings.enabledPIITypes,
+      useNER: settings.nerEnabled !== false,
+      detectionMode: settings.detectionMode || 'hybrid'
     });
 
     // No PII? quickPIICheck was false positive - allow click
@@ -558,6 +612,20 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     // PII detected - increment stats
     for (const type of detectionResult.types) {
       await incrementDetection(type);
+    }
+
+    // Update hybrid stats if available
+    if (detectionResult.sources || detectionResult.performance) {
+      try {
+        await chrome.runtime.sendMessage({
+          type: 'UPDATE_HYBRID_STATS',
+          sources: detectionResult.sources,
+          performance: detectionResult.performance,
+          detectionMode: settings.detectionMode || 'hybrid'
+        });
+      } catch (error) {
+        console.error('PII Guardian: Failed to update hybrid stats:', error);
+      }
     }
 
     // Show modal and get decision
@@ -594,6 +662,54 @@ async function handlePIIDetectionForSendButton(input, text, button) {
 }
 
 /**
+ * Initialize NER if enabled in settings
+ */
+async function initializeNER() {
+  if (nerInitializationAttempted) return;
+  nerInitializationAttempted = true;
+
+  try {
+    // Check if NER is enabled in settings
+    const settings = await getSettings();
+    if (!settings.nerEnabled) {
+      console.log('PII Guardian: NER disabled in settings');
+      return;
+    }
+
+    console.log('PII Guardian: Requesting NER initialization...');
+
+    // Request NER initialization from background script
+    const response = await chrome.runtime.sendMessage({ type: 'INIT_NER' });
+
+    if (response && response.success) {
+      console.log('PII Guardian: NER initialization requested successfully');
+    } else {
+      console.warn('PII Guardian: NER initialization request failed');
+    }
+  } catch (error) {
+    console.error('PII Guardian: Error requesting NER initialization:', error);
+  }
+}
+
+/**
+ * Listen for NER_READY message from background script
+ */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'NER_READY') {
+    console.log('PII Guardian: NER ready notification received');
+
+    // Enable NER in detectText module
+    // Note: We can't pass offscreenManager directly from content script
+    // The hybridDetector communicates with background script via messaging
+    enableNER(true);
+    nerInitialized = true;
+
+    sendResponse({ success: true });
+  }
+  return false;
+});
+
+/**
  * Initialize monitoring
  */
 function initialize() {
@@ -617,6 +733,9 @@ function initialize() {
 
   // Monitor send buttons
   blockSendButton();
+
+  // Initialize NER if enabled (lazy loading)
+  initializeNER();
 
   // Watch for dynamically added inputs
   const observer = new MutationObserver((mutations) => {

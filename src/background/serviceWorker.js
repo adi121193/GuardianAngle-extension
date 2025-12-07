@@ -312,6 +312,46 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return true;
 
+    case 'UPDATE_HYBRID_STATS':
+      chrome.storage.local.get(['settings'], (result) => {
+        const settings = result.settings || DEFAULT_SETTINGS;
+
+        if (!settings.stats) {
+          settings.stats = DEFAULT_SETTINGS.stats;
+        }
+
+        // Update NER-specific stats
+        const { sources, performance, detectionMode } = message;
+
+        if (sources) {
+          if (sources.regex > 0) {
+            settings.stats.regexDetections = (settings.stats.regexDetections || 0) + sources.regex;
+          }
+          if (sources.ner > 0) {
+            settings.stats.nerDetections = (settings.stats.nerDetections || 0) + sources.ner;
+          }
+          if (detectionMode === 'hybrid') {
+            settings.stats.hybridDetections = (settings.stats.hybridDetections || 0) + 1;
+          }
+        }
+
+        if (performance && performance.nerCached) {
+          settings.stats.nerCacheHits = (settings.stats.nerCacheHits || 0) + 1;
+        }
+
+        if (performance && performance.ner > 0) {
+          // Update average NER latency
+          const currentAvg = settings.stats.avgNerLatency || 0;
+          const totalInferences = settings.stats.nerDetections || 1;
+          settings.stats.avgNerLatency = ((currentAvg * (totalInferences - 1)) + performance.ner) / totalInferences;
+        }
+
+        chrome.storage.local.set({ settings }, () => {
+          sendResponse({ success: true });
+        });
+      });
+      return true;
+
     default:
       console.warn('Unknown message type:', message.type);
       sendResponse({ error: 'Unknown message type' });

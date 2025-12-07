@@ -11,12 +11,19 @@ let nerEnabled = false;
 
 /**
  * Enable NER detection (called when offscreen manager is ready)
+ * @param {Object|boolean} offscreenManagerOrFlag - Offscreen manager instance or boolean flag
  */
-export function enableNER(offscreenManager) {
-  if (offscreenManager) {
-    hybridDetector.setOffscreenManager(offscreenManager);
+export function enableNER(offscreenManagerOrFlag) {
+  if (offscreenManagerOrFlag === true) {
+    // Called from content script - just set flag
+    // hybridDetector will communicate with background script via messaging
     nerEnabled = true;
-    console.log('[detectText] NER detection enabled');
+    console.log('[detectText] NER detection enabled (content script mode)');
+  } else if (offscreenManagerOrFlag) {
+    // Called with actual offscreen manager instance
+    hybridDetector.setOffscreenManager(offscreenManagerOrFlag);
+    nerEnabled = true;
+    console.log('[detectText] NER detection enabled (direct mode)');
   }
 }
 

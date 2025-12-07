@@ -233,65 +233,113 @@ export function maskText(text, matches) {
     return text;
   }
 
-  // CRITICAL FIX BUG003: Use value-based replacement instead of position-based
-  // This prevents masking wrong text when DOM positions change after highlighting
+  // FIX BUG003: Sort matches by position (descending) to avoid index shifts
+  // This ensures we replace the correct occurrence even when duplicate values exist
+  const sortedMatches = [...matches].sort((a, b) => {
+    // Handle matches without position (fallback to 0)
+    const posA = a.position ?? 0;
+    const posB = b.position ?? 0;
+    return posB - posA; // Descending order
+  });
+
   let maskedText = text;
 
-  for (const match of matches) {
-    const { type, value } = match;
-    let maskedValue;
-
-    // Apply appropriate masking based on PII type
-    switch (type) {
-      case 'aadhaar':
-        maskedValue = maskAadhaar(value);
-        break;
-      case 'pan':
-        maskedValue = maskPAN(value);
-        break;
-      case 'phone':
-        maskedValue = maskPhone(value);
-        break;
-      case 'email':
-        maskedValue = maskEmail(value);
-        break;
-      case 'dob':
-        maskedValue = maskDOB(value);
-        break;
-      case 'creditCard':
-        maskedValue = maskCreditCard(value);
-        break;
-      case 'bankAccount':
-        maskedValue = maskBankAccount(value);
-        break;
-      case 'passport':
-        maskedValue = maskPassport(value);
-        break;
-      case 'ssn':
-        maskedValue = maskSSN(value);
-        break;
-      case 'ifsc':
-        maskedValue = maskIFSC(value);
-        break;
-      case 'gst':
-        maskedValue = maskGST(value);
-        break;
-      case 'drivingLicense':
-        maskedValue = maskDrivingLicense(value);
-        break;
-      case 'ipAddress':
-        maskedValue = maskIPAddress(value);
-        break;
-      default:
-        maskedValue = maskCompletely(value);
+  for (const match of sortedMatches) {
+    const { type, value, position } = match;
+    
+    // Skip if position is invalid or missing
+    if (position === undefined || position === null || position < 0) {
+      // Fallback: try to find and replace first occurrence
+      // This handles edge cases where position might not be available
+      maskedText = maskedText.replace(value, (matched) => {
+        // Only replace if we haven't already processed this exact match
+        // This is a best-effort fallback
+        return maskValueByType(matched, type);
+      });
+      continue;
     }
 
-    // CRITICAL FIX BUG003: Replace by value, not position
-    // This works correctly even if DOM structure changed after highlighting
-    maskedText = maskedText.replace(value, maskedValue);
+    // Verify the value exists at the specified position
+    const endPosition = position + value.length;
+    if (endPosition > maskedText.length) {
+      // Position out of bounds, skip this match
+      continue;
+    }
+
+    const textAtPosition = maskedText.substring(position, endPosition);
+    
+    // Verify the text at this position matches the expected value
+    // This prevents masking wrong text if positions are incorrect
+    if (textAtPosition !== value) {
+      // Position mismatch - try to find the value near the expected position
+      // Search in a small window around the expected position (±50 chars)
+      const searchStart = Math.max(0, position - 50);
+      const searchEnd = Math.min(maskedText.length, position + value.length + 50);
+      const searchText = maskedText.substring(searchStart, searchEnd);
+      const foundIndex = searchText.indexOf(value);
+      
+      if (foundIndex !== -1) {
+        // Found the value near expected position, use the found position
+        const actualPosition = searchStart + foundIndex;
+        const maskedValue = maskValueByType(value, type);
+        maskedText = maskedText.substring(0, actualPosition) +
+                     maskedValue +
+                     maskedText.substring(actualPosition + value.length);
+      }
+      // If not found, skip this match to avoid corrupting text
+      continue;
+    }
+
+    // Apply appropriate masking based on PII type
+    const maskedValue = maskValueByType(value, type);
+
+    // Replace at specific position using substring operations
+    // This ensures we replace the correct occurrence, not just the first one
+    maskedText = maskedText.substring(0, position) +
+                 maskedValue +
+                 maskedText.substring(position + value.length);
   }
 
   return maskedText;
+}
+
+/**
+ * Helper function to mask a value based on its type
+ * @param {string} value - The value to mask
+ * @param {string} type - The PII type
+ * @returns {string} Masked value
+ */
+function maskValueByType(value, type) {
+  switch (type) {
+    case 'aadhaar':
+      return maskAadhaar(value);
+    case 'pan':
+      return maskPAN(value);
+    case 'phone':
+      return maskPhone(value);
+    case 'email':
+      return maskEmail(value);
+    case 'dob':
+      return maskDOB(value);
+    case 'creditCard':
+      return maskCreditCard(value);
+    case 'bankAccount':
+      return maskBankAccount(value);
+    case 'passport':
+      return maskPassport(value);
+    case 'ssn':
+      return maskSSN(value);
+    case 'ifsc':
+      return maskIFSC(value);
+    case 'gst':
+      return maskGST(value);
+    case 'drivingLicense':
+      return maskDrivingLicense(value);
+    case 'ipAddress':
+      return maskIPAddress(value);
+    default:
+      return maskCompletely(value);
+  }
 }
 
 /**

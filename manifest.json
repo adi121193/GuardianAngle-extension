@@ -13,7 +13,8 @@
     "webRequest",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback"
+    "declarativeNetRequestFeedback",
+    "offscreen"
   ],
   "host_permissions": [
     "https://chat.openai.com/*",
@@ -26,11 +27,6 @@
   ],
   "background": {
     "service_worker": "background/serviceWorker.js"
-  },
-  "offscreen": {
-    "url": "html/offscreen.html",
-    "reasons": ["WORKERS"],
-    "justification": "Run ML inference in isolated environment for PII detection"
   },
   "content_scripts": [
     {
