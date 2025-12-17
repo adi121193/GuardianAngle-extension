@@ -37,7 +37,7 @@ function getSuggestions(type) {
  * @returns {string} Modal HTML
  */
 function createModalHTML(detectionResult, originalText = '') {
-  const { types, matches, score, risk } = detectionResult;
+  const { types, matches, score, risk, ambiguousMatches = [] } = detectionResult;
 
   const riskColors = {
     low: '#4CAF50',
@@ -75,6 +75,33 @@ function createModalHTML(detectionResult, originalText = '') {
     `;
   }).join('');
 
+  // Create ambiguous matches list (low confidence warnings)
+  const ambiguousList = ambiguousMatches.length > 0 ? ambiguousMatches.map(match => {
+    const { type, value, confidence, reasons = [] } = match;
+    const typeName = type.replace('potential_', '').replace('_', ' ');
+
+    return `
+      <li class="pii-detail-item pii-detail-ambiguous">
+        <div class="pii-detail-header">
+          <span class="pii-detail-type">Possible ${typeName}</span>
+          <span class="pii-detail-confidence pii-confidence-low">${Math.round(confidence * 100)}%</span>
+        </div>
+        <div class="pii-detail-value">
+          <strong>Detected:</strong>
+          <code class="pii-detected-value">${escapeHtml(value)}</code>
+        </div>
+        <div class="pii-detail-suggestion pii-suggestion-info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          Low confidence detection. ${reasons.join('. ')}
+        </div>
+      </li>
+    `;
+  }).join('') : '';
+
   // Generate masked preview
   const maskedPreview = maskText(originalText, matches);
   const showPreview = originalText && originalText !== maskedPreview;
@@ -109,6 +136,22 @@ function createModalHTML(detectionResult, originalText = '') {
           <div class="pii-details-list">
             ${piiDetailsList}
           </div>
+
+          ${ambiguousList ? `
+            <div class="pii-ambiguous-section">
+              <h4 class="pii-ambiguous-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Low Confidence Detections:
+              </h4>
+              <div class="pii-details-list">
+                ${ambiguousList}
+              </div>
+            </div>
+          ` : ''}
 
           ${showPreview ? `
             <div class="pii-preview-section">
@@ -483,6 +526,46 @@ function getModalStyles() {
       flex-shrink: 0;
       margin-top: 2px;
       color: #2196F3;
+    }
+
+    /* Ambiguous PII Detections */
+    .pii-ambiguous-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .pii-ambiguous-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-ambiguous-title svg {
+      color: #9E9E9E;
+    }
+
+    .pii-detail-ambiguous {
+      border-left-color: #9E9E9E;
+      background: #fafafa;
+    }
+
+    .pii-confidence-low {
+      background: #9E9E9E;
+    }
+
+    .pii-suggestion-info {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .pii-suggestion-info svg {
+      color: #9E9E9E;
     }
 
     /* Preview Section */

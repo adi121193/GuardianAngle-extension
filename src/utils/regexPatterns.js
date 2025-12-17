@@ -3,16 +3,30 @@
  * All patterns are optimized for Indian context + global patterns
  */
 
+import {
+  validateAadhaarChecksum,
+  validateIndianPhone,
+  validateInternationalPhone,
+  validateBankAccount,
+  validateLuhnChecksum,
+  validatePAN,
+  classifyNumericPII,
+  analyzeContext
+} from './validators.js';
+
 export const PII_PATTERNS = {
   // Indian Aadhaar Number (12 digits, optional spaces/dashes)
+  // NOW WITH STRICT VERHOEFF CHECKSUM VALIDATION
   aadhaar: {
     pattern: /\b\d{4}\s?\d{4}\s?\d{4}\b/g,
     name: 'Aadhaar Number',
     confidence: 0.85,
-    validator: (match) => {
-      const digits = match.replace(/\s/g, '');
-      return digits.length === 12 && /^\d{12}$/.test(digits);
-    }
+    priority: 2, // Lower priority than phone
+    validator: (match, fullText, index) => {
+      // CRITICAL: Must pass Verhoeff checksum
+      return validateAadhaarChecksum(match);
+    },
+    contextAware: true
   },
 
   // Indian PAN Card (ABCDE1234F format)
@@ -20,20 +34,31 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Z]{5}\d{4}[A-Z]\b/g,
     name: 'PAN Card',
     confidence: 0.95,
-    validator: (match) => {
-      return /^[A-Z]{5}\d{4}[A-Z]$/.test(match);
+    priority: 5,
+    validator: (match, fullText, index) => {
+      return validatePAN(match);
     }
   },
 
   // Phone Numbers (Indian + International)
+  // HIGHEST PRIORITY - checks first with normalization
   phone: {
-    pattern: /(\+\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b|\b\d{10}\b/g,
+    pattern: /(?:\+91[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\b0?\d{10}\b)/g,
     name: 'Phone Number',
     confidence: 0.75,
-    validator: (match) => {
-      const digits = match.replace(/\D/g, '');
-      return digits.length >= 10 && digits.length <= 15;
-    }
+    priority: 1, // HIGHEST PRIORITY
+    validator: (match, fullText, index) => {
+      // Try Indian phone first
+      const indianResult = validateIndianPhone(match);
+      if (indianResult.valid) {
+        return true;
+      }
+
+      // Try international phone
+      const intlResult = validateInternationalPhone(match);
+      return intlResult.valid;
+    },
+    contextAware: true
   },
 
   // Email Addresses
@@ -41,7 +66,8 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
     name: 'Email Address',
     confidence: 0.9,
-    validator: (match) => {
+    priority: 6,
+    validator: (match, fullText, index) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(match);
     }
   },
@@ -94,12 +120,21 @@ export const PII_PATTERNS = {
     pattern: /\b(?:account|acc|a\/c|bank)\s*(?:no|number|#|num)?[\s:]*\d{8,18}\b/gi,
     name: 'Bank Account Number',
     confidence: 0.6,
-    validator: (match) => {
+    priority: 3, // Lower than phone, higher than low-confidence
+    validator: (match, fullText, index) => {
       // Must have context keyword and valid digit count
       const hasContext = /(?:account|acc|a\/c|bank)/i.test(match);
       const digits = match.replace(/\D/g, '');
-      return hasContext && digits.length >= 8 && digits.length <= 18;
-    }
+      const valid = hasContext && validateBankAccount(digits);
+
+      // Don't match if it could be Aadhaar
+      if (digits.length === 12 && validateAadhaarChecksum(digits)) {
+        return false;
+      }
+
+      return valid;
+    },
+    contextAware: true
   },
 
   // IFSC Code
@@ -117,23 +152,9 @@ export const PII_PATTERNS = {
     pattern: /\b(?:\d{4}[\s\-]?){3}\d{4}\b/g,
     name: 'Credit/Debit Card',
     confidence: 0.8,
-    validator: (match) => {
-      // Luhn algorithm validation
-      const digits = match.replace(/[\s\-]/g, '');
-      if (digits.length < 13 || digits.length > 19) return false;
-
-      let sum = 0;
-      let isEven = false;
-      for (let i = digits.length - 1; i >= 0; i--) {
-        let digit = parseInt(digits[i], 10);
-        if (isEven) {
-          digit *= 2;
-          if (digit > 9) digit -= 9;
-        }
-        sum += digit;
-        isEven = !isEven;
-      }
-      return sum % 10 === 0;
+    priority: 4,
+    validator: (match, fullText, index) => {
+      return validateLuhnChecksum(match);
     }
   },
 
@@ -189,7 +210,7 @@ export const PII_PATTERNS = {
 };
 
 /**
- * Detect PII in text using regex patterns
+ * Detect PII in text using regex patterns with priority-based routing
  * @param {string} text - Text to analyze
  * @param {number} minConfidence - Minimum confidence threshold (0-1)
  * @returns {Object} Detection results
@@ -199,6 +220,7 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
     piiDetected: false,
     types: [],
     matches: [],
+    ambiguousMatches: [], // NEW: low-confidence matches
     score: 0
   };
 
@@ -207,34 +229,137 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
   }
 
   const detectedTypes = new Set();
+  const processedPositions = new Set(); // Track positions to avoid duplicates
   let totalConfidence = 0;
   let matchCount = 0;
 
-  for (const [type, config] of Object.entries(PII_PATTERNS)) {
+  // Sort patterns by priority (lower number = higher priority)
+  const sortedPatterns = Object.entries(PII_PATTERNS).sort((a, b) => {
+    const priorityA = a[1].priority || 999;
+    const priorityB = b[1].priority || 999;
+    return priorityA - priorityB;
+  });
+
+  // First pass: collect all potential matches with positions
+  const allMatches = [];
+
+  for (const [type, config] of sortedPatterns) {
     const matches = Array.from(text.matchAll(config.pattern));
 
     for (const match of matches) {
       const matchedText = match[0];
+      const position = match.index;
 
-      // Validate the match
-      if (config.validator && !config.validator(matchedText)) {
+      allMatches.push({
+        type,
+        config,
+        matchedText,
+        position,
+        endPosition: position + matchedText.length
+      });
+    }
+  }
+
+  // Second pass: process matches with priority and context
+  for (const matchInfo of allMatches) {
+    const { type, config, matchedText, position, endPosition } = matchInfo;
+
+    // Skip if this position was already matched by higher-priority pattern
+    let overlaps = false;
+    for (const processedPos of processedPositions) {
+      const [start, end] = processedPos.split('-').map(Number);
+      if ((position >= start && position < end) || (endPosition > start && endPosition <= end)) {
+        overlaps = true;
+        break;
+      }
+    }
+
+    if (overlaps) {
+      continue;
+    }
+
+    // Context-aware validation
+    let finalConfidence = config.confidence;
+    let validationResult = true;
+
+    if (config.validator) {
+      validationResult = config.validator(matchedText, text, position);
+
+      // If validation failed, skip this match
+      if (!validationResult) {
+        continue;
+      }
+    }
+
+    // Apply context scoring for context-aware patterns
+    if (config.contextAware) {
+      const context = analyzeContext(text, position);
+
+      // Adjust confidence based on context
+      if (type === 'phone' && (context.hasPhoneContext || context.hasTimestamp)) {
+        finalConfidence += 0.15;
+      } else if (type === 'aadhaar' && context.hasAadhaarContext) {
+        finalConfidence += 0.1;
+      } else if (type === 'bankAccount' && context.hasAccountContext) {
+        finalConfidence += 0.1;
+      }
+    }
+
+    // Use smart classification for numeric patterns
+    if (type === 'aadhaar' || type === 'phone' || type === 'bankAccount') {
+      const classification = classifyNumericPII(matchedText, text, position);
+
+      if (classification.type && classification.type !== type) {
+        // Smart classifier says it's a different type
+        continue; // Skip, let the correct pattern handle it
+      }
+
+      if (classification.ambiguous) {
+        // Low confidence / ambiguous match
+        results.ambiguousMatches.push({
+          type: classification.type || 'unknown',
+          value: matchedText,
+          name: config.name,
+          confidence: classification.confidence,
+          position,
+          reasons: classification.reasons,
+          isAmbiguous: true
+        });
         continue;
       }
 
-      // Only include if confidence meets threshold
-      if (config.confidence >= minConfidence) {
-        detectedTypes.add(type);
-        totalConfidence += config.confidence;
-        matchCount++;
-
-        results.matches.push({
-          type,
-          value: matchedText,
-          name: config.name,
-          confidence: config.confidence,
-          position: match.index
-        });
+      // Update confidence from classifier if available
+      if (classification.confidence > 0) {
+        finalConfidence = Math.min(0.98, classification.confidence);
       }
+    }
+
+    // Only include if confidence meets threshold
+    if (finalConfidence >= minConfidence) {
+      detectedTypes.add(type);
+      totalConfidence += finalConfidence;
+      matchCount++;
+
+      results.matches.push({
+        type,
+        value: matchedText,
+        name: config.name,
+        confidence: finalConfidence,
+        position
+      });
+
+      // Mark this position as processed
+      processedPositions.add(`${position}-${endPosition}`);
+    } else if (finalConfidence >= 0.3) {
+      // Low confidence but not completely invalid
+      results.ambiguousMatches.push({
+        type,
+        value: matchedText,
+        name: config.name,
+        confidence: finalConfidence,
+        position,
+        isAmbiguous: true
+      });
     }
   }
 
