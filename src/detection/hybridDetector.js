@@ -284,8 +284,9 @@ export class HybridDetector {
 
     // Always run regex detection (fast)
     let regexResults = [];
+    let ambiguousResults = [];
     if (mode !== DetectionMode.NER_ONLY) {
-      const regexDetection = detectPIIWithRegex(text);
+      const regexDetection = detectPIIWithRegex(text, options.minConfidence || 0.6);
       // Convert to our format with start/end positions
       regexResults = regexDetection.matches.map(match => ({
         type: match.type.toUpperCase(),
@@ -293,8 +294,22 @@ export class HybridDetector {
         category: match.category || 'IDENTITY',
         confidence: match.confidence || 0.9,
         source: 'regex',
-        start: match.start || text.indexOf(match.value),
-        end: match.end || (text.indexOf(match.value) + match.value.length)
+        // Use precise positions from regex detector to avoid masking the wrong occurrence
+        start: match.position,
+        end: match.position + match.value.length
+      }));
+
+      // Include ambiguous matches
+      ambiguousResults = (regexDetection.ambiguousMatches || []).map(match => ({
+        type: match.type.toUpperCase(),
+        value: match.value,
+        category: 'IDENTITY',
+        confidence: match.confidence || 0.3,
+        source: 'regex',
+        isAmbiguous: true,
+        reasons: match.reasons || [],
+        start: match.position,
+        end: match.position + match.value.length
       }));
     }
 
@@ -328,6 +343,7 @@ export class HybridDetector {
 
     return {
       detections: mergedResults,
+      ambiguousDetections: ambiguousResults,
       count: mergedResults.length,
       performance: {
         total: totalTime,
@@ -339,7 +355,8 @@ export class HybridDetector {
       sources: {
         regex: regexResults.length,
         ner: nerResults.length,
-        merged: mergedResults.length
+        merged: mergedResults.length,
+        ambiguous: ambiguousResults.length
       }
     };
   }

@@ -8,6 +8,7 @@ import { showWarningModal, isModalActive } from './injectWarningUI.js';
 import { getSettings, incrementDetection, incrementBlocked, isEnabled } from '../utils/storage.js';
 import { initializeInlineHighlighting, injectHighlightStyles } from './inlineHighlighter.js';
 import { initializeFloatingButton, injectFloatingButtonStyles } from './floatingButton.js';
+import { offscreenManagerProxy } from '../ml/offscreenManagerProxy.js';
 
 // Debounce timers
 const debounceTimers = new WeakMap();
@@ -15,6 +16,7 @@ const DEBOUNCE_DELAY = 300; // ms
 
 // Track monitored elements
 const monitoredElements = new WeakSet();
+const monitoredHistory = new WeakSet();
 
 // Track last checked values to avoid redundant checks
 const lastCheckedValues = new WeakMap();
@@ -26,6 +28,9 @@ let isSimulatedInteraction = false;
 // NER initialization state
 let nerInitialized = false;
 let nerInitializationAttempted = false;
+
+// Feature flag: scan visible chat history (off by default to avoid unexpected behavior)
+const SCAN_HISTORY = true;
 
 /**
  * Check if element is an AI chat input
@@ -86,13 +91,41 @@ function isAIChatInput(element) {
 }
 
 /**
+ * Attempt to find chat message containers for history scanning
+ * @returns {HTMLElement[]} array of message nodes
+ */
+function findChatMessages() {
+  // Heuristics for common chat UIs (Gemini/ChatGPT/Claude)
+  const selectors = [
+    '[data-message-id]',
+    '[data-message-index]',
+    '[data-message-author]',
+    '.message',
+    '.msg',
+    '.prose',
+    '[class*="message"]',
+    '[class*="msg"]'
+  ];
+  const nodes = [];
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(node => {
+      if (node.innerText && !monitoredHistory.has(node)) {
+        nodes.push(node);
+      }
+    });
+  });
+  return nodes;
+}
+
+/**
  * Get text content from element
  * @param {HTMLElement} element
  * @returns {string}
  */
 function getTextContent(element) {
   if (element.contentEditable === 'true') {
-    return element.innerText || element.textContent || '';
+    // textContent preserves exact spacing/newlines better than innerText
+    return element.textContent || '';
   }
   return element.value || '';
 }
@@ -104,7 +137,8 @@ function getTextContent(element) {
  */
 function setTextContent(element, text) {
   if (element.contentEditable === 'true') {
-    element.innerText = text;
+    // textContent avoids browser reflow/extra whitespace that innerText can introduce
+    element.textContent = text;
   } else {
     element.value = text;
   }
@@ -698,11 +732,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'NER_READY') {
     console.log('PII Guardian: NER ready notification received');
 
-    // Enable NER in detectText module
-    // Note: We can't pass offscreenManager directly from content script
-    // The hybridDetector communicates with background script via messaging
-    enableNER(true);
+    // Set proxy as ready
+    offscreenManagerProxy.setReady(true);
+
+    // Enable NER in detectText module and pass proxy
+    // The proxy will forward inference requests to background via messaging
+    enableNER(offscreenManagerProxy);
     nerInitialized = true;
+
+    console.log('PII Guardian: NER enabled with offscreen proxy');
 
     sendResponse({ success: true });
   }
@@ -731,6 +769,11 @@ function initialize() {
   // Monitor existing inputs
   monitorAllInputs();
 
+  // Optional: scan visible chat history once per init (lightweight)
+  if (SCAN_HISTORY) {
+    scanChatHistory();
+  }
+
   // Monitor send buttons
   blockSendButton();
 
@@ -748,13 +791,58 @@ function initialize() {
               attachListeners(node);
             }
 
+            // Scan new messages for history detection
+            if (SCAN_HISTORY) {
+              scanChatHistory();
+            }
+
             // Check children
             const inputs = node.querySelectorAll?.('input[type="text"], textarea, [contenteditable="true"]');
             inputs?.forEach(element => {
               if (isAIChatInput(element)) {
                 attachListeners(element);
               }
-            });
+});
+
+/**
+ * Scan visible chat history for PII (does not modify DOM)
+ * Uses quickPIICheck first, then full detectPII; increments stats but no masking.
+ */
+async function scanChatHistory() {
+  try {
+    const messages = findChatMessages();
+    if (!messages.length) return;
+
+    const settings = await getSettings();
+    if (!settings.enabled) return;
+
+    for (const msg of messages) {
+      // Avoid reprocessing the same node
+      monitoredHistory.add(msg);
+
+      const text = msg.innerText || msg.textContent || '';
+      if (!text || text.length < 5) continue;
+
+      if (!quickPIICheck(text)) continue;
+
+      const detectionResult = await detectPII(text, {
+        minConfidence: settings.minConfidence,
+        enabledTypes: settings.enabledPIITypes,
+        useNER: settings.nerEnabled !== false,
+        detectionMode: settings.detectionMode || 'hybrid'
+      });
+
+      if (detectionResult.piiDetected) {
+        // Increment detection counters
+        for (const type of detectionResult.types) {
+          await incrementDetection(type);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('PII Guardian: Error scanning chat history:', error);
+  }
+}
 
             // Re-scan for send buttons
             blockSendButton();

@@ -11,6 +11,7 @@ import { maskText } from '../utils/maskRules.js';
 const buttonInstances = new WeakMap();
 const activePanels = new WeakMap();
 const detectionResults = new WeakMap(); // Store detection results per element
+const originalText = new WeakMap(); // Store original text before highlighting
 
 // Debounce timer per element
 const detectionDebounceTimers = new WeakMap();
@@ -119,8 +120,9 @@ export function initializeFloatingButton(element) {
       detectionDebounceTimers.delete(element);
     }
 
-    // Clear detection results
+    // Clear detection results and original text
     detectionResults.delete(element);
+    originalText.delete(element);
 
     console.info('PII Guardian: Cleanup complete');
   };
@@ -192,8 +194,9 @@ async function runDetection(element) {
     // Deduplicate matches for accurate count
     const deduplicatedResult = deduplicateMatches(detectionResult);
 
-    // Store detection results for blur handler
+    // Store detection results AND original text before highlighting
     detectionResults.set(element, deduplicatedResult);
+    originalText.set(element, text);
 
     // Show button with detection count
     showButton(element, deduplicatedResult);
@@ -462,7 +465,8 @@ function getTextContent(element) {
     // Normalize to merge text nodes
     clone.normalize();
 
-    return clone.innerText || clone.textContent || '';
+    // Use textContent to preserve exact spacing/newlines (innerText can reflow)
+    return clone.textContent || '';
   }
   return element.value || '';
 }
@@ -474,20 +478,18 @@ function getTextContent(element) {
  */
 function setTextContent(element, text) {
   if (element.contentEditable === 'true') {
-    // Preserve whitespace by using innerHTML with text nodes
-    const selection = window.getSelection();
-    const range = document.createRange();
+    // Use textContent to avoid HTML reflow/extra whitespace
+    element.textContent = text;
 
-    // Clear and set content while preserving spaces
-    element.innerHTML = '';
-    const textNode = document.createTextNode(text);
-    element.appendChild(textNode);
-
-    // Move cursor to end
-    range.setStart(textNode, text.length);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
+    // Move cursor to end if focusable
+    const selection = window.getSelection?.();
+    if (selection && element.firstChild) {
+      const range = document.createRange();
+      range.setStart(element.firstChild, Math.min(text.length, element.firstChild.length));
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   } else {
     element.value = text;
   }
@@ -908,7 +910,8 @@ async function maskSinglePII(element, detectionResult, index) {
   // Remove highlights before masking
   removeHighlights(element);
 
-  const text = getTextContent(element);
+  // Use stored original text to avoid whitespace corruption from HTML conversion
+  const text = originalText.get(element) || getTextContent(element);
   const match = detectionResult.matches[index];
 
   const maskedText = maskText(text, [match]);
@@ -927,10 +930,15 @@ async function removeSinglePII(element, detectionResult, index) {
   // Remove highlights before removing PII
   removeHighlights(element);
 
-  const text = getTextContent(element);
+  // Use stored original text to avoid whitespace corruption from HTML conversion
+  const text = originalText.get(element) || getTextContent(element);
   const match = detectionResult.matches[index];
 
-  const newText = text.replace(match.value, '');
+  // Replace with space and normalize spacing to avoid double spaces
+  let newText = text.replace(match.value, ' ');
+  newText = newText.replace(/\u00A0/g, ' '); // normalize NBSP
+  newText = newText.replace(/\s{2,}/g, ' ').trim(); // collapse multiple spaces
+
   setTextContent(element, newText);
 }
 
@@ -943,7 +951,8 @@ async function maskAllPII(element, detectionResult) {
   // Remove highlights before masking
   removeHighlights(element);
 
-  const text = getTextContent(element);
+  // Use stored original text to avoid whitespace corruption from HTML conversion
+  const text = originalText.get(element) || getTextContent(element);
   const maskedText = maskText(text, detectionResult.matches);
   setTextContent(element, maskedText);
 

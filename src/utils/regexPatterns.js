@@ -77,7 +77,8 @@ export const PII_PATTERNS = {
     pattern: /\b(?:0?[1-9]|[12][0-9]|3[01])[\/\-\.](0?[1-9]|1[012])[\/\-\.](?:19|20)?\d{2}\b|\b(?:19|20)\d{2}[\/\-\.](0?[1-9]|1[012])[\/\-\.](0?[1-9]|[12][0-9]|3[01])\b/g,
     name: 'Date of Birth',
     confidence: 0.6,
-    validator: (match) => {
+    priority: 7,
+    validator: (match, fullText, index) => {
       // Additional validation could check if date is realistic for DOB
       return true;
     }
@@ -88,7 +89,8 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Z]\d{7}\b/g,
     name: 'Passport Number',
     confidence: 0.7,
-    validator: (match) => {
+    priority: 9,
+    validator: (match, fullText, index) => {
       return /^[A-Z]\d{7}$/.test(match);
     }
   },
@@ -98,7 +100,8 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Z]{2}\d{13}\b|\b[A-Z]{2}[-\s]?\d{2}[-\s]?\d{11}\b/g,
     name: 'Driving License',
     confidence: 0.75,
-    validator: (match) => {
+    priority: 10,
+    validator: (match, fullText, index) => {
       const normalized = match.replace(/[-\s]/g, '');
       return /^[A-Z]{2}\d{13}$/.test(normalized);
     }
@@ -109,7 +112,8 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,2}\s?\d{4}\b/g,
     name: 'Vehicle Registration',
     confidence: 0.7,
-    validator: (match) => {
+    priority: 11,
+    validator: (match, fullText, index) => {
       return true;
     }
   },
@@ -142,7 +146,8 @@ export const PII_PATTERNS = {
     pattern: /\b[A-Z]{4}0[A-Z0-9]{6}\b/g,
     name: 'IFSC Code',
     confidence: 0.85,
-    validator: (match) => {
+    priority: 15,
+    validator: (match, fullText, index) => {
       return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(match);
     }
   },
@@ -167,7 +172,8 @@ export const PII_PATTERNS = {
     pattern: /\b\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]\b/g,
     name: 'GST Number',
     confidence: 0.9,
-    validator: (match) => {
+    priority: 12,
+    validator: (match, fullText, index) => {
       return /^\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]$/.test(match);
     }
   },
@@ -177,7 +183,8 @@ export const PII_PATTERNS = {
     pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
     name: 'SSN',
     confidence: 0.9,
-    validator: (match) => {
+    priority: 13,
+    validator: (match, fullText, index) => {
       return /^\d{3}-\d{2}-\d{4}$/.test(match);
     }
   },
@@ -187,7 +194,8 @@ export const PII_PATTERNS = {
     pattern: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g,
     name: 'IP Address',
     confidence: 0.7,
-    validator: (match) => {
+    priority: 8,
+    validator: (match, fullText, index) => {
       const parts = match.split('.');
       return parts.every(part => parseInt(part, 10) <= 255);
     }
@@ -203,7 +211,8 @@ export const PII_PATTERNS = {
     pattern: /\bMRN[\s:]?\d{6,10}\b|\bPatient[\s:]?ID[\s:]?\d{6,10}\b/gi,
     name: 'Medical Record',
     confidence: 0.8,
-    validator: (match) => {
+    priority: 14,
+    validator: (match, fullText, index) => {
       return true;
     }
   }

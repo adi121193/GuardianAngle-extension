@@ -4,6 +4,7 @@
  */
 
 import { offscreenManager } from '../ml/offscreenManager.js';
+import { detectPIIWithRegex } from '../utils/regexPatterns.js';
 
 // Track injected tabs to avoid duplicate injection
 const injectedTabs = new Set();
@@ -33,20 +34,6 @@ const AI_PLATFORMS = [
   'twitter.com'
 ];
 
-// PII detection patterns (copied from detectText.js for service worker use)
-const PII_PATTERNS = {
-  aadhaar: /\b\d{4}\s?\d{4}\s?\d{4}\b/g,
-  pan: /\b[A-Z]{5}\d{4}[A-Z]\b/g,
-  phone: /(?:^|[^\d])\d{10}(?:[^\d]|$)/g,
-  email: /\b[\w.]+@[\w.]+\.\w{2,}\b/g,
-  creditCard: /\b(?:\d{4}[\s\-]?){3}\d{4}\b/g,
-  ssn: /\b\d{3}-\d{2}-\d{4}\b/g,
-  passport: /\b[A-Z]\d{7}\b/g,
-  bankAccount: /\b\d{9,18}\b/g,
-  ifsc: /\b[A-Z]{4}0[A-Z0-9]{6}\b/g,
-  gst: /\b\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]\b/g
-};
-
 /**
  * Check if URL is an AI platform
  */
@@ -56,29 +43,44 @@ function isAIPlatform(url) {
 }
 
 /**
- * Detect PII in text using regex patterns
+ * Detect PII in text using strict validators
+ * Now uses the same detection logic as content scripts with:
+ * - Verhoeff checksum for Aadhaar
+ * - Priority-based routing
+ * - Context-aware detection
  */
 function detectPIIInText(text) {
   if (!text || typeof text !== 'string') return { detected: false, types: [] };
 
-  const detectedTypes = [];
-  const matches = [];
-
-  for (const [type, pattern] of Object.entries(PII_PATTERNS)) {
-    const found = text.match(pattern);
-    if (found && found.length > 0) {
-      detectedTypes.push(type);
-      matches.push(...found);
+  try {
+    // Verify detectPIIWithRegex is available
+    if (typeof detectPIIWithRegex !== 'function') {
+      console.error('[ServiceWorker] detectPIIWithRegex not available, using fallback');
+      return { detected: false, types: [], error: 'Validator not loaded' };
     }
-  }
 
-  return {
-    detected: detectedTypes.length > 0,
-    types: detectedTypes,
-    matches: matches,
-    count: matches.length
-  };
+    // Use the strict validator from regexPatterns
+    const result = detectPIIWithRegex(text, 0.6);
+
+    console.log(`[ServiceWorker] PII detection: ${result.piiDetected ? 'detected' : 'none'}, types: ${result.types.join(', ')}`);
+
+    return {
+      detected: result.piiDetected,
+      types: result.types,
+      matches: result.matches.map(m => m.value),
+      count: result.matches.length,
+      details: result.matches,
+      ambiguous: result.ambiguousMatches || []
+    };
+  } catch (error) {
+    console.error('[ServiceWorker] Error in detectPIIInText:', error);
+    return { detected: false, types: [], error: error.message };
+  }
 }
+
+// Expose detection helpers to avoid tree-shaking and keep background logic aligned with content
+self.__detectPIIInText = detectPIIInText;
+self.__detectPIIWithRegexAvailable = typeof detectPIIWithRegex === 'function';
 
 /**
  * Extract text from request body (handles various formats)
@@ -168,7 +170,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
           'passport',
           'ssn',
           'ifsc',
-          'gst'
+          'gst',
+          'dob',
+          'ipAddress',
+          'drivingLicense',
+          'vehicleReg',
+          'medicalRecord'
         ],
         notificationSound: true,
         proEnabled: false,
@@ -192,6 +199,29 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   } else if (details.reason === 'update') {
     console.log('Extension updated from', details.previousVersion);
+
+    // Migration: Add new PII types to existing users' settings
+    chrome.storage.local.get(['settings'], (result) => {
+      if (result.settings && result.settings.enabledPIITypes) {
+        const currentTypes = result.settings.enabledPIITypes;
+        const newTypes = ['dob', 'ipAddress', 'drivingLicense', 'vehicleReg', 'medicalRecord'];
+
+        // Add any missing types
+        let updated = false;
+        for (const type of newTypes) {
+          if (!currentTypes.includes(type)) {
+            currentTypes.push(type);
+            updated = true;
+          }
+        }
+
+        if (updated) {
+          chrome.storage.local.set({ settings: result.settings }, () => {
+            console.log('Settings migrated: Added new PII types', newTypes);
+          });
+        }
+      }
+    });
   }
 
   // Inject into existing tabs (on both install and update)
@@ -541,5 +571,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: false, isReady: false, isInitializing: false });
     });
     return true; // Async response
+  }
+
+  // Handle NER inference requests from content scripts
+  if (message.type === 'RUN_NER_INFERENCE') {
+    console.log(`[ServiceWorker] Received NER inference request (${message.text?.length || 0} chars)`);
+
+    (async () => {
+      try {
+        const result = await offscreenManager.runInference(message.text);
+        console.log(`[ServiceWorker] NER inference complete: ${result.success ? 'success' : 'failed'}`);
+        sendResponse(result);
+      } catch (error) {
+        console.error('[ServiceWorker] NER inference error:', error);
+        sendResponse({
+          success: false,
+          error: error.message,
+          entities: []
+        });
+      }
+    })();
+
+    return true; // Keep channel open for async response
   }
 });

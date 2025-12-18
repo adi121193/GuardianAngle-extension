@@ -21,7 +21,9 @@ const DEFAULT_SETTINGS = {
     'passport',
     'ssn',
     'ifsc',
-    'gst'
+    'gst',
+    'dob',
+    'ipAddress'
   ],
   notificationSound: true,
   proEnabled: false,

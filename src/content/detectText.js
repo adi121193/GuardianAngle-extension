@@ -37,16 +37,26 @@ export async function detectPII(text, options = {}) {
   const {
     minConfidence = 0.6,
     enabledTypes = null,
-    useNER = nerEnabled
+    useNER = nerEnabled,
+    detectionMode = 'hybrid',
+    mode = detectionMode  // Map detectionMode to mode for backward compatibility
   } = options;
 
   let results;
 
-  // Use hybrid detection if NER is enabled
-  if (useNER && nerEnabled) {
-    const hybridResults = await hybridDetector.detect(text, options);
+  // Determine detection method based on mode
+  const shouldUseNER = (mode === 'hybrid' || mode === 'ner') && useNER && nerEnabled;
+  const shouldUseRegex = mode === 'hybrid' || mode === 'regex';
 
-    // Convert hybrid results to existing format
+  // Use hybrid detection if NER is enabled and mode allows it
+  if (shouldUseNER) {
+    const hybridResults = await hybridDetector.detect(text, {
+      ...options,
+      mode,
+      minConfidence
+    });
+
+    // Convert hybrid results to existing format with positions
     results = {
       piiDetected: hybridResults.count > 0,
       matches: hybridResults.detections.map(d => ({
@@ -55,13 +65,17 @@ export async function detectPII(text, options = {}) {
         confidence: d.confidence,
         category: d.category,
         source: d.source,
-        nerEntity: d.nerEntity
+        nerEntity: d.nerEntity,
+        position: d.start || d.position || 0,  // Include position for masking/highlighting
+        start: d.start,
+        end: d.end
       })),
+      ambiguousMatches: hybridResults.ambiguousDetections || [],
       types: [...new Set(hybridResults.detections.map(d => d.type.toLowerCase()))],
       score: hybridResults.count > 0
         ? hybridResults.detections.reduce((sum, d) => sum + d.confidence, 0) / hybridResults.count
         : 0,
-      methods: ['regex', 'ner'],
+      methods: shouldUseRegex ? ['regex', 'ner'] : ['ner'],
       performance: hybridResults.performance,
       sources: hybridResults.sources
     };
@@ -98,12 +112,20 @@ export function quickPIICheck(text) {
   }
 
   // Quick regex checks for most common PII patterns
+  // IMPORTANT: Keep this list comprehensive to avoid skipping detections
   const quickPatterns = [
     /\b\d{4}\s?\d{4}\s?\d{4}\b/,        // Aadhaar-like
     /\b[A-Z]{5}\d{4}[A-Z]\b/,           // PAN-like
-    /(?:^|[^\d])\d{10}(?:[^\d]|$)/,     // Phone-like (fixed to handle punctuation)
+    /(?:^|[^\d])\d{10}(?:[^\d]|$)/,     // Phone-like
     /\b[\w.]+@[\w.]+\.\w{2,}\b/,        // Email
-    /\b(?:\d{4}[\s\-]?){3}\d{4}\b/     // Credit card-like
+    /\b(?:\d{4}[\s\-]?){3}\d{4}\b/,    // Credit card-like
+    /\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/, // DOB-like (dd/mm/yyyy, etc.)
+    /\b(?:\d{1,3}\.){3}\d{1,3}\b/,      // IP Address-like
+    /\b[A-Z]\d{7}\b/,                    // Passport-like
+    /\b[A-Z]{2}\d{13}\b/,                // Driving License-like
+    /\b[A-Z]{4}0[A-Z0-9]{6}\b/,          // IFSC-like
+    /\b\d{3}-\d{2}-\d{4}\b/,             // SSN-like
+    /\bMRN[\s:]?\d{6,10}\b/i             // Medical Record-like
   ];
 
   return quickPatterns.some(pattern => pattern.test(text));

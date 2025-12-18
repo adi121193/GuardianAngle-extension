@@ -10,11 +10,11 @@
  * @example "1234 5678 9012" -> "XXXX XXXX 9012"
  */
 export function maskAadhaar(aadhaar) {
-  const cleaned = aadhaar.replace(/\s/g, '');
-  if (cleaned.length !== 12) return aadhaar;
+  const digits = aadhaar.replace(/\D/g, '');
+  if (digits.length !== 12) return aadhaar;
 
-  const last4 = cleaned.slice(-4);
-  return `XXXX XXXX ${last4}`;
+  const maskedDigits = 'XXXXXXXX' + digits.slice(-4);
+  return applyOriginalFormatting(aadhaar, maskedDigits);
 }
 
 /**
@@ -38,25 +38,17 @@ export function maskPAN(pan) {
  * @example "9876543210" -> "98****210"
  */
 export function maskPhone(phone) {
-  const cleaned = phone.replace(/\D/g, '');
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 10) return phone;
 
-  if (cleaned.length < 10) return phone;
+  const codeLength = Math.max(0, digits.length - 10);
+  const country = digits.slice(0, codeLength);
+  const number = digits.slice(codeLength);
 
-  // Check for country code
-  let countryCode = '';
-  let number = cleaned;
+  const maskedNumber = number.slice(0, 2) + '****' + number.slice(-3);
+  const maskedDigits = (country ? country : '') + maskedNumber;
 
-  if (cleaned.length > 10) {
-    const codeLength = cleaned.length - 10;
-    countryCode = '+' + cleaned.slice(0, codeLength) + ' ';
-    number = cleaned.slice(codeLength);
-  }
-
-  const first2 = number.slice(0, 2);
-  const last3 = number.slice(-3);
-  const masked = `${first2}****${last3}`;
-
-  return countryCode + masked;
+  return applyOriginalFormatting(phone, maskedDigits);
 }
 
 /**
@@ -211,6 +203,29 @@ export function maskIPAddress(ip) {
   if (parts.length !== 4) return ip;
 
   return `${parts[0]}.XXX.XXX.XXX`;
+}
+
+/**
+ * Apply the original formatting (non-digit chars) to a masked digit string.
+ * Preserves original separators/spaces to avoid adding new whitespace.
+ * @param {string} original
+ * @param {string} maskedDigits - digits only, same length as original digits
+ * @returns {string}
+ */
+function applyOriginalFormatting(original, maskedDigits) {
+  let digitIndex = 0;
+  const maskedChars = [];
+
+  for (const ch of original) {
+    if (/\d/.test(ch)) {
+      maskedChars.push(maskedDigits[digitIndex] || '');
+      digitIndex++;
+    } else {
+      maskedChars.push(ch);
+    }
+  }
+
+  return maskedChars.join('');
 }
 
 /**
