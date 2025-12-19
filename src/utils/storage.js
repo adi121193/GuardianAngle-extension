@@ -35,6 +35,9 @@ const DEFAULT_SETTINGS = {
   nerEnabled: true,              // Enable NER-based detection
   detectionMode: 'hybrid',        // 'regex_only', 'ner_only', 'hybrid'
   nerAutoInit: false,             // Auto-initialize NER on startup (false = lazy load)
+  // History Scanning (Priority 3: Opt-in for performance)
+  scanHistory: false,             // Scan page history for PII (may impact performance)
+  scanHistoryDepth: 50,           // Max messages to scan if enabled
   stats: {
     totalDetections: 0,
     totalMasked: 0,

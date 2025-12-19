@@ -8,12 +8,13 @@
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest tests/unit",
     "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest tests/integration",
+    "test:regression": "NODE_OPTIONS=--experimental-vm-modules jest tests/regression",
     "build": "npm run test && node esbuild.config.js",
     "build:quick": "node esbuild.config.js",
     "watch": "node esbuild.config.js --watch",
     "clean": "rm -rf dist coverage",
     "generate-icons": "node scripts/generate-icons.js",
-    "precommit": "npm run test && npm run build:quick"
+    "precommit": "npm run test:regression && npm run test && npm run build:quick"
   },
   "type": "module",
   "dependencies": {

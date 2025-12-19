@@ -331,6 +331,8 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
           name: config.name,
           confidence: classification.confidence,
           position,
+          start: position,
+          end: endPosition,
           reasons: classification.reasons,
           isAmbiguous: true
         });
@@ -354,7 +356,9 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
         value: matchedText,
         name: config.name,
         confidence: finalConfidence,
-        position
+        position,
+        start: position,  // Alias for compatibility
+        end: endPosition   // End position for precise masking/removal
       });
 
       // Mark this position as processed
@@ -367,6 +371,8 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
         name: config.name,
         confidence: finalConfidence,
         position,
+        start: position,
+        end: endPosition,
         isAmbiguous: true
       });
     }

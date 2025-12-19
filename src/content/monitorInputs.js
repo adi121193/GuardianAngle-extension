@@ -29,8 +29,10 @@ let isSimulatedInteraction = false;
 let nerInitialized = false;
 let nerInitializationAttempted = false;
 
-// Feature flag: scan visible chat history (off by default to avoid unexpected behavior)
-const SCAN_HISTORY = true;
+// Feature flag: scan visible chat history (now controlled by settings - Priority 3)
+// Default: false (opt-in for performance, prevents costly scans on every mutation)
+let SCAN_HISTORY = false;
+let SCAN_HISTORY_DEPTH = 50;
 
 /**
  * Check if element is an AI chat input
@@ -750,7 +752,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 /**
  * Initialize monitoring
  */
-function initialize() {
+async function initialize() {
   // Safety check: Ensure chrome APIs are available
   if (typeof chrome === 'undefined' || !chrome.storage) {
     console.error('PII Guardian: Chrome APIs not available, retrying in 100ms...');
@@ -759,6 +761,17 @@ function initialize() {
   }
 
   console.log('PII Guardian: Input monitoring initialized');
+
+  // Load history scanning settings (Priority 3: Opt-in)
+  try {
+    const settings = await getSettings();
+    SCAN_HISTORY = settings.scanHistory ?? false;
+    SCAN_HISTORY_DEPTH = settings.scanHistoryDepth ?? 50;
+    console.log(`[monitorInputs] History scanning: ${SCAN_HISTORY ? 'enabled (depth: ' + SCAN_HISTORY_DEPTH + ')' : 'disabled (opt-in)'}`);
+  } catch (error) {
+    console.warn('[monitorInputs] Failed to load history scanning settings, using defaults (off):', error);
+    SCAN_HISTORY = false;
+  }
 
   // Inject floating button styles (Grammarly-style)
   injectFloatingButtonStyles();
@@ -769,7 +782,7 @@ function initialize() {
   // Monitor existing inputs
   monitorAllInputs();
 
-  // Optional: scan visible chat history once per init (lightweight)
+  // Optional: scan visible chat history once per init (lightweight, opt-in)
   if (SCAN_HISTORY) {
     scanChatHistory();
   }
@@ -816,7 +829,13 @@ async function scanChatHistory() {
     const settings = await getSettings();
     if (!settings.enabled) return;
 
-    for (const msg of messages) {
+    // Limit scan depth to prevent performance issues (Priority 3)
+    const maxMessages = Math.min(messages.length, SCAN_HISTORY_DEPTH);
+    const messagesToScan = messages.slice(-maxMessages); // Scan most recent messages
+
+    console.log(`[scanChatHistory] Scanning ${messagesToScan.length}/${messages.length} messages (depth limit: ${SCAN_HISTORY_DEPTH})`);
+
+    for (const msg of messagesToScan) {
       // Avoid reprocessing the same node
       monitoredHistory.add(msg);
 

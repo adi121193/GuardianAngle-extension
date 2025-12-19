@@ -914,10 +914,24 @@ async function maskSinglePII(element, detectionResult, index) {
   const text = originalText.get(element) || getTextContent(element);
   const match = detectionResult.matches[index];
 
+  // STRICT POSITION-BASED MASKING (Priority 1)
+  // Validate that match has position information
+  if (match.position === undefined && match.start === undefined) {
+    console.warn('[maskSinglePII] Match missing position information - SKIPPING masking to avoid wrong occurrence', {
+      type: match.type,
+      value: match.value
+    });
+    return; // SKIP - do not attempt masking without position
+  }
+
+  // maskText() already handles position-strict masking with fallback logic
   const maskedText = maskText(text, [match]);
   setTextContent(element, maskedText);
 
   await incrementMasked();
+
+  // Update detection results after successful masking
+  updateDetectionResults(element);
 }
 
 /**
@@ -934,12 +948,68 @@ async function removeSinglePII(element, detectionResult, index) {
   const text = originalText.get(element) || getTextContent(element);
   const match = detectionResult.matches[index];
 
-  // Replace with space and normalize spacing to avoid double spaces
-  let newText = text.replace(match.value, ' ');
-  newText = newText.replace(/\u00A0/g, ' '); // normalize NBSP
-  newText = newText.replace(/\s{2,}/g, ' ').trim(); // collapse multiple spaces
+  // STRICT POSITION-BASED REMOVAL (Priority 1)
+  // Skip removal if position is missing or invalid - DO NOT use .replace() fallback
+  const { value, position, start, end } = match;
 
-  setTextContent(element, newText);
+  // Try multiple position sources (position, start, or calculate from value)
+  const actualPosition = position ?? start ?? -1;
+  const actualEnd = end ?? (actualPosition >= 0 ? actualPosition + value.length : -1);
+
+  // Validation: Position must be valid and within bounds
+  if (actualPosition < 0 || actualEnd < 0 || actualEnd > text.length) {
+    console.warn('[removeSinglePII] Invalid or missing position - SKIPPING removal to avoid wrong occurrence', {
+      position: actualPosition,
+      end: actualEnd,
+      textLength: text.length,
+      value: value
+    });
+    return; // SKIP - do not attempt removal
+  }
+
+  // Verify the text at this position matches the expected value
+  const textAtPosition = text.substring(actualPosition, actualEnd);
+
+  if (textAtPosition !== value) {
+    // Position mismatch - try to find the value near the expected position (±50 chars)
+    const searchStart = Math.max(0, actualPosition - 50);
+    const searchEnd = Math.min(text.length, actualPosition + value.length + 50);
+    const searchText = text.substring(searchStart, searchEnd);
+    const foundIndex = searchText.indexOf(value);
+
+    if (foundIndex !== -1) {
+      // Found the value near expected position, use the found position
+      const correctedPosition = searchStart + foundIndex;
+      const correctedEnd = correctedPosition + value.length;
+      const newText = text.substring(0, correctedPosition) + ' ' + text.substring(correctedEnd);
+
+      // Normalize spacing to avoid double spaces
+      const normalizedText = newText.replace(/\u00A0/g, ' ').replace(/\s{2,}/g, ' ').trim();
+      setTextContent(element, normalizedText);
+
+      console.warn('[removeSinglePII] Position corrected from', actualPosition, 'to', correctedPosition);
+      return;
+    }
+
+    // Value not found near expected position - SKIP removal
+    console.error('[removeSinglePII] Position mismatch and value not found nearby - SKIPPING removal', {
+      expectedAtPosition: textAtPosition,
+      expectedValue: value,
+      position: actualPosition
+    });
+    return; // SKIP - strict mode, no fallback
+  }
+
+  // Position is valid and text matches - proceed with removal
+  const newText = text.substring(0, actualPosition) + ' ' + text.substring(actualEnd);
+
+  // Normalize spacing to avoid double spaces
+  const normalizedText = newText.replace(/\u00A0/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+  setTextContent(element, normalizedText);
+
+  // Update detection results after successful removal
+  updateDetectionResults(element);
 }
 
 /**

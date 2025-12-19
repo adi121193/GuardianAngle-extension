@@ -100,6 +100,27 @@
       </section>
 
       <section class="settings-section">
+        <h2>⚙️ Advanced Settings</h2>
+        <p class="section-description">
+          Advanced features that may impact performance. Use with caution.
+        </p>
+
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="scanHistory">
+            Scan page history for PII
+          </label>
+          <span class="setting-hint">Scans visible chat messages on AI platforms (may impact performance)</span>
+        </div>
+
+        <div class="setting-item">
+          <label for="scanHistoryDepth">History scan depth:</label>
+          <input type="number" id="scanHistoryDepth" min="10" max="200" value="50" step="10">
+          <span class="setting-hint">Maximum messages to scan (default: 50)</span>
+        </div>
+      </section>
+
+      <section class="settings-section">
         <h2>Data Management</h2>
         <button class="btn btn-secondary" id="resetStatsBtn">Reset Statistics</button>
         <button class="btn btn-secondary" id="exportDataBtn">Export Data</button>

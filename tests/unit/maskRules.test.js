@@ -205,6 +205,58 @@ describe('maskText Function', () => {
     expect(masked).toBe('Number: 98****210');
   });
 
+  test('BUG003: masks correct occurrence when duplicate values exist', () => {
+    // Same email appears twice - should mask the correct one based on position
+    const text = 'Email me at test@example.com or contact test@example.com for help';
+    const matches = [
+      createMockMatch('email', 'test@example.com', 12), // First occurrence
+      createMockMatch('email', 'test@example.com', 42)  // Second occurrence
+    ];
+
+    const masked = maskText(text, matches);
+    
+    // Both should be masked
+    expect(masked).toContain('t***@example.com');
+    // Count occurrences - should have 2 masked emails
+    const maskedEmailCount = (masked.match(/t\*\*\*@example\.com/g) || []).length;
+    expect(maskedEmailCount).toBe(2);
+    
+    // Verify positions are correct - first email should be at position 12
+    expect(masked.substring(12, 12 + 't***@example.com'.length)).toBe('t***@example.com');
+    // Second email should be at position 42 (adjusted for first mask length difference)
+    // Note: After first mask, positions shift, but we process in descending order
+    const secondMaskStart = masked.indexOf('t***@example.com', 13);
+    expect(secondMaskStart).toBeGreaterThan(30); // Should be after first mask
+  });
+
+  test('BUG003: masks only the specified occurrence when masking single PII', () => {
+    // Same email appears twice - should mask only the second one based on position
+    const text = 'Email: test@example.com and also test@example.com';
+    const matches = [
+      createMockMatch('email', 'test@example.com', 7),   // First occurrence at "Email: " (7 chars)
+      createMockMatch('email', 'test@example.com', 33)   // Second occurrence
+    ];
+
+    // Mask only the second occurrence (index 1, position 33)
+    const masked = maskText(text, [matches[1]]);
+    
+    // First email should remain unmasked, second should be masked
+    expect(masked).toContain('test@example.com'); // First occurrence still there
+    expect(masked).toContain('t***@example.com');  // Second occurrence masked
+    
+    // Verify we have exactly one unmasked email and one masked email
+    const allUnmaskedEmails = masked.match(/test@example\.com/g);
+    expect(allUnmaskedEmails ? allUnmaskedEmails.length : 0).toBe(1); // Only one unmasked
+    
+    // Verify masked version appears exactly once
+    const maskedEmails = masked.match(/t\*\*\*@example\.com/g);
+    expect(maskedEmails ? maskedEmails.length : 0).toBe(1); // One masked
+    
+    // Verify the first email is at the correct position (should be near start)
+    const firstEmailIndex = masked.indexOf('test@example.com');
+    expect(firstEmailIndex).toBe(7); // Should be at position 7 (after "Email: ")
+  });
+
   test('returns original text if no matches', () => {
     const text = 'No PII here';
     const masked = maskText(text, []);

@@ -259,18 +259,54 @@ export function maskText(text, matches) {
 
   let maskedText = text;
 
+  // Track which parts of text have been processed to avoid double-processing
+  const processedRanges = [];
+
   for (const match of sortedMatches) {
     const { type, value, position } = match;
     
     // Skip if position is invalid or missing
     if (position === undefined || position === null || position < 0) {
-      // Fallback: try to find and replace first occurrence
-      // This handles edge cases where position might not be available
-      maskedText = maskedText.replace(value, (matched) => {
-        // Only replace if we haven't already processed this exact match
-        // This is a best-effort fallback
-        return maskValueByType(matched, type);
-      });
+      // FIX BUG003: When position is missing, we can't reliably know which occurrence
+      // to replace when duplicate values exist. Try to find first unprocessed occurrence.
+      console.warn(`[maskText] Position missing for match type=${type}, value="${value}". Using fallback (may mask wrong occurrence if duplicates exist).`);
+      
+      // Try to find the value in the text
+      let foundPosition = -1;
+      let searchStart = 0;
+      
+      // Search for value, skipping already processed ranges
+      while (searchStart < maskedText.length) {
+        const index = maskedText.indexOf(value, searchStart);
+        if (index === -1) break;
+        
+        // Check if this position is already processed
+        const isProcessed = processedRanges.some(range => 
+          index >= range.start && index < range.end
+        );
+        
+        if (!isProcessed) {
+          foundPosition = index;
+          break;
+        }
+        
+        searchStart = index + 1;
+      }
+      
+      if (foundPosition !== -1) {
+        // Found unprocessed occurrence, use position-based replacement
+        const maskedValue = maskValueByType(value, type);
+        const endPosition = foundPosition + value.length;
+        maskedText = maskedText.substring(0, foundPosition) +
+                     maskedValue +
+                     maskedText.substring(endPosition);
+        
+        // Track this range as processed
+        processedRanges.push({ start: foundPosition, end: endPosition });
+      } else {
+        // Value not found or all occurrences already processed, skip
+        console.warn(`[maskText] Could not find unprocessed occurrence of "${value}", skipping.`);
+      }
       continue;
     }
 
@@ -300,6 +336,9 @@ export function maskText(text, matches) {
         maskedText = maskedText.substring(0, actualPosition) +
                      maskedValue +
                      maskedText.substring(actualPosition + value.length);
+        
+        // Track this range as processed
+        processedRanges.push({ start: actualPosition, end: actualPosition + value.length });
       }
       // If not found, skip this match to avoid corrupting text
       continue;
@@ -313,6 +352,9 @@ export function maskText(text, matches) {
     maskedText = maskedText.substring(0, position) +
                  maskedValue +
                  maskedText.substring(position + value.length);
+    
+    // Track this range as processed
+    processedRanges.push({ start: position, end: position + value.length });
   }
 
   return maskedText;

@@ -20,6 +20,10 @@ async function init() {
   document.getElementById('detectionMode').value = settings.detectionMode || 'hybrid';
   document.getElementById('nerAutoInit').checked = settings.nerAutoInit || false;
 
+  // Load Advanced settings (history scanning)
+  document.getElementById('scanHistory').checked = settings.scanHistory || false;
+  document.getElementById('scanHistoryDepth').value = settings.scanHistoryDepth || 50;
+
   // Check NER status
   checkNERStatus();
 
@@ -41,6 +45,10 @@ async function init() {
     settings.nerEnabled = document.getElementById('nerEnabled').checked;
     settings.detectionMode = document.getElementById('detectionMode').value;
     settings.nerAutoInit = document.getElementById('nerAutoInit').checked;
+
+    // Save Advanced settings (history scanning)
+    settings.scanHistory = document.getElementById('scanHistory').checked;
+    settings.scanHistoryDepth = parseInt(document.getElementById('scanHistoryDepth').value, 10);
 
     await saveSettings(settings);
     alert('Settings saved!');
