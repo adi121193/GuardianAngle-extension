@@ -42,8 +42,9 @@ export const PII_PATTERNS = {
 
   // Phone Numbers (Indian + International)
   // HIGHEST PRIORITY - checks first with normalization
+  // Enhanced to catch variations like "99100 22334", "9910022334", etc.
   phone: {
-    pattern: /(?:\+91[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\b0?\d{10}\b)/g,
+    pattern: /(?:\+91[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\b0?\d{10}\b|\b\d{5}[\s.-]?\d{5}\b|\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b)/g,
     name: 'Phone Number',
     confidence: 0.75,
     priority: 1, // HIGHEST PRIORITY
@@ -325,8 +326,10 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
 
       if (classification.ambiguous) {
         // Low confidence / ambiguous match
+        // Guard: ensure type is never undefined
+        const ambiguousType = classification.type || type || 'unknown';
         results.ambiguousMatches.push({
-          type: classification.type || 'unknown',
+          type: ambiguousType,
           value: matchedText,
           name: config.name,
           confidence: classification.confidence,
@@ -347,6 +350,12 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
 
     // Only include if confidence meets threshold
     if (finalConfidence >= minConfidence) {
+      // Guard: ensure type is never undefined
+      if (!type) {
+        console.warn('[regexPatterns] Skipping match with undefined type:', matchedText);
+        continue;
+      }
+
       detectedTypes.add(type);
       totalConfidence += finalConfidence;
       matchCount++;
@@ -365,6 +374,12 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
       processedPositions.add(`${position}-${endPosition}`);
     } else if (finalConfidence >= 0.3) {
       // Low confidence but not completely invalid
+      // Guard: ensure type is never undefined
+      if (!type) {
+        console.warn('[regexPatterns] Skipping ambiguous match with undefined type:', matchedText);
+        continue;
+      }
+
       results.ambiguousMatches.push({
         type,
         value: matchedText,

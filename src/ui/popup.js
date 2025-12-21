@@ -23,33 +23,74 @@ let viewAllHistoryBtn;
 let helpToggle;
 let helpContent;
 
+// v1.3.0: NER UI Elements
+let nerToggle;
+let nerStatusChip;
+let nerInfoBtn;
+let nerInfoModal;
+let nerInfoModalClose;
+let nerInfoModalOk;
+let nerDownloadModal;
+let nerDownloadConfirm;
+let nerDownloadCancel;
+let nerDownloadNever;
+let nerDownloadClose;
+let nerDownloadProgress;
+let nerProgressFill;
+let nerProgressText;
+
 /**
  * Initialize popup
  */
 async function init() {
-  // Get DOM elements
-  enableToggle = document.getElementById('enableToggle');
-  statusDot = document.getElementById('statusDot');
-  statusText = document.getElementById('statusText');
-  totalDetections = document.getElementById('totalDetections');
-  totalMasked = document.getElementById('totalMasked');
-  totalBlocked = document.getElementById('totalBlocked');
-  dashboardBtn = document.getElementById('dashboardBtn');
-  settingsBtn = document.getElementById('settingsBtn');
-  upgradeBtn = document.getElementById('upgradeBtn');
-  proBanner = document.getElementById('proBanner');
-  proStatus = document.getElementById('proStatus');
-  proExpiryText = document.getElementById('proExpiryText');
-  recentDetectionsList = document.getElementById('recentDetectionsList');
-  viewAllHistoryBtn = document.getElementById('viewAllHistoryBtn');
-  helpToggle = document.getElementById('helpToggle');
-  helpContent = document.getElementById('helpContent');
+  try {
+    console.log('[Popup] Initializing...');
 
-  // Load current state
-  await loadState();
+    // Get DOM elements
+    enableToggle = document.getElementById('enableToggle');
+    statusDot = document.getElementById('statusDot');
+    statusText = document.getElementById('statusText');
+    totalDetections = document.getElementById('totalDetections');
+    totalMasked = document.getElementById('totalMasked');
+    totalBlocked = document.getElementById('totalBlocked');
+    dashboardBtn = document.getElementById('dashboardBtn');
+    settingsBtn = document.getElementById('settingsBtn');
+    upgradeBtn = document.getElementById('upgradeBtn');
+    proBanner = document.getElementById('proBanner');
+    proStatus = document.getElementById('proStatus');
+    proExpiryText = document.getElementById('proExpiryText');
+    recentDetectionsList = document.getElementById('recentDetectionsList');
+    viewAllHistoryBtn = document.getElementById('viewAllHistoryBtn');
+    helpToggle = document.getElementById('helpToggle');
+    helpContent = document.getElementById('helpContent');
 
-  // Attach event listeners
-  attachListeners();
+    // v1.3.0: Get NER UI elements
+    nerToggle = document.getElementById('nerToggle');
+    nerStatusChip = document.getElementById('nerStatusChip');
+    nerInfoBtn = document.getElementById('nerInfoBtn');
+    nerInfoModal = document.getElementById('nerInfoModal');
+    nerInfoModalClose = document.getElementById('nerModalClose');
+    nerInfoModalOk = document.getElementById('nerModalOk');
+    nerDownloadModal = document.getElementById('nerDownloadModal');
+    nerDownloadConfirm = document.getElementById('nerDownloadConfirm');
+    nerDownloadCancel = document.getElementById('nerDownloadCancel');
+    nerDownloadNever = document.getElementById('nerDownloadNever');
+    nerDownloadClose = document.getElementById('nerDownloadClose');
+    nerDownloadProgress = document.getElementById('nerDownloadProgress');
+    nerProgressFill = document.getElementById('nerProgressFill');
+    nerProgressText = document.getElementById('nerProgressText');
+
+    console.log('[Popup] DOM elements loaded');
+
+    // Load current state
+    console.log('[Popup] Loading state...');
+    await loadState();
+    console.log('[Popup] State loaded');
+
+    // Attach event listeners
+    console.log('[Popup] Attaching listeners...');
+    attachListeners();
+    console.log('[Popup] Listeners attached - Popup ready!');
 
   // Add real-time storage change listener for live updates
   chrome.storage.onChanged.addListener((changes, areaName) => {
@@ -80,6 +121,27 @@ async function init() {
       loadRecentDetections();
     }
   });
+
+  } catch (error) {
+    console.error('[Popup] FATAL ERROR during initialization:', error);
+    console.error('[Popup] Stack trace:', error.stack);
+
+    // Show error message to user
+    document.body.innerHTML = `
+      <div style="padding: 20px; text-align: center; color: #D32F2F; font-family: -apple-system, system-ui, sans-serif;">
+        <h2 style="margin-bottom: 10px;">⚠️ Popup Failed to Load</h2>
+        <p style="font-size: 14px; margin: 10px 0; color: #424242;">Error: ${error.message}</p>
+        <p style="font-size: 12px; color: #757575; margin: 10px 0;">Check the console (F12) for details</p>
+        <button onclick="location.reload()" style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 15px; font-size: 14px; font-weight: 600;">
+          Reload Popup
+        </button>
+        <br>
+        <a href="html/dashboard.html" style="color: #2196F3; text-decoration: none; font-size: 13px; margin-top: 10px; display: inline-block;">
+          Or try Dashboard instead
+        </a>
+      </div>
+    `;
+  }
 }
 
 /**
@@ -87,12 +149,19 @@ async function init() {
  */
 async function loadState() {
   try {
+    console.log('[Popup] loadState() called');
     const settings = await getSettings();
     const stats = await getStats();
     const licenseStatus = await checkLicenseStatus();
 
+    console.log('[Popup] Settings loaded:', settings);
+
     // Update toggle
-    enableToggle.checked = settings.enabled;
+    if (enableToggle) {
+      enableToggle.checked = settings.enabled;
+    } else {
+      console.warn('[Popup] enableToggle element not found');
+    }
 
     // Update status indicator
     updateStatusIndicator(settings.enabled);
@@ -105,8 +174,13 @@ async function loadState() {
 
     // Load recent detections
     await loadRecentDetections();
+
+    // v1.3.0: Load NER state
+    await loadNERState(settings);
   } catch (error) {
-    console.error('Failed to load state:', error);
+    console.error('[Popup] Failed to load state:', error);
+    console.error('[Popup] Error stack:', error.stack);
+    throw error; // Re-throw to be caught by init's try-catch
   }
 }
 
@@ -364,6 +438,213 @@ function formatPIIType(type) {
   return formatted[type] || type;
 }
 
+// ============================================================================
+// v1.3.0: NER UI Functions
+// ============================================================================
+
+/**
+ * Load NER state from settings
+ */
+async function loadNERState(settings) {
+  const nerDisabledBanner = document.getElementById('nerDisabledBanner');
+
+  // Set toggle state
+  if (nerToggle) {
+    nerToggle.checked = settings.nerEnabled || false;
+
+    // Disable if user chose "never ask"
+    if (settings.nerNeverAsk) {
+      nerToggle.disabled = true;
+      nerToggle.title = 'NER permanently disabled. Click Reset button below to enable.';
+
+      // Show disabled banner
+      if (nerDisabledBanner) {
+        nerDisabledBanner.style.display = 'flex';
+      }
+    } else {
+      nerToggle.disabled = false;
+      nerToggle.title = 'Enable enhanced NER detection';
+
+      // Hide disabled banner
+      if (nerDisabledBanner) {
+        nerDisabledBanner.style.display = 'none';
+      }
+    }
+  }
+
+  // Update status chip
+  await updateNERStatusChip(settings);
+}
+
+/**
+ * Update NER status chip based on current state
+ */
+async function updateNERStatusChip(settings) {
+  if (!nerStatusChip) return;
+
+  const statusLabel = nerStatusChip.querySelector('.status-label');
+  const statusIcon = nerStatusChip.querySelector('.status-icon');
+
+  // Remove all status classes
+  nerStatusChip.className = 'status-chip';
+
+  if (!settings.nerEnabled) {
+    nerStatusChip.classList.add('status-disabled');
+    if (statusLabel) statusLabel.textContent = 'NER: Disabled';
+    if (statusIcon) statusIcon.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+    `;
+  } else if (!settings.nerModelDownloaded) {
+    nerStatusChip.classList.add('status-error');
+    if (statusLabel) statusLabel.textContent = 'NER: Model Not Downloaded';
+    if (statusIcon) statusIcon.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    `;
+  } else {
+    // Check actual NER status from background
+    try {
+      const response = await chrome.runtime.sendMessage({ type: 'NER_STATUS' });
+      if (response && response.initialized) {
+        nerStatusChip.classList.add('status-ready');
+        if (statusLabel) statusLabel.textContent = 'NER: Ready';
+        if (statusIcon) statusIcon.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        `;
+      } else {
+        nerStatusChip.classList.add('status-loading');
+        if (statusLabel) statusLabel.textContent = 'NER: Loading...';
+        if (statusIcon) statusIcon.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        `;
+      }
+    } catch (error) {
+      nerStatusChip.classList.add('status-error');
+      if (statusLabel) statusLabel.textContent = 'NER: Error';
+      if (statusIcon) statusIcon.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      `;
+    }
+  }
+}
+
+/**
+ * Show NER download modal
+ */
+function showNERDownloadModal() {
+  if (nerDownloadModal) {
+    nerDownloadModal.style.display = 'flex';
+  }
+}
+
+/**
+ * Hide NER download modal
+ */
+function hideNERDownloadModal() {
+  if (nerDownloadModal) {
+    nerDownloadModal.style.display = 'none';
+    // Reset progress bar
+    if (nerDownloadProgress) nerDownloadProgress.style.display = 'none';
+    if (nerProgressFill) nerProgressFill.style.width = '0%';
+    if (nerProgressText) nerProgressText.textContent = 'Downloading... 0%';
+  }
+}
+
+/**
+ * Start NER model download
+ */
+async function startNERModelDownload() {
+  if (!nerDownloadProgress || !nerProgressFill || !nerProgressText) return;
+
+  // Show progress bar, hide buttons
+  nerDownloadProgress.style.display = 'block';
+  const buttons = nerDownloadModal.querySelectorAll('.modal-footer button');
+  buttons.forEach(btn => btn.style.display = 'none');
+
+  try {
+    // Request NER initialization from background script
+    chrome.runtime.sendMessage({
+      type: 'INIT_NER',
+      forceDownload: true
+    });
+
+    // Simulate progress (real progress tracking can be added later)
+    for (let i = 0; i <= 100; i += 10) {
+      nerProgressFill.style.width = `${i}%`;
+      nerProgressText.textContent = `Downloading... ${i}%`;
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    // Save state
+    const settings = await getSettings();
+    settings.nerModelDownloaded = true;
+    settings.nerEnabled = true;
+    await chrome.storage.local.set({ settings });
+
+    // Update UI
+    if (nerToggle) nerToggle.checked = true;
+    await updateNERStatusChip(settings);
+
+    // Close modal
+    hideNERDownloadModal();
+
+    // Show success toast
+    showToast('NER model downloaded successfully!', 'success');
+  } catch (error) {
+    console.error('NER download error:', error);
+    showToast('Failed to download NER model. Try again later.', 'error');
+
+    // Reset modal
+    nerDownloadProgress.style.display = 'none';
+    buttons.forEach(btn => btn.style.display = '');
+  }
+}
+
+/**
+ * Show toast notification
+ */
+function showToast(message, type = 'info') {
+  // Simple toast implementation
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10001;
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+  `;
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
 /**
  * Attach event listeners
  */
@@ -408,7 +689,207 @@ function attachListeners() {
     helpContent.style.display = isVisible ? 'none' : 'block';
     helpToggle.classList.toggle('active', !isVisible);
   });
+
+  // v1.3.0: NER Toggle
+  if (nerToggle) {
+    nerToggle.addEventListener('change', async (e) => {
+      console.log('[Popup] NER toggle clicked:', e.target.checked);
+
+      try {
+        const settings = await getSettings();
+        console.log('[Popup] Current settings:', settings);
+
+        if (e.target.checked) {
+          // Enabling NER
+          console.log('[Popup] Attempting to enable NER');
+
+          if (settings.nerNeverAsk) {
+            console.log('[Popup] NER permanently disabled by user');
+            showToast('NER disabled by user preference', 'info');
+            e.target.checked = false;
+            return;
+          }
+
+          if (!settings.nerModelDownloaded) {
+            console.log('[Popup] Model not downloaded, showing prompt');
+            // Show download prompt
+            showNERDownloadModal();
+            // Revert toggle until download completes
+            e.target.checked = false;
+          } else {
+            console.log('[Popup] Model already downloaded, enabling NER');
+            // Model already downloaded, just enable
+            settings.nerEnabled = true;
+            await chrome.storage.local.set({ settings });
+            await updateNERStatusChip(settings);
+
+            // Notify background to initialize if needed
+            chrome.runtime.sendMessage({ type: 'INIT_NER' });
+          }
+        } else {
+          // Disabling NER
+          console.log('[Popup] Disabling NER');
+          settings.nerEnabled = false;
+          await chrome.storage.local.set({ settings });
+          await updateNERStatusChip(settings);
+        }
+      } catch (error) {
+        console.error('[Popup] Error in NER toggle handler:', error);
+        showToast('Error toggling NER: ' + error.message, 'error');
+        e.target.checked = !e.target.checked; // Revert toggle
+      }
+    });
+  }
+
+  // v1.3.0: NER Info Button
+  if (nerInfoBtn) {
+    nerInfoBtn.addEventListener('click', () => {
+      if (nerInfoModal) nerInfoModal.style.display = 'flex';
+    });
+  }
+
+  // v1.3.0: NER Info Modal Close Buttons
+  if (nerInfoModalClose) {
+    nerInfoModalClose.addEventListener('click', () => {
+      if (nerInfoModal) nerInfoModal.style.display = 'none';
+    });
+  }
+
+  if (nerInfoModalOk) {
+    nerInfoModalOk.addEventListener('click', () => {
+      if (nerInfoModal) nerInfoModal.style.display = 'none';
+    });
+  }
+
+  // v1.3.0: Close modal on overlay click
+  if (nerInfoModal) {
+    nerInfoModal.addEventListener('click', (e) => {
+      if (e.target === nerInfoModal) {
+        nerInfoModal.style.display = 'none';
+      }
+    });
+  }
+
+  // v1.3.0: NER Download Confirm Button
+  if (nerDownloadConfirm) {
+    nerDownloadConfirm.addEventListener('click', async () => {
+      await startNERModelDownload();
+    });
+  }
+
+  // v1.3.0: NER Download Cancel Button
+  if (nerDownloadCancel) {
+    nerDownloadCancel.addEventListener('click', () => {
+      hideNERDownloadModal();
+      if (nerToggle) nerToggle.checked = false;
+    });
+  }
+
+  // v1.3.0: NER Download Never Button
+  if (nerDownloadNever) {
+    nerDownloadNever.addEventListener('click', async () => {
+      const settings = await getSettings();
+      settings.nerNeverAsk = true;
+      settings.nerEnabled = false;
+      await chrome.storage.local.set({ settings });
+
+      hideNERDownloadModal();
+      if (nerToggle) {
+        nerToggle.checked = false;
+        nerToggle.disabled = true;
+        nerToggle.title = 'You chose to always use regex only. Reset in settings to enable.';
+      }
+
+      showToast('NER permanently disabled. Reset in settings if needed.', 'info');
+    });
+  }
+
+  // v1.3.0: NER Download Modal Close Button
+  if (nerDownloadClose) {
+    nerDownloadClose.addEventListener('click', () => {
+      hideNERDownloadModal();
+      if (nerToggle) nerToggle.checked = false;
+    });
+  }
+
+  // v1.3.0: Close download modal on overlay click
+  if (nerDownloadModal) {
+    nerDownloadModal.addEventListener('click', (e) => {
+      if (e.target === nerDownloadModal) {
+        hideNERDownloadModal();
+        if (nerToggle) nerToggle.checked = false;
+      }
+    });
+  }
+
+  // v1.3.0: NER Reset Button
+  const nerResetBtn = document.getElementById('nerResetBtn');
+  if (nerResetBtn) {
+    nerResetBtn.addEventListener('click', async () => {
+      console.log('[Popup] Resetting NER preferences');
+
+      try {
+        const settings = await getSettings();
+
+        // Reset the "never ask" flag
+        settings.nerNeverAsk = false;
+        settings.nerDownloadPromptShown = false;
+        settings.nerEnabled = false; // Keep disabled but allow user to enable
+
+        await chrome.storage.local.set({ settings });
+
+        // Re-enable toggle
+        if (nerToggle) {
+          nerToggle.disabled = false;
+          nerToggle.checked = false;
+          nerToggle.title = 'Enable enhanced NER detection';
+        }
+
+        // Hide banner
+        const nerDisabledBanner = document.getElementById('nerDisabledBanner');
+        if (nerDisabledBanner) {
+          nerDisabledBanner.style.display = 'none';
+        }
+
+        showToast('NER preferences reset. You can now enable NER.', 'success');
+
+        // Reload NER state
+        await loadNERState(settings);
+
+      } catch (error) {
+        console.error('[Popup] Error resetting NER:', error);
+        showToast('Error resetting NER: ' + error.message, 'error');
+      }
+    });
+  }
 }
+
+// Listen for NER status changes from background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'NER_STATUS_CHANGED') {
+    console.log('[Popup] NER status changed:', message.status);
+
+    // Reload settings to get updated state
+    chrome.storage.local.get(['settings'], async (result) => {
+      const settings = result.settings || {};
+      await updateNERStatusChip(settings);
+    });
+
+    sendResponse({ success: true });
+  }
+
+  if (message.type === 'NER_DOWNLOAD_PROGRESS') {
+    console.log('[Popup] NER download progress:', message.progress);
+
+    // Update progress bar if visible
+    if (nerProgressFill && nerProgressText) {
+      nerProgressFill.style.width = `${message.progress}%`;
+      nerProgressText.textContent = `Downloading... ${message.progress}%`;
+    }
+  }
+
+  return false;
+});
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', init);

@@ -35,6 +35,35 @@ let SCAN_HISTORY = false;
 let SCAN_HISTORY_DEPTH = 50;
 
 /**
+ * Safe message sender with extension context invalidation handling
+ * @param {Object} message - Message to send
+ * @returns {Promise<any>} Response or null if context invalidated
+ */
+async function safeSendMessage(message) {
+  try {
+    // Check if extension context is valid
+    if (!chrome.runtime?.id) {
+      console.warn('[monitorInputs] Extension context invalidated - skipping message');
+      return null;
+    }
+
+    return await chrome.runtime.sendMessage(message);
+  } catch (error) {
+    // Check for specific context invalidation errors
+    if (error.message?.includes('Extension context invalidated') ||
+        error.message?.includes('message channel closed') ||
+        error.message?.includes('Receiving end does not exist')) {
+      console.warn('[monitorInputs] Extension context invalidated:', error.message);
+      // Could show user notification or reload content script
+      return null;
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
+}
+
+/**
  * Check if element is an AI chat input
  * @param {HTMLElement} element
  * @returns {boolean}
@@ -151,6 +180,11 @@ function setTextContent(element, text) {
  * @param {HTMLElement} element
  */
 async function handleInput(element) {
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    return; // Silently skip if context invalidated
+  }
+
   try {
     // Check if extension is enabled
     const enabled = await isEnabled();
@@ -196,7 +230,7 @@ async function handleInput(element) {
       // Update hybrid stats if available
       if (detectionResult.sources || detectionResult.performance) {
         try {
-          await chrome.runtime.sendMessage({
+          await safeSendMessage({
             type: 'UPDATE_HYBRID_STATS',
             sources: detectionResult.sources,
             performance: detectionResult.performance,
@@ -250,6 +284,11 @@ async function handleInput(element) {
  * @param {ClipboardEvent} event
  */
 async function handlePaste(event) {
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    return; // Silently skip if context invalidated
+  }
+
   try {
     // Check if extension is enabled
     const enabled = await isEnabled();
@@ -288,7 +327,7 @@ async function handlePaste(event) {
       // Update hybrid stats if available
       if (detectionResult.sources || detectionResult.performance) {
         try {
-          await chrome.runtime.sendMessage({
+          await safeSendMessage({
             type: 'UPDATE_HYBRID_STATS',
             sources: detectionResult.sources,
             performance: detectionResult.performance,
@@ -404,6 +443,12 @@ function attachListeners(element) {
  * @param {string} text - Text content
  */
 async function handlePIIDetectionForEnterKey(element, text) {
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    simulateEnterKey(element); // Allow send if context invalidated
+    return;
+  }
+
   try {
     // Check if extension is enabled
     const enabled = await isEnabled();
@@ -438,7 +483,7 @@ async function handlePIIDetectionForEnterKey(element, text) {
     // Update hybrid stats if available
     if (detectionResult.sources || detectionResult.performance) {
       try {
-        await chrome.runtime.sendMessage({
+        await safeSendMessage({
           type: 'UPDATE_HYBRID_STATS',
           sources: detectionResult.sources,
           performance: detectionResult.performance,
@@ -619,6 +664,12 @@ function blockSendButton() {
  * @param {HTMLElement} button - Send button that was clicked
  */
 async function handlePIIDetectionForSendButton(input, text, button) {
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    button.click(); // Allow click if context invalidated
+    return;
+  }
+
   try {
     // Check if extension is enabled
     const enabled = await isEnabled();
@@ -653,7 +704,7 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     // Update hybrid stats if available
     if (detectionResult.sources || detectionResult.performance) {
       try {
-        await chrome.runtime.sendMessage({
+        await safeSendMessage({
           type: 'UPDATE_HYBRID_STATS',
           sources: detectionResult.sources,
           performance: detectionResult.performance,
@@ -715,7 +766,7 @@ async function initializeNER() {
     console.log('PII Guardian: Requesting NER initialization...');
 
     // Request NER initialization from background script
-    const response = await chrome.runtime.sendMessage({ type: 'INIT_NER' });
+    const response = await safeSendMessage({ type: 'INIT_NER' });
 
     if (response && response.success) {
       console.log('PII Guardian: NER initialization requested successfully');

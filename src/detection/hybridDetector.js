@@ -287,30 +287,49 @@ export class HybridDetector {
     let ambiguousResults = [];
     if (mode !== DetectionMode.NER_ONLY) {
       const regexDetection = detectPIIWithRegex(text, options.minConfidence || 0.6);
+
+      // Debug logging: track matches BEFORE filtering
+      const invalidMatches = regexDetection.matches.filter(match => !match.type || !match.value);
+      if (invalidMatches.length > 0) {
+        console.warn('[hybridDetector] Found matches with missing type/value:',
+          invalidMatches.map(m => ({ hasType: !!m.type, hasValue: !!m.value, match: m })));
+      }
+
       // Convert to our format with start/end positions
-      regexResults = regexDetection.matches.map(match => ({
-        type: match.type.toUpperCase(),
-        value: match.value,
-        category: match.category || 'IDENTITY',
-        confidence: match.confidence || 0.9,
-        source: 'regex',
-        // Use precise positions from regex detector to avoid masking the wrong occurrence
-        start: match.position,
-        end: match.position + match.value.length
-      }));
+      regexResults = regexDetection.matches
+        .filter(match => match.type && match.value) // Guard: skip matches without type or value
+        .map(match => ({
+          type: match.type.toUpperCase(),
+          value: match.value,
+          category: match.category || 'IDENTITY',
+          confidence: match.confidence || 0.9,
+          source: 'regex',
+          // Use precise positions from regex detector to avoid masking the wrong occurrence
+          start: match.position,
+          end: match.position + match.value.length
+        }));
 
       // Include ambiguous matches
-      ambiguousResults = (regexDetection.ambiguousMatches || []).map(match => ({
-        type: match.type.toUpperCase(),
-        value: match.value,
-        category: 'IDENTITY',
-        confidence: match.confidence || 0.3,
-        source: 'regex',
-        isAmbiguous: true,
-        reasons: match.reasons || [],
-        start: match.position,
-        end: match.position + match.value.length
-      }));
+      // Debug logging: track ambiguous matches BEFORE filtering
+      const invalidAmbiguous = (regexDetection.ambiguousMatches || []).filter(match => !match.type || !match.value);
+      if (invalidAmbiguous.length > 0) {
+        console.warn('[hybridDetector] Found ambiguous matches with missing type/value:',
+          invalidAmbiguous.map(m => ({ hasType: !!m.type, hasValue: !!m.value, match: m })));
+      }
+
+      ambiguousResults = (regexDetection.ambiguousMatches || [])
+        .filter(match => match.type && match.value) // Guard: skip matches without type or value
+        .map(match => ({
+          type: match.type.toUpperCase(),
+          value: match.value,
+          category: 'IDENTITY',
+          confidence: match.confidence || 0.3,
+          source: 'regex',
+          isAmbiguous: true,
+          reasons: match.reasons || [],
+          start: match.position,
+          end: match.position + match.value.length
+        }));
     }
 
     const regexTime = performance.now() - startTime;

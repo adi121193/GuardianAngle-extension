@@ -32,6 +32,7 @@ class OffscreenManager {
   async createDocument() {
     if (await this.hasDocument()) {
       console.log('[OffscreenManager] Document already exists');
+      this.isCreated = true;
       return true;
     }
 
@@ -48,6 +49,13 @@ class OffscreenManager {
       console.log('[OffscreenManager] Offscreen document created');
       return true;
     } catch (error) {
+      // Treat "Only a single offscreen document may be created" as success
+      if (error.message && error.message.includes('Only a single offscreen')) {
+        console.log('[OffscreenManager] Offscreen document already exists (caught error), treating as success');
+        this.isCreated = true;
+        return true;
+      }
+
       console.error('[OffscreenManager] Failed to create document:', error);
       this.isCreated = false;
       return false;

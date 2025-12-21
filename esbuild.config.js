@@ -128,15 +128,20 @@ async function build() {
     console.log('  → models/');
     copyDirectory('models', 'dist/models');
 
-    // 6. Copy ONNX Runtime WASM files from node_modules
-    console.log('  → onnxruntime-web WASM files');
+    // 6. Copy ONNX Runtime WASM and module files from node_modules
+    console.log('  → onnxruntime-web WASM and module files');
     const ortWasmDir = 'node_modules/onnxruntime-web/dist';
     if (existsSync(ortWasmDir)) {
       mkdirSync('dist/onnxruntime-web', { recursive: true });
-      const wasmFiles = readdirSync(ortWasmDir).filter(f => f.endsWith('.wasm'));
-      for (const file of wasmFiles) {
+      // Copy .wasm, .mjs, and .js files needed by ORT
+      const ortFiles = readdirSync(ortWasmDir).filter(f =>
+        f.endsWith('.wasm') || f.endsWith('.mjs') ||
+        (f.endsWith('.js') && !f.includes('.map'))
+      );
+      for (const file of ortFiles) {
         copyFileSync(join(ortWasmDir, file), join('dist/onnxruntime-web', file));
       }
+      console.log(`     Copied ${ortFiles.length} ORT files (.wasm, .mjs, .js)`);
     }
 
     console.log('\n✅ Build complete!\n');

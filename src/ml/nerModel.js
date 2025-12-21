@@ -5,6 +5,14 @@
 
 import * as ort from 'onnxruntime-web';
 
+// CRITICAL: Configure ORT BEFORE any initialization
+// Must disable proxy mode to avoid JSEP module loading issues in Chrome extensions
+ort.env.wasm.proxy = false;
+ort.env.wasm.numThreads = 4;
+ort.env.wasm.simd = true;
+ort.env.logLevel = 'warning';
+ort.env.wasm.wasmPaths = chrome.runtime.getURL('onnxruntime-web/');
+
 // Label mapping for BERT-base NER
 const LABEL_MAP = {
   0: 'O',      // Outside entity
@@ -38,31 +46,11 @@ export class NERModel {
    */
   async initializeRuntime() {
     console.log('[NERModel] Initializing ONNX Runtime...');
+    console.log('[NERModel] WASM config: proxy=false, threads=4, simd=true');
+    console.log('[NERModel] WASM paths:', ort.env.wasm.wasmPaths);
 
-    // Configure ONNX Runtime
-    // Try WebGPU first, fallback to WASM
-    ort.env.wasm.numThreads = 4;
-    ort.env.wasm.simd = true;
-    ort.env.logLevel = 'warning';
-
-    // Set execution providers in order of preference
-    const executionProviders = [];
-
-    // Try WebGPU if available
-    if (typeof navigator !== 'undefined' && 'gpu' in navigator) {
-      try {
-        const adapter = await navigator.gpu?.requestAdapter();
-        if (adapter) {
-          console.log('[NERModel] WebGPU available, will try as primary EP');
-          executionProviders.push('webgpu');
-        }
-      } catch (e) {
-        console.log('[NERModel] WebGPU check failed:', e.message);
-      }
-    }
-
-    // Always add WASM as fallback
-    executionProviders.push('wasm');
+    // Use WASM only - WebGPU requires JSEP proxy which is problematic in extensions
+    const executionProviders = ['wasm'];
 
     console.log('[NERModel] Execution providers:', executionProviders);
     return executionProviders;

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PII Guardian",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Local AI Privacy Browser Extension - Detect and protect sensitive PII before sending to AI tools",
   "permissions": [
     "storage",
@@ -65,7 +65,10 @@
       "resources": [
         "models/*",
         "styles/*",
-        "assets/*"
+        "assets/*",
+        "onnxruntime-web/*.wasm",
+        "onnxruntime-web/*.mjs",
+        "onnxruntime-web/*.js"
       ],
       "matches": ["<all_urls>"]
     }

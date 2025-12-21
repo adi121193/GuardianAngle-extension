@@ -96,17 +96,31 @@ async function init() {
       const response = await chrome.runtime.sendMessage({ type: 'INIT_NER' });
 
       if (response && response.success) {
+        // Success - update UI and refresh settings to reflect persisted state
         statusValue.textContent = 'Ready ✅';
+        statusValue.style.color = '#10b981';
         btn.textContent = 'Initialized';
-        setTimeout(() => checkNERStatus(), 500);
+        btn.style.display = 'none';
+
+        // Reload settings from storage to get the updated nerModelDownloaded flag
+        setTimeout(() => {
+          chrome.storage.local.get(['settings'], (result) => {
+            if (result.settings) {
+              console.log('[Settings] NER model downloaded:', result.settings.nerModelDownloaded);
+            }
+          });
+          checkNERStatus();
+        }, 500);
       } else {
         statusValue.textContent = 'Failed ❌';
+        statusValue.style.color = '#ef4444';
         btn.disabled = false;
         btn.textContent = 'Retry';
       }
     } catch (error) {
       console.error('NER init error:', error);
       statusValue.textContent = 'Error ❌';
+      statusValue.style.color = '#ef4444';
       btn.disabled = false;
       btn.textContent = 'Retry';
     }

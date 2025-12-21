@@ -3,6 +3,14 @@
  * Implements deterministic masking to protect sensitive data
  */
 
+import {
+  normalizeText,
+  findNthOccurrence,
+  findClosestOccurrence,
+  getOccurrenceIndex,
+  enhanceMatch
+} from './textNormalization.js';
+
 /**
  * Mask Aadhaar number - show last 4 digits
  * @param {string} aadhaar - Aadhaar number
@@ -239,122 +247,186 @@ export function maskCompletely(value) {
 
 /**
  * Mask PII in text based on detection results
+ * RESILIENT VERSION: Handles contenteditable quirks (NBSP, zero-width chars, position drift)
  * @param {string} text - Original text
  * @param {Array} matches - Array of PII matches from detection
+ * @param {Object} options - Options for masking
+ * @param {string} options.originalText - Original text at detection time (for position mapping)
  * @returns {string} Text with masked PII
  */
-export function maskText(text, matches) {
+export function maskText(text, matches, options = {}) {
   if (!matches || matches.length === 0) {
     return text;
   }
 
-  // FIX BUG003: Sort matches by position (descending) to avoid index shifts
-  // This ensures we replace the correct occurrence even when duplicate values exist
-  const sortedMatches = [...matches].sort((a, b) => {
-    // Handle matches without position (fallback to 0)
-    const posA = a.position ?? 0;
-    const posB = b.position ?? 0;
-    return posB - posA; // Descending order
+  const { originalText } = options;
+
+  // Normalize current text for consistent processing
+  const normalizedText = normalizeText(text);
+
+  // Enhance matches with occurrence tracking
+  const enhancedMatches = matches.map(match => {
+    // If we have original text, use it to determine occurrence
+    const referenceText = originalText || text;
+    return enhanceMatch(match, referenceText);
+  });
+
+  // Sort by position descending to avoid index shifts during replacement
+  const sortedMatches = [...enhancedMatches].sort((a, b) => {
+    const posA = a.start ?? a.position ?? 0;
+    const posB = b.start ?? b.position ?? 0;
+    return posB - posA;
   });
 
   let maskedText = text;
-
-  // Track which parts of text have been processed to avoid double-processing
   const processedRanges = [];
 
   for (const match of sortedMatches) {
-    const { type, value, position } = match;
-    
-    // Skip if position is invalid or missing
-    if (position === undefined || position === null || position < 0) {
-      // FIX BUG003: When position is missing, we can't reliably know which occurrence
-      // to replace when duplicate values exist. Try to find first unprocessed occurrence.
-      console.warn(`[maskText] Position missing for match type=${type}, value="${value}". Using fallback (may mask wrong occurrence if duplicates exist).`);
-      
-      // Try to find the value in the text
-      let foundPosition = -1;
-      let searchStart = 0;
-      
-      // Search for value, skipping already processed ranges
-      while (searchStart < maskedText.length) {
-        const index = maskedText.indexOf(value, searchStart);
-        if (index === -1) break;
-        
-        // Check if this position is already processed
-        const isProcessed = processedRanges.some(range => 
-          index >= range.start && index < range.end
+    const { type, value, normalizedValue, occurrence, start, position } = match;
+    const actualStart = start ?? position ?? -1;
+
+    // Strategy 1: Try exact position match
+    if (actualStart >= 0 && actualStart + value.length <= maskedText.length) {
+      const textAtPosition = maskedText.substring(actualStart, actualStart + value.length);
+
+      if (textAtPosition === value) {
+        // Exact match at expected position
+        const maskedValue = maskValueByType(value, type);
+        maskedText = maskedText.substring(0, actualStart) +
+                     maskedValue +
+                     maskedText.substring(actualStart + value.length);
+
+        processedRanges.push({ start: actualStart, end: actualStart + value.length });
+        continue;
+      }
+
+      // Try with normalized comparison (handles NBSP differences)
+      const normalizedAtPosition = normalizeText(textAtPosition);
+      if (normalizedAtPosition === normalizedValue) {
+        const maskedValue = maskValueByType(textAtPosition, type); // Mask actual text, preserving formatting
+        maskedText = maskedText.substring(0, actualStart) +
+                     maskedValue +
+                     maskedText.substring(actualStart + textAtPosition.length);
+
+        processedRanges.push({ start: actualStart, end: actualStart + textAtPosition.length });
+        continue;
+      }
+    }
+
+    // Strategy 2: Try nth-occurrence matching (position-independent, robust for duplicates)
+    if (occurrence >= 0) {
+      console.log(`[maskText] Position mismatch for "${value}", trying nth-occurrence (${occurrence})`);
+
+      const nthMatch = findNthOccurrence(maskedText, value, occurrence);
+
+      if (nthMatch) {
+        // Check if this range was already processed
+        const isProcessed = processedRanges.some(range =>
+          nthMatch.start >= range.start && nthMatch.start < range.end
         );
-        
+
         if (!isProcessed) {
-          foundPosition = index;
-          break;
+          const maskedValue = maskValueByType(value, type);
+          maskedText = maskedText.substring(0, nthMatch.start) +
+                       maskedValue +
+                       maskedText.substring(nthMatch.end);
+
+          processedRanges.push({ start: nthMatch.start, end: nthMatch.end });
+          continue;
         }
-        
-        searchStart = index + 1;
       }
-      
-      if (foundPosition !== -1) {
-        // Found unprocessed occurrence, use position-based replacement
+
+      // Try with normalized text
+      const normalizedCurrent = normalizeText(maskedText);
+      const nthNormMatch = findNthOccurrence(normalizedCurrent, normalizedValue, occurrence);
+
+      if (nthNormMatch) {
+        // Map normalized position back to actual text
+        // Find the actual text at this normalized position
+        let actualPos = 0;
+        let normPos = 0;
+
+        for (let i = 0; i < maskedText.length && normPos < nthNormMatch.start; i++) {
+          const char = maskedText[i];
+          const normChar = normalizeText(char);
+          if (normChar) normPos += normChar.length;
+          actualPos = i + 1;
+        }
+
+        // Extract actual text matching the normalized value
+        const actualExtract = maskedText.substring(actualPos, actualPos + value.length + 10);
+        const actualNormalized = normalizeText(actualExtract);
+        const matchLength = actualNormalized.indexOf(normalizedValue) >= 0
+          ? normalizedValue.length
+          : value.length;
+
+        if (actualPos >= 0 && actualPos + matchLength <= maskedText.length) {
+          const actualValue = maskedText.substring(actualPos, actualPos + matchLength);
+          const maskedValue = maskValueByType(actualValue, type);
+          maskedText = maskedText.substring(0, actualPos) +
+                       maskedValue +
+                       maskedText.substring(actualPos + matchLength);
+
+          processedRanges.push({ start: actualPos, end: actualPos + matchLength });
+          continue;
+        }
+      }
+    }
+
+    // Strategy 3: Find closest occurrence to expected position
+    if (actualStart >= 0) {
+      console.log(`[maskText] Trying closest occurrence for "${value}" near position ${actualStart}`);
+
+      const closestMatch = findClosestOccurrence(maskedText, value, actualStart, 200);
+
+      if (closestMatch) {
+        const isProcessed = processedRanges.some(range =>
+          closestMatch.start >= range.start && closestMatch.start < range.end
+        );
+
+        if (!isProcessed) {
+          const maskedValue = maskValueByType(value, type);
+          maskedText = maskedText.substring(0, closestMatch.start) +
+                       maskedValue +
+                       maskedText.substring(closestMatch.end);
+
+          processedRanges.push({ start: closestMatch.start, end: closestMatch.end });
+          console.log(`[maskText] Masked at corrected position ${closestMatch.start} (drift: ${closestMatch.distance} chars)`);
+          continue;
+        }
+      }
+    }
+
+    // Strategy 4: Last resort - find any unprocessed occurrence
+    let foundUnprocessed = false;
+    let searchIndex = 0;
+
+    while (searchIndex < maskedText.length) {
+      const index = maskedText.indexOf(value, searchIndex);
+      if (index === -1) break;
+
+      const isProcessed = processedRanges.some(range =>
+        index >= range.start && index < range.end
+      );
+
+      if (!isProcessed) {
         const maskedValue = maskValueByType(value, type);
-        const endPosition = foundPosition + value.length;
-        maskedText = maskedText.substring(0, foundPosition) +
+        maskedText = maskedText.substring(0, index) +
                      maskedValue +
-                     maskedText.substring(endPosition);
-        
-        // Track this range as processed
-        processedRanges.push({ start: foundPosition, end: endPosition });
-      } else {
-        // Value not found or all occurrences already processed, skip
-        console.warn(`[maskText] Could not find unprocessed occurrence of "${value}", skipping.`);
+                     maskedText.substring(index + value.length);
+
+        processedRanges.push({ start: index, end: index + value.length });
+        console.log(`[maskText] Fallback: masked first unprocessed occurrence of "${value}" at ${index}`);
+        foundUnprocessed = true;
+        break;
       }
-      continue;
+
+      searchIndex = index + 1;
     }
 
-    // Verify the value exists at the specified position
-    const endPosition = position + value.length;
-    if (endPosition > maskedText.length) {
-      // Position out of bounds, skip this match
-      continue;
+    if (!foundUnprocessed) {
+      console.warn(`[maskText] FAILED to mask "${value}" - not found in current text or all occurrences processed`);
     }
-
-    const textAtPosition = maskedText.substring(position, endPosition);
-    
-    // Verify the text at this position matches the expected value
-    // This prevents masking wrong text if positions are incorrect
-    if (textAtPosition !== value) {
-      // Position mismatch - try to find the value near the expected position
-      // Search in a small window around the expected position (±50 chars)
-      const searchStart = Math.max(0, position - 50);
-      const searchEnd = Math.min(maskedText.length, position + value.length + 50);
-      const searchText = maskedText.substring(searchStart, searchEnd);
-      const foundIndex = searchText.indexOf(value);
-      
-      if (foundIndex !== -1) {
-        // Found the value near expected position, use the found position
-        const actualPosition = searchStart + foundIndex;
-        const maskedValue = maskValueByType(value, type);
-        maskedText = maskedText.substring(0, actualPosition) +
-                     maskedValue +
-                     maskedText.substring(actualPosition + value.length);
-        
-        // Track this range as processed
-        processedRanges.push({ start: actualPosition, end: actualPosition + value.length });
-      }
-      // If not found, skip this match to avoid corrupting text
-      continue;
-    }
-
-    // Apply appropriate masking based on PII type
-    const maskedValue = maskValueByType(value, type);
-
-    // Replace at specific position using substring operations
-    // This ensures we replace the correct occurrence, not just the first one
-    maskedText = maskedText.substring(0, position) +
-                 maskedValue +
-                 maskedText.substring(position + value.length);
-    
-    // Track this range as processed
-    processedRanges.push({ start: position, end: position + value.length });
   }
 
   return maskedText;

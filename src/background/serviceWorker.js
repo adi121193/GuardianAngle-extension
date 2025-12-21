@@ -240,6 +240,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Background received message:', message);
 
+  // Ignore messages meant ONLY for offscreen document
+  // Note: INIT_NER and NER_STATUS are handled by a separate listener below
+  const offscreenOnlyMessages = ['NER_INIT', 'NER_INFERENCE', 'NER_DISPOSE', 'NER_STATUS_CHANGED'];
+  if (offscreenOnlyMessages.includes(message.type)) {
+    // These are handled by offscreen document, not service worker
+    return false;
+  }
+
   switch (message.type) {
     case 'GET_SETTINGS':
       chrome.storage.local.get(['settings'], (result) => {
@@ -528,6 +536,17 @@ async function initializeNER() {
     if (result.success) {
       console.log(`[ServiceWorker] NER model initialized in ${result.initTimeMs}ms`);
 
+      // CRITICAL: Persist success state to storage so UI reflects the ready state
+      chrome.storage.local.get(['settings'], (storageResult) => {
+        const settings = storageResult.settings || DEFAULT_SETTINGS;
+        settings.nerModelDownloaded = true;
+        settings.nerEnabled = true;
+
+        chrome.storage.local.set({ settings }, () => {
+          console.log('[ServiceWorker] NER model status persisted to storage');
+        });
+      });
+
       // Notify content scripts that NER is ready
       chrome.tabs.query({}, (tabs) => {
         tabs.forEach(tab => {
@@ -541,8 +560,27 @@ async function initializeNER() {
           }
         });
       });
+
+      // Notify popup to update status chip
+      chrome.runtime.sendMessage({
+        type: 'NER_STATUS',
+        status: 'ready',
+        initialized: true
+      }).catch(() => {
+        // Popup may not be open, that's OK
+      });
     } else {
       console.error('[ServiceWorker] NER initialization failed:', result.error);
+
+      // Notify popup of error
+      chrome.runtime.sendMessage({
+        type: 'NER_STATUS',
+        status: 'error',
+        initialized: false,
+        error: result.error
+      }).catch(() => {
+        // Popup may not be open, that's OK
+      });
     }
   } catch (error) {
     console.error('[ServiceWorker] NER initialization error:', error);
@@ -555,7 +593,30 @@ async function initializeNER() {
 
 // Handle messages requesting NER initialization and status
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'INIT_NER') {
+  // Accept both INIT_NER (from popup) and NER_INIT (internal)
+  if (message.type === 'INIT_NER' || message.type === 'NER_INIT') {
+    const forceDownload = message.forceDownload || false;
+
+    console.log(`[ServiceWorker] NER initialization requested (forceDownload: ${forceDownload})`);
+
+    // Optional: Send progress updates to popup
+    if (forceDownload && sender.tab) {
+      // Simulate progress for user download experience
+      // In real implementation, this would track actual model download
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += 10;
+        if (progress <= 100) {
+          chrome.runtime.sendMessage({
+            type: 'NER_DOWNLOAD_PROGRESS',
+            progress: progress
+          }).catch(() => clearInterval(progressInterval));
+        } else {
+          clearInterval(progressInterval);
+        }
+      }, 300);
+    }
+
     initializeNER().then(() => {
       sendResponse({ success: true });
     }).catch(error => {

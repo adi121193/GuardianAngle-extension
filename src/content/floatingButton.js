@@ -161,6 +161,14 @@ function scheduleDetection(element, immediate = false) {
  */
 async function runDetection(element) {
   try {
+    // Guard: Check if extension context is still valid
+    if (!chrome?.runtime?.id) {
+      console.warn('[floatingButton] Extension context invalidated - hiding UI and stopping detection');
+      hideButton(element);
+      closeAllPanels();
+      return;
+    }
+
     const settings = await getSettings();
     if (!settings.enabled) {
       hideButton(element);
@@ -447,10 +455,17 @@ function findTextNodeAtPosition(element, targetPosition) {
 
 /**
  * Get text content from element (clean text without HTML)
+ * Returns text exactly as-is (with NBSP, ZW chars) for accurate detection
  * @param {HTMLElement} element
+ * @param {Object} options
+ * @param {boolean} options.normalize - Whether to normalize invisible characters (default: false)
  * @returns {string}
  */
-function getTextContent(element) {
+function getTextContent(element, options = {}) {
+  const { normalize = false } = options;
+
+  let text = '';
+
   if (element.contentEditable === 'true') {
     // Clone element to get clean text without modifying the original
     const clone = element.cloneNode(true);
@@ -458,17 +473,26 @@ function getTextContent(element) {
     // Remove all highlight spans from clone
     const highlights = clone.querySelectorAll('.pii-highlight');
     highlights.forEach(highlight => {
-      const text = document.createTextNode(highlight.textContent);
-      highlight.parentNode.replaceChild(text, highlight);
+      const textNode = document.createTextNode(highlight.textContent);
+      highlight.parentNode.replaceChild(textNode, highlight);
     });
 
     // Normalize to merge text nodes
     clone.normalize();
 
     // Use textContent to preserve exact spacing/newlines (innerText can reflow)
-    return clone.textContent || '';
+    text = clone.textContent || '';
+  } else {
+    text = element.value || '';
   }
-  return element.value || '';
+
+  // Optionally normalize invisible characters
+  if (normalize && typeof normalizeText === 'function') {
+    // Dynamic import will be available if needed
+    return text;
+  }
+
+  return text;
 }
 
 /**
@@ -770,11 +794,86 @@ async function openPanel(element, button, detectionResult) {
  * @returns {string}
  */
 function createPanelHTML(detectionResult) {
-  const { matches } = detectionResult;
+  const { matches, sources, detectionMode } = detectionResult;
+
+  // Calculate detection summary
+  const regexCount = matches.filter(m => m.source === 'regex').length;
+  const nerCount = matches.filter(m => m.source === 'ner').length;
+  const hybridCount = matches.filter(m => m.source === 'hybrid').length;
+
+  // Create detection summary if NER is being used
+  let summaryHTML = '';
+  if (detectionMode && (nerCount > 0 || hybridCount > 0 || detectionMode !== 'regex_only')) {
+    const totalDetections = matches.length;
+    summaryHTML = `
+      <div class="detection-summary">
+        <div class="detection-breakdown">
+          <span class="breakdown-item">
+            <strong class="breakdown-count">${totalDetections}</strong>
+            <span class="breakdown-label">total</span>
+          </span>
+          ${regexCount > 0 ? `
+          <span class="breakdown-item">
+            <span class="source-badge source-regex">regex</span>
+            <strong class="breakdown-count">${regexCount}</strong>
+          </span>
+          ` : ''}
+          ${nerCount > 0 ? `
+          <span class="breakdown-item">
+            <span class="source-badge source-ner">NER</span>
+            <strong class="breakdown-count">${nerCount}</strong>
+          </span>
+          ` : ''}
+          ${hybridCount > 0 ? `
+          <span class="breakdown-item">
+            <span class="source-badge source-hybrid">both</span>
+            <strong class="breakdown-count">${hybridCount}</strong>
+          </span>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Performance notice if NER unavailable
+  let performanceNoticeHTML = '';
+  if (detectionMode === 'regex_only' && sources?.regexOnly) {
+    performanceNoticeHTML = `
+      <div class="performance-notice">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Using regex only - NER unavailable</span>
+      </div>
+    `;
+  }
 
   const issuesHTML = matches.map((match, index) => {
-    const { type, name, value, confidence } = match;
+    const { type, name, value, confidence, source } = match;
     const riskColor = getRiskColor(confidence);
+    const confidenceLevel = getConfidenceLevel(confidence);
+
+    // Determine source badge
+    let sourceBadge = '';
+    if (source === 'regex') {
+      sourceBadge = '<span class="source-badge source-regex">regex</span>';
+    } else if (source === 'ner') {
+      sourceBadge = '<span class="source-badge source-ner">NER</span>';
+    } else if (source === 'hybrid') {
+      sourceBadge = '<span class="source-badge source-hybrid">both</span>';
+    }
+
+    // Determine confidence badge
+    let confidenceBadge = '';
+    if (confidenceLevel === 'high') {
+      confidenceBadge = '<span class="confidence-badge confidence-high">High</span>';
+    } else if (confidenceLevel === 'medium') {
+      confidenceBadge = '<span class="confidence-badge confidence-medium">Medium</span>';
+    } else {
+      confidenceBadge = '<span class="confidence-badge confidence-low">Low</span>';
+    }
 
     return `
       <div class="pii-issue" data-index="${index}">
@@ -786,7 +885,10 @@ function createPanelHTML(detectionResult) {
           </div>
           <div class="pii-issue-info">
             <strong>${name}</strong>
-            <span class="pii-issue-confidence">${Math.round(confidence * 100)}% confidence</span>
+            <div class="pii-issue-badges">
+              ${sourceBadge}
+              ${confidenceBadge}
+            </div>
           </div>
         </div>
         <div class="pii-issue-value">
@@ -823,6 +925,8 @@ function createPanelHTML(detectionResult) {
       </div>
       <span class="pii-panel-count">${matches.length} issue${matches.length !== 1 ? 's' : ''} found</span>
     </div>
+    ${summaryHTML}
+    ${performanceNoticeHTML}
     <div class="pii-panel-body">
       ${issuesHTML}
     </div>
@@ -847,6 +951,17 @@ function getRiskColor(confidence) {
   if (confidence >= 0.75) return '#FF5722';
   if (confidence >= 0.6) return '#FF9800';
   return '#4CAF50';
+}
+
+/**
+ * Get confidence level label
+ * @param {number} confidence
+ * @returns {string}
+ */
+function getConfidenceLevel(confidence) {
+  if (confidence >= 0.8) return 'high';
+  if (confidence >= 0.6) return 'medium';
+  return 'low';
 }
 
 /**
@@ -902,131 +1017,267 @@ function attachPanelHandlers(panel, element, detectionResult) {
 
 /**
  * Mask single PII item
+ * RESILIENT VERSION: Re-detects on current text for fresh positions
  * @param {HTMLElement} element
  * @param {Object} detectionResult
  * @param {number} index
  */
 async function maskSinglePII(element, detectionResult, index) {
-  // Remove highlights before masking
-  removeHighlights(element);
-
-  // Use stored original text to avoid whitespace corruption from HTML conversion
-  const text = originalText.get(element) || getTextContent(element);
-  const match = detectionResult.matches[index];
-
-  // STRICT POSITION-BASED MASKING (Priority 1)
-  // Validate that match has position information
-  if (match.position === undefined && match.start === undefined) {
-    console.warn('[maskSinglePII] Match missing position information - SKIPPING masking to avoid wrong occurrence', {
-      type: match.type,
-      value: match.value
-    });
-    return; // SKIP - do not attempt masking without position
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    console.warn('[maskSinglePII] Extension context invalidated - cannot mask');
+    return;
   }
 
-  // maskText() already handles position-strict masking with fallback logic
-  const maskedText = maskText(text, [match]);
-  setTextContent(element, maskedText);
+  try {
+    // Remove highlights before masking
+    removeHighlights(element);
 
-  await incrementMasked();
+    // Import dependencies (may fail if context invalidated during import)
+    const { maskText } = await import('../utils/maskRules.js');
+    const { detectPIIWithRegex } = await import('../utils/regexPatterns.js');
 
-  // Update detection results after successful masking
-  updateDetectionResults(element);
+    // Get current text (may have changed due to contenteditable quirks)
+    const currentText = getTextContent(element);
+    const originalDetectionText = originalText.get(element) || currentText;
+    const match = detectionResult.matches[index];
+
+    // Option 1: Re-detect on current text to get fresh positions (most robust)
+    // This handles all contenteditable drift automatically
+    const freshDetection = detectPIIWithRegex(currentText, 0.6);
+
+    // Find the same PII in fresh detection (match by type and value)
+    const freshMatch = freshDetection.matches.find(m =>
+      m.type === match.type && m.value === match.value
+    );
+
+    if (freshMatch) {
+      console.log(`[maskSinglePII] Using fresh detection for "${match.value}" at position ${freshMatch.position}`);
+      const maskedText = maskText(currentText, [freshMatch]);
+      setTextContent(element, maskedText);
+    } else {
+      // Fallback: Use resilient maskText with original text context
+      console.log(`[maskSinglePII] Fresh detection failed, using resilient masking for "${match.value}"`);
+      const maskedText = maskText(currentText, [match], { originalText: originalDetectionText });
+      setTextContent(element, maskedText);
+    }
+
+    await incrementMasked();
+
+    // Note: Detection results are now stale after masking
+    // Next mask action will re-detect automatically
+  } catch (error) {
+    if (error.message?.includes('context invalidated') ||
+        error.message?.includes('Extension context') ||
+        !chrome?.runtime?.id) {
+      console.warn('[maskSinglePII] Extension context invalidated during operation');
+      return;
+    }
+    console.error('[maskSinglePII] Error:', error);
+  }
 }
 
 /**
  * Remove single PII item
+ * RESILIENT VERSION: Uses nth-occurrence and handles contenteditable quirks
  * @param {HTMLElement} element
  * @param {Object} detectionResult
  * @param {number} index
  */
 async function removeSinglePII(element, detectionResult, index) {
-  // Remove highlights before removing PII
-  removeHighlights(element);
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    console.warn('[removeSinglePII] Extension context invalidated - cannot remove');
+    return;
+  }
+
+  try {
+    // Remove highlights before removing PII
+    removeHighlights(element);
+
+    // Import normalization utilities at runtime (may fail if context invalidated)
+    const { normalizeText, findNthOccurrence, findClosestOccurrence, getOccurrenceIndex, enhanceMatch } =
+      await import('../utils/textNormalization.js');
 
   // Use stored original text to avoid whitespace corruption from HTML conversion
   const text = originalText.get(element) || getTextContent(element);
+  const originalDetectionText = originalText.get(element) || text;
   const match = detectionResult.matches[index];
 
-  // STRICT POSITION-BASED REMOVAL (Priority 1)
-  // Skip removal if position is missing or invalid - DO NOT use .replace() fallback
   const { value, position, start, end } = match;
 
-  // Try multiple position sources (position, start, or calculate from value)
+  // Enhance match with occurrence tracking
+  const enhanced = enhanceMatch(match, originalDetectionText);
+  const { occurrence, normalizedValue } = enhanced;
+
   const actualPosition = position ?? start ?? -1;
   const actualEnd = end ?? (actualPosition >= 0 ? actualPosition + value.length : -1);
 
-  // Validation: Position must be valid and within bounds
-  if (actualPosition < 0 || actualEnd < 0 || actualEnd > text.length) {
-    console.warn('[removeSinglePII] Invalid or missing position - SKIPPING removal to avoid wrong occurrence', {
-      position: actualPosition,
-      end: actualEnd,
-      textLength: text.length,
-      value: value
-    });
-    return; // SKIP - do not attempt removal
+  let removalStart = -1;
+  let removalEnd = -1;
+
+  // Strategy 1: Try exact position match
+  if (actualPosition >= 0 && actualEnd <= text.length) {
+    const textAtPosition = text.substring(actualPosition, actualEnd);
+
+    if (textAtPosition === value) {
+      // Exact match - use it
+      removalStart = actualPosition;
+      removalEnd = actualEnd;
+    } else {
+      // Try normalized comparison
+      const normalizedAtPosition = normalizeText(textAtPosition);
+      if (normalizedAtPosition === normalizedValue) {
+        removalStart = actualPosition;
+        removalEnd = actualEnd;
+      }
+    }
   }
 
-  // Verify the text at this position matches the expected value
-  const textAtPosition = text.substring(actualPosition, actualEnd);
+  // Strategy 2: Try nth-occurrence (most robust for duplicates)
+  if (removalStart < 0 && occurrence >= 0) {
+    console.log(`[removeSinglePII] Position mismatch, trying nth-occurrence (${occurrence}) for "${value}"`);
 
-  if (textAtPosition !== value) {
-    // Position mismatch - try to find the value near the expected position (±50 chars)
-    const searchStart = Math.max(0, actualPosition - 50);
-    const searchEnd = Math.min(text.length, actualPosition + value.length + 50);
-    const searchText = text.substring(searchStart, searchEnd);
-    const foundIndex = searchText.indexOf(value);
+    const nthMatch = findNthOccurrence(text, value, occurrence);
 
-    if (foundIndex !== -1) {
-      // Found the value near expected position, use the found position
-      const correctedPosition = searchStart + foundIndex;
-      const correctedEnd = correctedPosition + value.length;
-      const newText = text.substring(0, correctedPosition) + ' ' + text.substring(correctedEnd);
+    if (nthMatch) {
+      removalStart = nthMatch.start;
+      removalEnd = nthMatch.end;
+    } else {
+      // Try with normalized text
+      const normalizedText = normalizeText(text);
+      const nthNormMatch = findNthOccurrence(normalizedText, normalizedValue, occurrence);
 
-      // Normalize spacing to avoid double spaces
-      const normalizedText = newText.replace(/\u00A0/g, ' ').replace(/\s{2,}/g, ' ').trim();
-      setTextContent(element, normalizedText);
+      if (nthNormMatch) {
+        // Map back to actual text position
+        let actualPos = 0;
+        let normPos = 0;
 
-      console.warn('[removeSinglePII] Position corrected from', actualPosition, 'to', correctedPosition);
-      return;
+        for (let i = 0; i < text.length && normPos < nthNormMatch.start; i++) {
+          const char = text[i];
+          const normChar = normalizeText(char);
+          if (normChar) normPos += normChar.length;
+          actualPos = i + 1;
+        }
+
+        removalStart = actualPos;
+        removalEnd = actualPos + value.length;
+      }
+    }
+  }
+
+  // Strategy 3: Find closest occurrence to expected position
+  if (removalStart < 0 && actualPosition >= 0) {
+    console.log(`[removeSinglePII] Trying closest occurrence near position ${actualPosition}`);
+
+    const closestMatch = findClosestOccurrence(text, value, actualPosition, 200);
+
+    if (closestMatch) {
+      removalStart = closestMatch.start;
+      removalEnd = closestMatch.end;
+      console.log(`[removeSinglePII] Found at position ${closestMatch.start} (drift: ${closestMatch.distance} chars)`);
+    }
+  }
+
+  // Strategy 4: Last resort - find first occurrence (only if no duplicates)
+  if (removalStart < 0) {
+    const allOccurrences = [];
+    let searchIndex = 0;
+
+    while (searchIndex < text.length) {
+      const idx = text.indexOf(value, searchIndex);
+      if (idx === -1) break;
+      allOccurrences.push(idx);
+      searchIndex = idx + 1;
     }
 
-    // Value not found near expected position - SKIP removal
-    console.error('[removeSinglePII] Position mismatch and value not found nearby - SKIPPING removal', {
-      expectedAtPosition: textAtPosition,
-      expectedValue: value,
-      position: actualPosition
-    });
-    return; // SKIP - strict mode, no fallback
+    if (allOccurrences.length === 1) {
+      // Only one occurrence, safe to remove
+      removalStart = allOccurrences[0];
+      removalEnd = allOccurrences[0] + value.length;
+      console.log(`[removeSinglePII] Single occurrence found at ${removalStart}`);
+    } else if (allOccurrences.length > 1) {
+      console.error(`[removeSinglePII] Multiple occurrences found (${allOccurrences.length}), cannot determine which to remove - SKIPPING`);
+      return;
+    }
   }
 
-  // Position is valid and text matches - proceed with removal
-  const newText = text.substring(0, actualPosition) + ' ' + text.substring(actualEnd);
+  // Perform removal if we found the position
+  if (removalStart >= 0 && removalEnd > removalStart) {
+    const newText = text.substring(0, removalStart) + ' ' + text.substring(removalEnd);
 
-  // Normalize spacing to avoid double spaces
-  const normalizedText = newText.replace(/\u00A0/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    // Normalize spacing to avoid double spaces and convert NBSP
+    const normalizedText = normalizeText(newText).replace(/\s{2,}/g, ' ').trim();
 
-  setTextContent(element, normalizedText);
+    setTextContent(element, normalizedText);
 
-  // Update detection results after successful removal
-  updateDetectionResults(element);
+    // Note: Detection results are now stale after removal
+    // Panel should be closed or detection re-run if needed
+
+    console.log(`[removeSinglePII] Removed "${value}" at position ${removalStart}-${removalEnd}`);
+  } else {
+    console.error(`[removeSinglePII] FAILED to find "${value}" for removal`);
+  }
+  } catch (error) {
+    if (error.message?.includes('context invalidated') ||
+        error.message?.includes('Extension context') ||
+        !chrome?.runtime?.id) {
+      console.warn('[removeSinglePII] Extension context invalidated during operation');
+      return;
+    }
+    console.error('[removeSinglePII] Error:', error);
+  }
 }
 
 /**
  * Mask all PII
+ * RESILIENT VERSION: Re-detects on current text for fresh positions
  * @param {HTMLElement} element
  * @param {Object} detectionResult
  */
 async function maskAllPII(element, detectionResult) {
-  // Remove highlights before masking
-  removeHighlights(element);
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    console.warn('[maskAllPII] Extension context invalidated - cannot mask');
+    return;
+  }
 
-  // Use stored original text to avoid whitespace corruption from HTML conversion
-  const text = originalText.get(element) || getTextContent(element);
-  const maskedText = maskText(text, detectionResult.matches);
-  setTextContent(element, maskedText);
+  try {
+    // Remove highlights before masking
+    removeHighlights(element);
+
+    // Import dependencies (may fail if context invalidated)
+    const { maskText } = await import('../utils/maskRules.js');
+    const { detectPIIWithRegex } = await import('../utils/regexPatterns.js');
+
+  // Get current text (may have changed due to contenteditable quirks)
+  const currentText = getTextContent(element);
+  const originalDetectionText = originalText.get(element) || currentText;
+
+  // Re-detect on current text for fresh positions
+  const freshDetection = detectPIIWithRegex(currentText, 0.6);
+
+  if (freshDetection.matches.length > 0) {
+    console.log(`[maskAllPII] Using fresh detection (${freshDetection.matches.length} matches)`);
+    const maskedText = maskText(currentText, freshDetection.matches);
+    setTextContent(element, maskedText);
+  } else {
+    // Fallback: Use original matches with resilient masking
+    console.log(`[maskAllPII] Fresh detection found nothing, using resilient masking`);
+    const maskedText = maskText(currentText, detectionResult.matches, { originalText: originalDetectionText });
+    setTextContent(element, maskedText);
+  }
 
   await incrementMasked();
+  } catch (error) {
+    if (error.message?.includes('context invalidated') ||
+        error.message?.includes('Extension context') ||
+        !chrome?.runtime?.id) {
+      console.warn('[maskAllPII] Extension context invalidated during operation');
+      return;
+    }
+    console.error('[maskAllPII] Error:', error);
+  }
 }
 
 /**
@@ -1325,6 +1576,114 @@ export function injectFloatingButtonStyles() {
       font-size: 12px;
       color: #757575;
       font-weight: 500;
+    }
+
+    .pii-issue-badges {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    /* Source Badges */
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .source-regex {
+      background: #2196F3;
+      color: white;
+    }
+
+    .source-ner {
+      background: #9C27B0;
+      color: white;
+    }
+
+    .source-hybrid {
+      background: linear-gradient(90deg, #2196F3 0%, #9C27B0 100%);
+      color: white;
+    }
+
+    /* Confidence Badges */
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .confidence-low {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+
+    .confidence-medium {
+      background: #FFF8E1;
+      color: #F57C00;
+    }
+
+    .confidence-high {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    /* Detection Summary */
+    .detection-summary {
+      padding: 12px 20px;
+      background: #F5F5F5;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .detection-breakdown {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .breakdown-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .breakdown-count {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .breakdown-label {
+      color: #757575;
+      font-size: 12px;
+    }
+
+    /* Performance Notice */
+    .performance-notice {
+      padding: 12px 20px;
+      background: #FFF8E1;
+      border-bottom: 1px solid #FFE082;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #F57C00;
+    }
+
+    .performance-notice svg {
+      flex-shrink: 0;
+      color: #F57C00;
     }
 
     .pii-issue-value {

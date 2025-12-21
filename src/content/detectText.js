@@ -59,19 +59,23 @@ export async function detectPII(text, options = {}) {
     // Convert hybrid results to existing format with positions
     results = {
       piiDetected: hybridResults.count > 0,
-      matches: hybridResults.detections.map(d => ({
-        type: d.type.toLowerCase(),
-        value: d.value,
-        confidence: d.confidence,
-        category: d.category,
-        source: d.source,
-        nerEntity: d.nerEntity,
-        position: d.start || d.position || 0,  // Include position for masking/highlighting
-        start: d.start,
-        end: d.end
-      })),
+      matches: hybridResults.detections
+        .filter(d => d.type && d.value)  // Guard: skip if type or value missing
+        .map(d => ({
+          type: d.type.toLowerCase(),
+          value: d.value,
+          confidence: d.confidence,
+          category: d.category,
+          source: d.source,
+          nerEntity: d.nerEntity,
+          position: d.start || d.position || 0,  // Include position for masking/highlighting
+          start: d.start,
+          end: d.end
+        })),
       ambiguousMatches: hybridResults.ambiguousDetections || [],
-      types: [...new Set(hybridResults.detections.map(d => d.type.toLowerCase()))],
+      types: [...new Set(hybridResults.detections
+        .filter(d => d.type)  // Guard: skip if type missing
+        .map(d => d.type.toLowerCase()))],
       score: hybridResults.count > 0
         ? hybridResults.detections.reduce((sum, d) => sum + d.confidence, 0) / hybridResults.count
         : 0,
