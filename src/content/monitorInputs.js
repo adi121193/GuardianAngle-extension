@@ -155,8 +155,16 @@ function findChatMessages() {
  */
 function getTextContent(element) {
   if (element.contentEditable === 'true') {
-    // textContent preserves exact spacing/newlines better than innerText
-    return element.textContent || '';
+    // innerText preserves user-visible spacing/line breaks between nodes
+    const text = element.innerText || element.textContent || '';
+    return text
+      .replace(/\u00A0/g, ' ')   // NBSP -> space
+      .replace(/\u200B/g, '')    // ZWSP
+      .replace(/\u200C/g, '')    // ZWNJ
+      .replace(/\u200D/g, '')    // ZWJ
+      .replace(/\s*\n\s*/g, ' ') // collapse line breaks to single space
+      .replace(/\s{2,}/g, ' ')   // collapse multiple spaces
+      .trim();
   }
   return element.value || '';
 }
@@ -592,14 +600,35 @@ function findSendButton() {
  * Find and monitor all AI chat inputs on the page
  */
 function monitorAllInputs() {
-  // Find all potential input elements
-  const inputs = document.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]');
+  const inputs = collectEditableInputs(document);
 
   inputs.forEach(element => {
     if (isAIChatInput(element)) {
       attachListeners(element);
     }
   });
+}
+
+/**
+ * Collect input elements, including those inside shadow DOMs
+ * @param {Document|ShadowRoot|Element} root
+ * @returns {HTMLElement[]}
+ */
+function collectEditableInputs(root) {
+  const results = new Set();
+
+  const scan = (node) => {
+    if (!node) return;
+    node.querySelectorAll?.('input[type="text"], textarea, [contenteditable="true"]').forEach(el => results.add(el));
+    node.querySelectorAll?.('*').forEach(child => {
+      if (child.shadowRoot) {
+        scan(child.shadowRoot);
+      }
+    });
+  };
+
+  scan(root);
+  return Array.from(results);
 }
 
 /**

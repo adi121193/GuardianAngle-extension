@@ -480,19 +480,23 @@ function getTextContent(element, options = {}) {
     // Normalize to merge text nodes
     clone.normalize();
 
-    // Use textContent to preserve exact spacing/newlines (innerText can reflow)
-    text = clone.textContent || '';
+    // Use innerText to keep user-visible spacing/line breaks between nodes
+    text = clone.innerText || clone.textContent || '';
   } else {
     text = element.value || '';
   }
 
-  // Optionally normalize invisible characters
-  if (normalize && typeof normalizeText === 'function') {
-    // Dynamic import will be available if needed
-    return text;
-  }
+  // Preserve separators: convert newlines to spaces and strip invisible chars
+  const cleaned = text
+    .replace(/\u00A0/g, ' ')   // NBSP -> space
+    .replace(/\u200B/g, '')    // ZWSP
+    .replace(/\u200C/g, '')    // ZWNJ
+    .replace(/\u200D/g, '')    // ZWJ
+    .replace(/\s*\n\s*/g, ' ') // collapse line breaks to single space
+    .replace(/\s{2,}/g, ' ')   // collapse multiple spaces
+    .trim();
 
-  return text;
+  return cleaned;
 }
 
 /**
@@ -674,36 +678,46 @@ function deduplicateMatches(detectionResult) {
     return detectionResult;
   }
 
-  // Sort by confidence descending, then by position
-  const sortedMatches = [...matches].sort((a, b) => {
-    if (b.confidence !== a.confidence) {
-      return b.confidence - a.confidence;
-    }
-    return a.position - b.position;
-  });
-
+  // Deduplicate only exact duplicate spans; keep overlaps so we don't drop PII
+  const bySpan = new Map();
   const deduplicatedMatches = [];
-  const usedRanges = [];
 
-  for (const match of sortedMatches) {
-    const start = match.position;
-    const end = match.position + match.value.length;
+  for (const match of matches) {
+    const { value = '', type = 'pii', confidence = 0, position } = match;
 
-    // Check if this range overlaps with any already added
-    const overlaps = usedRanges.some(range =>
-      (start >= range.start && start < range.end) ||
-      (end > range.start && end <= range.end) ||
-      (start <= range.start && end >= range.end)
-    );
+    // If we don't have a usable position, keep as-is (do not dedup)
+    const start = Number.isFinite(position) && position >= 0 ? position : null;
+    const end = start !== null ? start + value.length : null;
 
-    if (!overlaps) {
+    const key = start !== null && end !== null
+      ? `${start}-${end}-${type}-${value}`
+      : `nopos-${type}-${value}-${confidence}-${deduplicatedMatches.length}`;
+
+    if (!bySpan.has(key)) {
+      bySpan.set(key, match);
       deduplicatedMatches.push(match);
-      usedRanges.push({ start, end });
+    } else {
+      // If duplicate span, keep the higher confidence version
+      const existing = bySpan.get(key);
+      if ((existing.confidence || 0) < confidence) {
+        const idx = deduplicatedMatches.indexOf(existing);
+        if (idx !== -1) {
+          deduplicatedMatches[idx] = match;
+        }
+        bySpan.set(key, match);
+      }
     }
   }
 
-  // Sort back by position
-  deduplicatedMatches.sort((a, b) => a.position - b.position);
+  // Sort by position when available to keep UI order predictable
+  deduplicatedMatches.sort((a, b) => {
+    const aPos = Number.isFinite(a.position) ? a.position : Number.POSITIVE_INFINITY;
+    const bPos = Number.isFinite(b.position) ? b.position : Number.POSITIVE_INFINITY;
+    if (aPos === bPos) {
+      return (b.confidence || 0) - (a.confidence || 0);
+    }
+    return aPos - bPos;
+  });
 
   return {
     ...detectionResult,
@@ -879,18 +893,22 @@ function createPanelHTML(detectionResult) {
     return `
       <div class="pii-issue" data-index="${index}">
         <div class="pii-issue-header">
-          <div class="pii-issue-icon" style="background: ${riskColor}20; color: ${riskColor}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-        </div>
-        <div class="pii-issue-info">
-          <strong>${displayName}</strong>
-          <div class="pii-issue-badges">
-            ${sourceBadge}
+          <div class="pii-issue-left">
+            <div class="pii-issue-icon" style="background: ${riskColor}20; color: ${riskColor}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div class="pii-issue-info">
+              <strong>${displayName}</strong>
+              <div class="pii-issue-badges">
+                ${sourceBadge}
+              </div>
+            </div>
+          </div>
+          <div class="pii-issue-confidence">
             ${confidenceBadge}
           </div>
-        </div>
         </div>
         <div class="pii-issue-value">
           <code>${escapeHtml(value)}</code>
@@ -917,27 +935,29 @@ function createPanelHTML(detectionResult) {
   }).join('');
 
   return `
-    <div class="pii-panel-header">
-      <div class="pii-panel-title">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <strong>PII Guardian</strong>
+    <div class="pii-panel">
+      <div class="pii-panel-header">
+        <div class="pii-panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <strong>PII Guardian</strong>
+        </div>
+        <span class="pii-panel-count">${matches.length} issue${matches.length !== 1 ? 's' : ''} found</span>
       </div>
-      <span class="pii-panel-count">${matches.length} issue${matches.length !== 1 ? 's' : ''} found</span>
-    </div>
-    ${summaryHTML}
-    ${performanceNoticeHTML}
-    <div class="pii-panel-body">
-      ${issuesHTML}
-    </div>
-    <div class="pii-panel-footer">
-      <button class="pii-panel-btn pii-panel-btn-primary" data-action="mask-all">
-        Mask All
-      </button>
-      <button class="pii-panel-btn pii-panel-btn-secondary" data-action="dismiss">
-        Dismiss
-      </button>
+      ${summaryHTML}
+      ${performanceNoticeHTML}
+      <div class="pii-panel-body">
+        ${issuesHTML}
+      </div>
+      <div class="pii-panel-footer">
+        <button class="pii-panel-btn pii-panel-btn-primary" data-action="mask-all">
+          Mask All
+        </button>
+        <button class="pii-panel-btn pii-panel-btn-secondary" data-action="dismiss">
+          Dismiss
+        </button>
+      </div>
     </div>
   `;
 }
@@ -1083,11 +1103,13 @@ async function maskSinglePII(element, detectionResult, index) {
       console.log(`[maskSinglePII] Using fresh detection for "${match.value}" at position ${freshMatch.position}`);
       const maskedText = maskText(currentText, [freshMatch]);
       setTextContent(element, maskedText);
+      markIssueMasked(element, index);
     } else {
       // Fallback: Use resilient maskText with original text context
       console.log(`[maskSinglePII] Fresh detection failed, using resilient masking for "${match.value}"`);
       const maskedText = maskText(currentText, [match], { originalText: originalDetectionText });
       setTextContent(element, maskedText);
+      markIssueMasked(element, index);
     }
 
     await incrementMasked();
@@ -1289,11 +1311,13 @@ async function maskAllPII(element, detectionResult) {
     console.log(`[maskAllPII] Using fresh detection (${freshDetection.matches.length} matches)`);
     const maskedText = maskText(currentText, freshDetection.matches);
     setTextContent(element, maskedText);
+    markAllIssuesMasked(element);
   } else {
     // Fallback: Use original matches with resilient masking
     console.log(`[maskAllPII] Fresh detection found nothing, using resilient masking`);
     const maskedText = maskText(currentText, detectionResult.matches, { originalText: originalDetectionText });
     setTextContent(element, maskedText);
+    markAllIssuesMasked(element);
   }
 
   await incrementMasked();
@@ -1491,43 +1515,51 @@ export function injectFloatingButtonStyles() {
       }
     }
 
+    /* Dark container inspired by reference */
+.pii-panel {
+  background: #0f1115;
+  color: #f3f4f6;
+  border-radius: 14px;
+}
+
     .pii-panel-header {
-      padding: 18px 20px;
-      border-bottom: 1px solid #e8e8e8;
+      padding: 10px 14px;
+      border-bottom: 1px solid #1f232b;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(to bottom, #ffffff, #fafafa);
+      background: #0f1115;
     }
 
-    .pii-panel-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #1a1a1a;
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
+.pii-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f3f4f6;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
 
-    .pii-panel-title svg {
-      color: #2196F3;
-      flex-shrink: 0;
-    }
+.pii-panel-title svg {
+  color: #f43f5e;
+  flex-shrink: 0;
+}
 
-    .pii-panel-count {
-      background: #D32F2F15;
-      color: #D32F2F;
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
+.pii-panel-count {
+  background: #1f232b;
+  color: #fca5a5;
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid #fca5a5;
+}
 
     .pii-panel-body {
-      padding: 16px;
-      max-height: calc(70vh - 140px);
+      padding: 10px;
+      max-height: calc(70vh - 120px);
       overflow-y: auto;
       overflow-x: hidden;
     }
@@ -1550,19 +1582,17 @@ export function injectFloatingButtonStyles() {
     }
 
     .pii-issue {
-      background: #ffffff;
-      border: 1px solid #e8e8e8;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border-left: 4px solid #FF9800;
+      background: #14171d;
+      border: 1px solid #242a33;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
       transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: none;
     }
 
     .pii-issue:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-left-color: #F57C00;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
     .pii-issue:last-child {
@@ -1571,98 +1601,108 @@ export function injectFloatingButtonStyles() {
 
     .pii-issue-header {
       display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .pii-issue-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
     }
 
     .pii-issue-icon {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      background: #2a3038;
+      color: #fca5a5;
     }
 
     .pii-issue-info {
-      flex: 1;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      align-items: center;
+      gap: 6px;
       min-width: 0;
     }
 
     .pii-issue-info strong {
-      font-size: 14px;
-      color: #1a1a1a;
+      font-size: 13px;
+      color: #f3f4f6;
       font-weight: 600;
-    }
-
-    .pii-issue-confidence {
-      font-size: 12px;
-      color: #757575;
-      font-weight: 500;
+      white-space: nowrap;
     }
 
     .pii-issue-badges {
       display: flex;
       gap: 6px;
-      margin-top: 4px;
       flex-wrap: wrap;
+    }
+
+    .pii-issue-confidence {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     /* Source Badges */
     .source-badge {
       display: inline-flex;
       align-items: center;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+      border: 1px solid transparent;
+      background: #fff;
     }
 
-    .source-regex {
-      background: #2196F3;
-      color: white;
-    }
-
-    .source-ner {
-      background: #9C27B0;
-      color: white;
-    }
-
+    .source-regex,
+    .source-ner,
     .source-hybrid {
-      background: linear-gradient(90deg, #2196F3 0%, #9C27B0 100%);
-      color: white;
+      border-color: #fca5a5;
+      color: #fca5a5;
+      background: #1f232b;
     }
 
     /* Confidence Badges */
     .confidence-badge {
       display: inline-flex;
       align-items: center;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10px;
       font-weight: 600;
+      border: 1px solid transparent;
+      background: #fff;
     }
 
     .confidence-low {
-      background: #FFF3E0;
-      color: #E65100;
+      border-color: #fca5a5;
+      color: #fca5a5;
+      background: #1f232b;
     }
 
     .confidence-medium {
-      background: #FFF8E1;
-      color: #F57C00;
+      border-color: #fca5a5;
+      color: #fca5a5;
+      background: #1f232b;
     }
 
     .confidence-high {
-      background: #E8F5E9;
-      color: #2E7D32;
+      border-color: #fca5a5;
+      color: #fca5a5;
+      background: #1f232b;
     }
 
     /* Detection Summary */
@@ -1689,7 +1729,7 @@ export function injectFloatingButtonStyles() {
     .breakdown-count {
       font-size: 16px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #f3f4f6;
     }
 
     .breakdown-label {
@@ -1715,19 +1755,19 @@ export function injectFloatingButtonStyles() {
     }
 
     .pii-issue-value {
-      background: #fafafa;
-      border: 1px solid #e8e8e8;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
+      background: #0f1115;
+      border: 1px solid #2a3038;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
 
     .pii-issue-value code {
       font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 13px;
-      color: #D32F2F;
+      font-size: 12px;
+      color: #fca5a5;
       font-weight: 500;
       word-break: break-all;
       white-space: pre-wrap;
@@ -1736,15 +1776,14 @@ export function injectFloatingButtonStyles() {
 
     .pii-issue-actions {
       display: flex;
-      gap: 10px;
+      gap: 6px;
     }
 
     .pii-issue-btn {
       flex: 1;
-      padding: 8px 14px;
-      border: none;
+      padding: 8px 10px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -1753,6 +1792,7 @@ export function injectFloatingButtonStyles() {
       gap: 6px;
       transition: all 0.2s ease;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      border: 1px solid transparent;
     }
 
     .pii-issue-btn svg {
@@ -1760,57 +1800,57 @@ export function injectFloatingButtonStyles() {
     }
 
     .pii-issue-btn-mask {
-      background: #2196F3;
-      color: white;
+      background: #c81e4d;
+      color: #fef2f2;
+      border: 1px solid #be123c;
     }
 
     .pii-issue-btn-mask:hover {
-      background: #1976D2;
+      background: #be123c;
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.25);
     }
 
     .pii-issue-btn-remove {
-      background: #ffebee;
-      color: #D32F2F;
-      border: 1px solid #ffcdd2;
+      background: #1f232b;
+      color: #fca5a5;
+      border: 1px solid #fca5a5;
     }
 
     .pii-issue-btn-remove:hover {
-      background: #ffcdd2;
+      background: #2a3038;
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(211, 47, 47, 0.15);
     }
 
     .pii-panel-footer {
-      padding: 16px 20px;
-      border-top: 1px solid #e8e8e8;
+      padding: 12px 14px;
+      border-top: 1px solid #1f232b;
       display: flex;
       gap: 10px;
-      background: #fafafa;
+      background: #0f1115;
     }
 
     .pii-panel-btn {
       flex: 1;
-      padding: 12px 18px;
-      border: none;
+      padding: 10px 14px;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      border: 1px solid transparent;
     }
 
     .pii-panel-btn-primary {
-      background: #2196F3;
-      color: white;
+      background: #c81e4d;
+      color: #fdf2f8;
+      border-color: #be123c;
     }
 
     .pii-panel-btn-primary:hover {
-      background: #1976D2;
+      background: #be123c;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+      box-shadow: 0 6px 16px rgba(200, 30, 77, 0.25);
     }
 
     .pii-panel-btn-primary:active {
@@ -1818,15 +1858,15 @@ export function injectFloatingButtonStyles() {
     }
 
     .pii-panel-btn-secondary {
-      background: #ffffff;
-      color: #757575;
-      border: 1px solid #e0e0e0;
+      background: #1f232b;
+      color: #fca5a5;
+      border: 1px solid #fca5a5;
     }
 
     .pii-panel-btn-secondary:hover {
-      background: #f5f5f5;
-      color: #424242;
-      border-color: #bdbdbd;
+      background: #2a3038;
+      color: #fecdd3;
+      border-color: #fecdd3;
     }
 
     .pii-panel-btn-secondary:active {
@@ -1835,6 +1875,45 @@ export function injectFloatingButtonStyles() {
 
     .pii-panel-btn:active {
       transform: translateY(0);
+    }
+
+    /* Masked state */
+    .pii-issue.masked {
+      border-color: #16a34a;
+      background: #0f172a;
+    }
+
+    .pii-issue.masked .pii-issue-icon {
+      background: #14532d;
+      color: #bbf7d0;
+    }
+
+    .pii-issue.masked .pii-issue-value {
+      border-color: #16a34a55;
+      background: #0b1220;
+    }
+
+    .pii-issue.masked .pii-issue-value code {
+      color: #bbf7d0;
+    }
+
+    .pii-issue.masked .source-badge,
+    .pii-issue.masked .confidence-badge {
+      border-color: #16a34a;
+      color: #86efac;
+      background: #0b1220;
+    }
+
+    .pii-issue.masked .pii-issue-btn-mask {
+      background: #0b1220;
+      color: #86efac;
+      border-color: #16a34a;
+    }
+
+    .pii-issue.masked .pii-issue-btn-remove {
+      background: #0b1220;
+      color: #fca5a5;
+      border-color: #fca5a5;
     }
 
     /* PII Highlight Styles - Grammarly-like underlines */
@@ -1871,6 +1950,38 @@ export function injectFloatingButtonStyles() {
   `;
 
   document.head.appendChild(style);
+}
+
+/**
+ * Visually mark a single issue as masked (green state)
+ * @param {HTMLElement} element
+ * @param {number} index
+ */
+function markIssueMasked(element, index) {
+  try {
+    const panel = activePanels.get(element);
+    if (!panel) return;
+    const issueEl = panel.querySelector(`.pii-issue[data-index="${index}"]`);
+    if (issueEl) {
+      issueEl.classList.add('masked');
+    }
+  } catch (err) {
+    console.warn('[markIssueMasked] Failed to mark issue masked', err);
+  }
+}
+
+/**
+ * Visually mark all issues as masked (green state)
+ * @param {HTMLElement} element
+ */
+function markAllIssuesMasked(element) {
+  try {
+    const panel = activePanels.get(element);
+    if (!panel) return;
+    panel.querySelectorAll('.pii-issue').forEach(node => node.classList.add('masked'));
+  } catch (err) {
+    console.warn('[markAllIssuesMasked] Failed to mark all issues masked', err);
+  }
 }
 
 // CRITICAL FIX BUG002: Global observer to watch for removed DOM nodes

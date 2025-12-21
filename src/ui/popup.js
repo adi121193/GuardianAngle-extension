@@ -39,7 +39,6 @@ let nerDownloadProgress;
 let nerProgressFill;
 let nerProgressText;
 let lastNERStatusReady = false;
-let lastNERStatusReady = false;
 
 /**
  * Initialize popup
@@ -526,16 +525,7 @@ async function updateNERStatusChip(settings) {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         `;
-        if (!lastNERStatusReady) {
-          lastNERStatusReady = true;
-          setTimeout(() => {
-            try {
-              window.location.reload();
-            } catch (e) {
-              /* ignore reload errors */
-            }
-          }, 300);
-        }
+        lastNERStatusReady = true;
       } else if (isLoading) {
         nerStatusChip.classList.add('status-loading');
         if (statusLabel) statusLabel.textContent = 'NER: Loading...';
