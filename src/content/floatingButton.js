@@ -854,6 +854,7 @@ function createPanelHTML(detectionResult) {
     const { type, name, value, confidence, source } = match;
     const riskColor = getRiskColor(confidence);
     const confidenceLevel = getConfidenceLevel(confidence);
+    const displayName = name || formatPIIType(type) || 'PII';
 
     // Determine source badge
     let sourceBadge = '';
@@ -882,14 +883,14 @@ function createPanelHTML(detectionResult) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
+        </div>
+        <div class="pii-issue-info">
+          <strong>${displayName}</strong>
+          <div class="pii-issue-badges">
+            ${sourceBadge}
+            ${confidenceBadge}
           </div>
-          <div class="pii-issue-info">
-            <strong>${name}</strong>
-            <div class="pii-issue-badges">
-              ${sourceBadge}
-              ${confidenceBadge}
-            </div>
-          </div>
+        </div>
         </div>
         <div class="pii-issue-value">
           <code>${escapeHtml(value)}</code>
@@ -962,6 +963,33 @@ function getConfidenceLevel(confidence) {
   if (confidence >= 0.8) return 'high';
   if (confidence >= 0.6) return 'medium';
   return 'low';
+}
+
+/**
+ * Format PII type for display
+ * @param {string} type
+ * @returns {string}
+ */
+function formatPIIType(type) {
+  if (!type) return 'PII';
+  const map = {
+    aadhaar: 'Aadhaar',
+    pan: 'PAN',
+    phone: 'Phone',
+    email: 'Email',
+    creditcard: 'Credit Card',
+    credit_card: 'Credit Card',
+    bankaccount: 'Bank Account',
+    bank_account: 'Bank Account',
+    passport: 'Passport',
+    ssn: 'SSN',
+    ifsc: 'IFSC',
+    gst: 'GST',
+    dob: 'DOB',
+    address: 'Address'
+  };
+  const key = String(type).toLowerCase();
+  return map[key] || type;
 }
 
 /**

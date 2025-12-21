@@ -38,6 +38,8 @@ let nerDownloadClose;
 let nerDownloadProgress;
 let nerProgressFill;
 let nerProgressText;
+let lastNERStatusReady = false;
+let lastNERStatusReady = false;
 
 /**
  * Initialize popup
@@ -498,21 +500,25 @@ async function updateNERStatusChip(settings) {
         <line x1="9" y1="9" x2="15" y2="15"/>
       </svg>
     `;
+    lastNERStatusReady = false;
   } else if (!settings.nerModelDownloaded) {
-    nerStatusChip.classList.add('status-error');
-    if (statusLabel) statusLabel.textContent = 'NER: Model Not Downloaded';
+    nerStatusChip.classList.add('status-pending');
+    if (statusLabel) statusLabel.textContent = 'NER: Pending download';
     if (statusIcon) statusIcon.innerHTML = `
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
+        <polyline points="12 6 12 12 16 14"/>
       </svg>
     `;
+    lastNERStatusReady = false;
   } else {
     // Check actual NER status from background
     try {
       const response = await chrome.runtime.sendMessage({ type: 'NER_STATUS' });
-      if (response && response.initialized) {
+      const isReady = response?.initialized || response?.isReady;
+      const isLoading = response?.isInitializing;
+
+      if (isReady) {
         nerStatusChip.classList.add('status-ready');
         if (statusLabel) statusLabel.textContent = 'NER: Ready';
         if (statusIcon) statusIcon.innerHTML = `
@@ -520,6 +526,25 @@ async function updateNERStatusChip(settings) {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         `;
+        if (!lastNERStatusReady) {
+          lastNERStatusReady = true;
+          setTimeout(() => {
+            try {
+              window.location.reload();
+            } catch (e) {
+              /* ignore reload errors */
+            }
+          }, 300);
+        }
+      } else if (isLoading) {
+        nerStatusChip.classList.add('status-loading');
+        if (statusLabel) statusLabel.textContent = 'NER: Loading...';
+        if (statusIcon) statusIcon.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        `;
+        lastNERStatusReady = false;
       } else {
         nerStatusChip.classList.add('status-loading');
         if (statusLabel) statusLabel.textContent = 'NER: Loading...';
@@ -528,6 +553,7 @@ async function updateNERStatusChip(settings) {
             <circle cx="12" cy="12" r="10"/>
           </svg>
         `;
+        lastNERStatusReady = false;
       }
     } catch (error) {
       nerStatusChip.classList.add('status-error');

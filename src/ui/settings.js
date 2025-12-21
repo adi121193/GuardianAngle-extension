@@ -74,6 +74,14 @@ async function init() {
   document.getElementById('resetSettingsBtn').addEventListener('click', async () => {
     if (confirm('Reset all settings to defaults?')) {
       await resetSettings();
+
+      // Dispose NER model and clear flags so UI/state reflect a fresh start
+      try {
+        await chrome.runtime.sendMessage({ type: 'DISPOSE_NER' });
+      } catch (error) {
+        console.warn('[Settings] Failed to dispose NER during reset:', error);
+      }
+
       alert('Settings reset!');
       window.location.reload();
     }

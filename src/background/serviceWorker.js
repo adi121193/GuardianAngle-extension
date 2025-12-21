@@ -537,13 +537,17 @@ async function initializeNER() {
       console.log(`[ServiceWorker] NER model initialized in ${result.initTimeMs}ms`);
 
       // CRITICAL: Persist success state to storage so UI reflects the ready state
-      chrome.storage.local.get(['settings'], (storageResult) => {
-        const settings = storageResult.settings || DEFAULT_SETTINGS;
-        settings.nerModelDownloaded = true;
-        settings.nerEnabled = true;
+      // Use Promise to ensure storage is written before returning
+      await new Promise((resolve) => {
+        chrome.storage.local.get(['settings'], (storageResult) => {
+          const settings = storageResult.settings || DEFAULT_SETTINGS;
+          settings.nerModelDownloaded = true;
+          settings.nerEnabled = true;
 
-        chrome.storage.local.set({ settings }, () => {
-          console.log('[ServiceWorker] NER model status persisted to storage');
+          chrome.storage.local.set({ settings }, () => {
+            console.log('[ServiceWorker] NER model status persisted to storage');
+            resolve();
+          });
         });
       });
 
@@ -569,6 +573,8 @@ async function initializeNER() {
       }).catch(() => {
         // Popup may not be open, that's OK
       });
+
+      return { success: true };
     } else {
       console.error('[ServiceWorker] NER initialization failed:', result.error);
 
@@ -581,9 +587,12 @@ async function initializeNER() {
       }).catch(() => {
         // Popup may not be open, that's OK
       });
+
+      return { success: false, error: result.error };
     }
   } catch (error) {
     console.error('[ServiceWorker] NER initialization error:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -622,6 +631,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }).catch(error => {
       sendResponse({ success: false, error: error.message });
     });
+    return true; // Async response
+  }
+
+  // Dispose NER model and reset flags (used by settings reset)
+  if (message.type === 'DISPOSE_NER') {
+    (async () => {
+      try {
+        const disposed = await offscreenManager.disposeModel();
+
+        await new Promise((resolve) => {
+          chrome.storage.local.get(['settings'], (storageResult) => {
+            const settings = storageResult.settings || DEFAULT_SETTINGS;
+            settings.nerModelDownloaded = false;
+            settings.nerEnabled = false;
+            chrome.storage.local.set({ settings }, resolve);
+          });
+        });
+
+        sendResponse({ success: disposed });
+      } catch (error) {
+        console.error('[ServiceWorker] Failed to dispose NER model:', error);
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
     return true; // Async response
   }
 
