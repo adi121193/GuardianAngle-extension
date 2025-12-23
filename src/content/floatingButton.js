@@ -512,11 +512,15 @@ function setTextContent(element, text) {
     // Move cursor to end if focusable
     const selection = window.getSelection?.();
     if (selection && element.firstChild) {
-      const range = document.createRange();
-      range.setStart(element.firstChild, Math.min(text.length, element.firstChild.length));
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        const range = document.createRange();
+        range.setStart(element.firstChild, Math.min(text.length, element.firstChild.length || 0));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch (e) {
+        console.warn('[floatingButton] Failed to set cursor position:', e);
+      }
     }
   } else {
     element.value = text;
@@ -1100,16 +1104,16 @@ async function maskSinglePII(element, detectionResult, index) {
     );
 
     if (freshMatch) {
-      console.log(`[maskSinglePII] Using fresh detection for "${match.value}" at position ${freshMatch.position}`);
+      console.log(`[maskSinglePII] Masking "${match.value}" at position ${freshMatch.position}`);
       const maskedText = maskText(currentText, [freshMatch]);
       setTextContent(element, maskedText);
-      markIssueMasked(element, index);
+      markIssueMasked(element, index, getMaskedPreview(match.value));
     } else {
       // Fallback: Use resilient maskText with original text context
-      console.log(`[maskSinglePII] Fresh detection failed, using resilient masking for "${match.value}"`);
+      console.log(`[maskSinglePII] Using resilient masking for "${match.value}"`);
       const maskedText = maskText(currentText, [match], { originalText: originalDetectionText });
       setTextContent(element, maskedText);
-      markIssueMasked(element, index);
+      markIssueMasked(element, index, getMaskedPreview(match.value));
     }
 
     await incrementMasked();
@@ -1311,13 +1315,13 @@ async function maskAllPII(element, detectionResult) {
     console.log(`[maskAllPII] Using fresh detection (${freshDetection.matches.length} matches)`);
     const maskedText = maskText(currentText, freshDetection.matches);
     setTextContent(element, maskedText);
-    markAllIssuesMasked(element);
+    markAllIssuesMasked(element, detectionResult.matches);
   } else {
     // Fallback: Use original matches with resilient masking
     console.log(`[maskAllPII] Fresh detection found nothing, using resilient masking`);
     const maskedText = maskText(currentText, detectionResult.matches, { originalText: originalDetectionText });
     setTextContent(element, maskedText);
-    markAllIssuesMasked(element);
+    markAllIssuesMasked(element, detectionResult.matches);
   }
 
   await incrementMasked();
@@ -1916,6 +1920,12 @@ export function injectFloatingButtonStyles() {
       border-color: #fca5a5;
     }
 
+    .masked-badge {
+      border-color: #16a34a !important;
+      color: #86efac !important;
+      background: #0b1220 !important;
+    }
+
     /* PII Highlight Styles - Grammarly-like underlines */
     .pii-highlight {
       transition: all 0.2s ease;
@@ -1953,18 +1963,45 @@ export function injectFloatingButtonStyles() {
 }
 
 /**
- * Visually mark a single issue as masked (green state)
+ * Build a masked preview for display (keep first/last visible)
+ * @param {string} value
+ * @returns {string}
+ */
+function getMaskedPreview(value = '') {
+  if (!value) return '•••• masked';
+  if (value.length <= 4) return '••••';
+  const chars = value.split('');
+  for (let i = 1; i < chars.length - 1; i++) {
+    if (/\w/.test(chars[i])) chars[i] = '•';
+  }
+  return chars.join('');
+}
+
+/**
+ * Visually mark a single issue as masked (green state) and update display text
  * @param {HTMLElement} element
  * @param {number} index
+ * @param {string} preview
  */
-function markIssueMasked(element, index) {
+function markIssueMasked(element, index, preview = '•••• masked') {
   try {
     const panel = activePanels.get(element);
     if (!panel) return;
     const issueEl = panel.querySelector(`.pii-issue[data-index="${index}"]`);
-    if (issueEl) {
-      issueEl.classList.add('masked');
+    if (!issueEl) return;
+    issueEl.classList.add('masked');
+
+    const valueEl = issueEl.querySelector('.pii-issue-value code');
+    if (valueEl) valueEl.textContent = preview;
+
+    // Add masked badge
+    let maskedBadge = issueEl.querySelector('.masked-badge');
+    if (!maskedBadge) {
+      maskedBadge = document.createElement('span');
+      maskedBadge.className = 'confidence-badge masked-badge';
+      issueEl.querySelector('.pii-issue-confidence')?.appendChild(maskedBadge);
     }
+    maskedBadge.textContent = 'Masked';
   } catch (err) {
     console.warn('[markIssueMasked] Failed to mark issue masked', err);
   }
@@ -1973,12 +2010,19 @@ function markIssueMasked(element, index) {
 /**
  * Visually mark all issues as masked (green state)
  * @param {HTMLElement} element
+ * @param {Array} matches
  */
-function markAllIssuesMasked(element) {
+function markAllIssuesMasked(element, matches = []) {
   try {
     const panel = activePanels.get(element);
     if (!panel) return;
-    panel.querySelectorAll('.pii-issue').forEach(node => node.classList.add('masked'));
+
+    const issues = panel.querySelectorAll('.pii-issue');
+    issues.forEach((node, idx) => {
+      const match = matches[idx];
+      const preview = match ? getMaskedPreview(match.value) : '•••• masked';
+      markIssueMasked(element, node.dataset.index || idx, preview);
+    });
   } catch (err) {
     console.warn('[markAllIssuesMasked] Failed to mark all issues masked', err);
   }

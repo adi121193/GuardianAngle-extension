@@ -10,6 +10,41 @@ import { incrementMasked } from '../utils/storage.js';
 let activeModal = null;
 
 /**
+ * Get text content from element (handles both input and contenteditable)
+ * @param {HTMLElement} element
+ * @returns {string}
+ */
+function getTextContent(element) {
+  if (element.contentEditable === 'true') {
+    // innerText preserves user-visible spacing/line breaks between nodes
+    const text = element.innerText || element.textContent || '';
+    return text
+      .replace(/\u00A0/g, ' ')   // NBSP -> space
+      .replace(/\u200B/g, '')    // ZWSP
+      .replace(/\u200C/g, '')    // ZWNJ
+      .replace(/\u200D/g, '')    // ZWJ
+      .replace(/\s*\n\s*/g, ' ') // collapse line breaks to single space
+      .replace(/\s{2,}/g, ' ')   // collapse multiple spaces
+      .trim();
+  }
+  return element.value || '';
+}
+
+/**
+ * Set text content to element (handles both input and contenteditable)
+ * @param {HTMLElement} element
+ * @param {string} text
+ */
+function setTextContent(element, text) {
+  if (element.contentEditable === 'true') {
+    // textContent avoids browser reflow/extra whitespace that innerText can introduce
+    element.textContent = text;
+  } else {
+    element.value = text;
+  }
+}
+
+/**
  * Generate suggestions based on PII type
  */
 function getSuggestions(type) {
@@ -240,7 +275,8 @@ export async function showWarningModal(detectionResult, targetElement) {
 
     // Add modal HTML with original text for preview
     const modalWrapper = document.createElement('div');
-    modalWrapper.innerHTML = createModalHTML(detectionResult, targetElement.value || targetElement.textContent || '');
+    const originalText = getTextContent(targetElement);
+    modalWrapper.innerHTML = createModalHTML(detectionResult, originalText);
     shadow.appendChild(modalWrapper);
 
     activeModal = container;
@@ -256,14 +292,15 @@ export async function showWarningModal(detectionResult, targetElement) {
       container.remove();
       activeModal = null;
 
+      const originalText = getTextContent(targetElement);
       const result = {
         action,
         maskedText: null,
-        originalText: targetElement.value
+        originalText: originalText
       };
 
       if (action === 'mask') {
-        result.maskedText = maskText(targetElement.value, detectionResult.matches);
+        result.maskedText = maskText(originalText, detectionResult.matches);
         await incrementMasked();
       }
       // Note: incrementBlocked() is now called in monitorInputs.js only when actual blocking occurs
