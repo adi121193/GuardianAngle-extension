@@ -149,15 +149,82 @@ function findChatMessages() {
 }
 
 /**
+ * Find the actual editable container (handles ProseMirror, Tiptap, etc.)
+ * @param {HTMLElement} element
+ * @returns {HTMLElement}
+ */
+function findEditableContainer(element) {
+  // If element itself is contenteditable, use it
+  if (element.contentEditable === 'true') {
+    return element;
+  }
+
+  // Look for ProseMirror editor (Claude.ai uses this)
+  const proseMirror = element.closest('.ProseMirror') ||
+                      element.closest('[contenteditable="true"]') ||
+                      document.querySelector('.ProseMirror');
+  if (proseMirror) {
+    return proseMirror;
+  }
+
+  // Look for textarea (fallback)
+  const textarea = element.closest('textarea') ||
+                   document.querySelector('textarea[data-testid="chat-input-ssr"]');
+  if (textarea) {
+    return textarea;
+  }
+
+  // Walk up the DOM tree to find contenteditable parent
+  let current = element.parentElement;
+  while (current) {
+    if (current.contentEditable === 'true') {
+      return current;
+    }
+    current = current.parentElement;
+  }
+
+  return element;
+}
+
+/**
  * Get text content from element
  * @param {HTMLElement} element
  * @returns {string}
  */
 function getTextContent(element) {
-  if (element.contentEditable === 'true') {
-    // innerText preserves user-visible spacing/line breaks between nodes
-    const text = element.innerText || element.textContent || '';
-    return text
+  // Find the actual editable container
+  const container = findEditableContainer(element);
+
+  console.log('[PII Guardian DEBUG] getTextContent - container:', container.tagName, container.className);
+  console.log('[PII Guardian DEBUG] getTextContent - contentEditable:', container.contentEditable);
+  console.log('[PII Guardian DEBUG] getTextContent - innerHTML preview:', container.innerHTML?.substring(0, 200));
+
+  // Check if it's a contenteditable element (handles 'true', 'inherit', truthy values)
+  const isContentEditable = container.contentEditable === 'true' ||
+                            container.contentEditable === true ||
+                            container.isContentEditable ||
+                            container.classList?.contains('ProseMirror');
+
+  if (isContentEditable || container.innerHTML) {
+    // Try multiple methods to get text from ProseMirror/contenteditable
+    let text = '';
+
+    // Method 1: Get text from all paragraph elements (ProseMirror structure)
+    const paragraphs = container.querySelectorAll('p');
+    if (paragraphs.length > 0) {
+      text = Array.from(paragraphs)
+        .map(p => p.innerText || p.textContent || '')
+        .join(' ');
+      console.log('[PII Guardian DEBUG] Text from paragraphs:', text);
+    }
+
+    // Method 2: Fallback to innerText/textContent
+    if (!text || text.trim() === '') {
+      text = container.innerText || container.textContent || '';
+      console.log('[PII Guardian DEBUG] Text from innerText/textContent:', text);
+    }
+
+    const cleaned = text
       .replace(/\u00A0/g, ' ')   // NBSP -> space
       .replace(/\u200B/g, '')    // ZWSP
       .replace(/\u200C/g, '')    // ZWNJ
@@ -165,8 +232,14 @@ function getTextContent(element) {
       .replace(/\s*\n\s*/g, ' ') // collapse line breaks to single space
       .replace(/\s{2,}/g, ' ')   // collapse multiple spaces
       .trim();
+    console.log('[PII Guardian DEBUG] getTextContent FINAL result:', cleaned);
+    return cleaned;
   }
-  return element.value || '';
+
+  // Fallback for input/textarea elements
+  const value = container.value || '';
+  console.log('[PII Guardian DEBUG] getTextContent from input/textarea:', value.substring(0, 100));
+  return value;
 }
 
 /**
@@ -386,6 +459,7 @@ function attachListeners(element) {
     return; // Already monitoring
   }
 
+  console.log('[PII Guardian DEBUG] Attaching listeners to:', element.tagName, element.className || element.id || element.getAttribute('data-testid'));
   monitoredElements.add(element);
 
   // Initialize Grammarly-style floating button
@@ -418,6 +492,8 @@ function attachListeners(element) {
   // Enter key event - CRITICAL: Block submission if PII detected
   // NOTE: NOT async - must call preventDefault() synchronously!
   element.addEventListener('keydown', (event) => {
+    console.log('[PII Guardian DEBUG] Keydown event on element:', event.key);
+
     // CRITICAL FIX BUG005: Bypass if this is a simulated interaction
     if (isSimulatedInteraction) {
       return; // Allow through without blocking
@@ -425,13 +501,18 @@ function attachListeners(element) {
 
     if (event.key === 'Enter' && !event.shiftKey) {
       const text = getTextContent(event.target);
+      console.log('[PII Guardian DEBUG] Enter pressed, text:', text.substring(0, 50) + '...');
 
       // Quick PII check (synchronous)
-      if (quickPIICheck(text)) {
+      const quickCheck = quickPIICheck(text);
+      console.log('[PII Guardian DEBUG] quickPIICheck result:', quickCheck);
+
+      if (quickCheck) {
         // BLOCK IMMEDIATELY - Must be synchronous!
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+        console.log('[PII Guardian DEBUG] Enter blocked, starting full detection...');
 
         // Now handle async detection
         handlePIIDetectionForEnterKey(event.target, text).catch(err => {
@@ -451,8 +532,11 @@ function attachListeners(element) {
  * @param {string} text - Text content
  */
 async function handlePIIDetectionForEnterKey(element, text) {
+  console.log('[PII Guardian DEBUG] handlePIIDetectionForEnterKey called');
+
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
+    console.log('[PII Guardian DEBUG] Context invalidated, allowing send');
     simulateEnterKey(element); // Allow send if context invalidated
     return;
   }
@@ -460,6 +544,7 @@ async function handlePIIDetectionForEnterKey(element, text) {
   try {
     // Check if extension is enabled
     const enabled = await isEnabled();
+    console.log('[PII Guardian DEBUG] Extension enabled:', enabled);
     if (!enabled) {
       // Extension disabled - allow the blocked action
       simulateEnterKey(element);
@@ -468,6 +553,7 @@ async function handlePIIDetectionForEnterKey(element, text) {
 
     // Get settings
     const settings = await getSettings();
+    console.log('[PII Guardian DEBUG] Settings loaded, enabledPIITypes:', settings.enabledPIITypes);
 
     // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
@@ -476,12 +562,15 @@ async function handlePIIDetectionForEnterKey(element, text) {
       useNER: settings.nerEnabled !== false,
       detectionMode: settings.detectionMode || 'hybrid'
     });
+    console.log('[PII Guardian DEBUG] Detection result:', JSON.stringify(detectionResult, null, 2));
 
     // No PII? quickPIICheck was false positive - allow send
     if (!detectionResult.piiDetected) {
+      console.log('[PII Guardian DEBUG] No PII detected (false positive), allowing send');
       simulateEnterKey(element);
       return;
     }
+    console.log('[PII Guardian DEBUG] PII DETECTED! Types:', detectionResult.types);
 
     // PII detected - increment stats
     for (const type of detectionResult.types) {
@@ -964,6 +1053,13 @@ if (document.readyState === 'loading') {
 } else {
   initialize();
 }
+
+// DEBUG: Global keydown listener to trace all Enter key presses
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    console.log('[PII Guardian DEBUG] GLOBAL Enter detected on:', event.target.tagName, event.target.className);
+  }
+}, true); // Capture phase - fires FIRST
 
 // Re-scan periodically for inputs and buttons (fallback for complex SPAs)
 setInterval(() => {

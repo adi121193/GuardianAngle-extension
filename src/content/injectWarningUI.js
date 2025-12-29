@@ -72,7 +72,19 @@ function getSuggestions(type) {
  * @returns {string} Modal HTML
  */
 function createModalHTML(detectionResult, originalText = '') {
-  const { types, matches, score, risk, ambiguousMatches = [] } = detectionResult;
+  const { types, matches, score, ambiguousMatches = [] } = detectionResult;
+
+  // Calculate risk level from matches if not provided
+  const calculateRisk = () => {
+    if (!matches || matches.length === 0) return 'low';
+    const maxConfidence = Math.max(...matches.map(m => m.confidence || 0));
+    if (maxConfidence >= 0.9) return 'critical';
+    if (maxConfidence >= 0.75) return 'high';
+    if (maxConfidence >= 0.6) return 'medium';
+    return 'low';
+  };
+
+  const risk = detectionResult.risk || calculateRisk();
 
   const riskColors = {
     low: '#4CAF50',

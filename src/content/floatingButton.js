@@ -639,15 +639,24 @@ function calculateRiskLevel(matches) {
  * @param {HTMLElement} button - Button element
  */
 function positionButton(element, button) {
-  const rect = element.getBoundingClientRect();
-  const parentRect = element.parentElement.getBoundingClientRect();
+  // Guard against null elements
+  if (!element || !button || !element.parentElement) {
+    return;
+  }
 
-  // Position relative to parent
-  const bottom = parentRect.bottom - rect.bottom + 8;
-  const right = parentRect.right - rect.right + 8;
+  try {
+    const rect = element.getBoundingClientRect();
+    const parentRect = element.parentElement.getBoundingClientRect();
 
-  button.style.bottom = `${bottom}px`;
-  button.style.right = `${right}px`;
+    // Position relative to parent
+    const bottom = parentRect.bottom - rect.bottom + 8;
+    const right = parentRect.right - rect.right + 8;
+
+    button.style.bottom = `${bottom}px`;
+    button.style.right = `${right}px`;
+  } catch (error) {
+    console.warn('[positionButton] Error positioning button:', error);
+  }
 }
 
 /**
