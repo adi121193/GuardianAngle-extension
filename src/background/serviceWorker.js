@@ -471,8 +471,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
 
     default:
-      console.warn('Unknown message type:', message.type);
-      sendResponse({ error: 'Unknown message type' });
+      // Don't respond here - let other listeners handle it
+      // Calling sendResponse() would close the message channel
       return false;
   }
 });
