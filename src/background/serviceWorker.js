@@ -166,17 +166,28 @@ async function injectContentScript(tabId, forceReload = false) {
   if (!forceReload && injectedTabs.has(tabId)) {
     // Verify the content script is still responding
     try {
-      await chrome.tabs.sendMessage(tabId, { type: 'PING' });
-      console.log('PII Guardian: Content script still active in tab', tabId);
-      return;
+      const response = await chrome.tabs.sendMessage(tabId, { type: 'PING' });
+      if (response?.alive) {
+        console.log('PII Guardian: Content script still active in tab', tabId);
+        return;
+      }
     } catch (error) {
       // Content script not responding - needs re-injection
-      console.log('PII Guardian: Content script not responding, will re-inject');
+      console.log('PII Guardian: Content script not responding, will re-inject into tab', tabId);
       injectedTabs.delete(tabId);
     }
   }
 
   try {
+    // First, try to get tab info to ensure it's ready
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab || tab.status !== 'complete') {
+      console.log('PII Guardian: Tab not ready, skipping injection for tab', tabId);
+      return;
+    }
+
+    console.log('PII Guardian: Injecting content script into tab', tabId, tab.url);
+
     // Inject the content script
     await chrome.scripting.executeScript({
       target: { tabId: tabId },
@@ -184,9 +195,21 @@ async function injectContentScript(tabId, forceReload = false) {
     });
 
     injectedTabs.add(tabId);
-    console.log('PII Guardian: Content script injected into tab', tabId);
+    console.log('PII Guardian: Content script injected successfully into tab', tabId);
   } catch (error) {
-    console.error('PII Guardian: Failed to inject content script:', error);
+    console.error('PII Guardian: Failed to inject content script into tab', tabId, ':', error.message);
+
+    // If injection fails, show notification to user
+    if (forceReload && error.message?.includes('Cannot access')) {
+      console.log('PII Guardian: Showing refresh notification for tab', tabId);
+      // Try to show a notification or badge
+      try {
+        chrome.action.setBadgeText({ text: '!' });
+        chrome.action.setBadgeBackgroundColor({ color: '#FF9800' });
+      } catch (e) {
+        // Ignore badge errors
+      }
+    }
   }
 }
 
@@ -266,15 +289,28 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   }
 
-  // Inject into existing tabs (on both install and update)
-  // On update, force re-injection to replace orphaned content scripts
-  const forceReload = details.reason === 'update';
+  // Handle existing AI platform tabs
   const tabs = await chrome.tabs.query({});
-  for (const tab of tabs) {
-    if (tab.url && isAIPlatform(tab.url) && tab.id) {
-      // Small delay to ensure page is ready
+  const aiTabs = tabs.filter(tab => tab.url && isAIPlatform(tab.url) && tab.id);
+
+  if (details.reason === 'update' && aiTabs.length > 0) {
+    // On extension update/reload, refresh AI platform tabs to get fresh content scripts
+    // This is more reliable than trying to inject into existing pages
+    console.log(`PII Guardian: Refreshing ${aiTabs.length} AI platform tab(s) after update...`);
+
+    for (const tab of aiTabs) {
+      try {
+        console.log(`PII Guardian: Refreshing tab ${tab.id} (${tab.url})`);
+        await chrome.tabs.reload(tab.id);
+      } catch (error) {
+        console.error(`PII Guardian: Failed to refresh tab ${tab.id}:`, error.message);
+      }
+    }
+  } else if (details.reason === 'install') {
+    // On fresh install, inject into existing tabs
+    for (const tab of aiTabs) {
       setTimeout(() => {
-        injectContentScript(tab.id, forceReload);
+        injectContentScript(tab.id, false);
       }, 1000);
     }
   }
