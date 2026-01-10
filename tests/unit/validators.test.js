@@ -82,8 +82,17 @@ describe('International Phone Validation', () => {
   });
 
   test('rejects too short or too long numbers', () => {
-    expect(validateInternationalPhone('123456789').valid).toBe(false);
+    // 6 digits is too short (minimum is 7)
+    expect(validateInternationalPhone('123456').valid).toBe(false);
+    // 17 digits is too long (maximum is 15 per ITU-T E.164)
     expect(validateInternationalPhone('12345678901234567').valid).toBe(false);
+  });
+
+  test('accepts 7-9 digit numbers as low confidence international', () => {
+    // Some countries have shorter numbers
+    expect(validateInternationalPhone('1234567').valid).toBe(true);
+    expect(validateInternationalPhone('12345678').valid).toBe(true);
+    expect(validateInternationalPhone('123456789').valid).toBe(true);
   });
 });
 

@@ -233,8 +233,17 @@ export class HybridDetector {
    * Run NER detection with caching
    */
   async runNER(text) {
+    console.log('[HybridDetector] runNER called, offscreenManager:', !!this.offscreenManager);
+
     if (!this.offscreenManager) {
-      return { entities: [], cached: false };
+      console.warn('[HybridDetector] No offscreen manager - NER unavailable');
+      return { entities: [], cached: false, unavailable: true };
+    }
+
+    // Check if the proxy reports ready
+    if (typeof this.offscreenManager.isNERReady === 'function' && !this.offscreenManager.isNERReady()) {
+      console.warn('[HybridDetector] NER not ready (proxy reports not ready)');
+      return { entities: [], cached: false, unavailable: true };
     }
 
     // Check cache
@@ -246,14 +255,18 @@ export class HybridDetector {
 
     // Ensure NER is initialized
     if (!this.nerInitialized) {
+      console.log('[HybridDetector] NER not initialized, attempting initialization...');
       const initialized = await this.initializeNER();
       if (!initialized) {
-        return { entities: [], cached: false };
+        console.warn('[HybridDetector] NER initialization failed');
+        return { entities: [], cached: false, unavailable: true };
       }
     }
 
     try {
+      console.log('[HybridDetector] Running NER inference...');
       const result = await this.offscreenManager.runInference(text);
+      console.log('[HybridDetector] NER inference result:', { success: result.success, entityCount: result.entities?.length });
 
       if (result.success) {
         // Cache result
@@ -267,11 +280,11 @@ export class HybridDetector {
         return { entities: result.entities, cached: false };
       } else {
         console.error('[HybridDetector] NER inference failed:', result.error);
-        return { entities: [], cached: false };
+        return { entities: [], cached: false, error: result.error };
       }
     } catch (error) {
       console.error('[HybridDetector] NER inference error:', error);
-      return { entities: [], cached: false };
+      return { entities: [], cached: false, error: error.message };
     }
   }
 
@@ -282,11 +295,20 @@ export class HybridDetector {
     const startTime = performance.now();
     const mode = options.mode || this.mode;
 
+    console.log('[HybridDetector] detect() called:', {
+      textLength: text?.length,
+      mode,
+      nerEnabled: this.nerEnabled,
+      hasOffscreenManager: !!this.offscreenManager
+    });
+
     // Always run regex detection (fast)
     let regexResults = [];
     let ambiguousResults = [];
     if (mode !== DetectionMode.NER_ONLY) {
+      console.log('[HybridDetector] Running regex detection...');
       const regexDetection = detectPIIWithRegex(text, options.minConfidence || 0.6);
+      console.log('[HybridDetector] Regex detection found:', regexDetection.matches?.length, 'matches');
 
       // Debug logging: track matches BEFORE filtering
       const invalidMatches = regexDetection.matches.filter(match => !match.type || !match.value);

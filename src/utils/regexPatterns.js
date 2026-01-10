@@ -42,13 +42,19 @@ export const PII_PATTERNS = {
 
   // Phone Numbers (Indian + International)
   // HIGHEST PRIORITY - checks first with normalization
-  // Enhanced to catch variations like "99100 22334", "9910022334", etc.
+  // Supports: Indian (+91), US (+1), UK (+44), and other international formats
   phone: {
-    pattern: /(?:\+91[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\b0?\d{10}\b|\b\d{5}[\s.-]?\d{5}\b|\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b)/g,
+    pattern: /(?:\+\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}(?:[\s.-]?\d{1,4})?|\b\d{10,11}\b|\b\d{5}[\s.-]?\d{5}\b/g,
     name: 'Phone Number',
     confidence: 0.75,
     priority: 1, // HIGHEST PRIORITY
     validator: (match, fullText, index) => {
+      // Reject if it looks like a date (yyyy-mm-dd, dd-mm-yyyy, etc.)
+      if (/^\d{4}[-\/\.]\d{1,2}[-\/\.]\d{1,2}$/.test(match) ||
+          /^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{2,4}$/.test(match)) {
+        return false; // Let DOB pattern handle this
+      }
+
       // Try Indian phone first
       const indianResult = validateIndianPhone(match);
       if (indianResult.valid) {
@@ -226,6 +232,12 @@ export const PII_PATTERNS = {
  * @returns {Object} Detection results
  */
 export function detectPIIWithRegex(text, minConfidence = 0.6) {
+  console.log('[regexPatterns] detectPIIWithRegex called:', {
+    textLength: text?.length,
+    minConfidence,
+    textPreview: text?.substring(0, 100)
+  });
+
   const results = {
     piiDetected: false,
     types: [],
@@ -235,6 +247,7 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
   };
 
   if (!text || typeof text !== 'string') {
+    console.log('[regexPatterns] Invalid text input, returning empty results');
     return results;
   }
 
@@ -295,8 +308,24 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
     if (config.validator) {
       validationResult = config.validator(matchedText, text, position);
 
-      // If validation failed, skip this match
+      // If validation failed, add to ambiguous matches for user awareness (for PAN/Aadhaar)
       if (!validationResult) {
+        // For PAN and Aadhaar, add as ambiguous match even if validation fails
+        // This helps users who type invalid but PII-like patterns
+        if (type === 'pan' || type === 'aadhaar') {
+          console.log(`[regexPatterns] ${type} validation failed for "${matchedText}" - adding as ambiguous`);
+          results.ambiguousMatches.push({
+            type,
+            value: matchedText,
+            name: config.name,
+            confidence: 0.4, // Low confidence since validation failed
+            position,
+            start: position,
+            end: endPosition,
+            isAmbiguous: true,
+            reasons: [`Failed ${type} validation but matches pattern`]
+          });
+        }
         continue;
       }
     }
@@ -396,6 +425,14 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
   results.piiDetected = detectedTypes.size > 0;
   results.types = Array.from(detectedTypes);
   results.score = matchCount > 0 ? totalConfidence / matchCount : 0;
+
+  console.log('[regexPatterns] Detection complete:', {
+    piiDetected: results.piiDetected,
+    matchCount: results.matches.length,
+    ambiguousCount: results.ambiguousMatches.length,
+    types: results.types,
+    matches: results.matches.map(m => ({ type: m.type, value: m.value?.substring(0, 20) }))
+  });
 
   return results;
 }

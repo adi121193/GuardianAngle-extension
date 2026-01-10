@@ -44,50 +44,92 @@ export async function detectPII(text, options = {}) {
 
   let results;
 
+  // DEBUG: Log detection parameters
+  console.log('[detectText] detectPII called:', {
+    textLength: text?.length,
+    mode,
+    useNER,
+    nerEnabled,
+    minConfidence
+  });
+
   // Determine detection method based on mode
   const shouldUseNER = (mode === 'hybrid' || mode === 'ner') && useNER && nerEnabled;
   const shouldUseRegex = mode === 'hybrid' || mode === 'regex';
 
+  console.log('[detectText] Detection strategy:', { shouldUseNER, shouldUseRegex });
+
   // Use hybrid detection if NER is enabled and mode allows it
   if (shouldUseNER) {
-    const hybridResults = await hybridDetector.detect(text, {
-      ...options,
-      mode,
-      minConfidence
-    });
+    try {
+      const hybridResults = await hybridDetector.detect(text, {
+        ...options,
+        mode,
+        minConfidence
+      });
 
-    // Convert hybrid results to existing format with positions
-    results = {
-      piiDetected: hybridResults.count > 0,
-      matches: hybridResults.detections
-        .filter(d => d.type && d.value)  // Guard: skip if type or value missing
-        .map(d => ({
-          type: d.type.toLowerCase(),
-          value: d.value,
-          confidence: d.confidence,
-          category: d.category,
-          source: d.source,
-          nerEntity: d.nerEntity,
-          position: d.start || d.position || 0,  // Include position for masking/highlighting
-          start: d.start,
-          end: d.end
-        })),
-      ambiguousMatches: hybridResults.ambiguousDetections || [],
-      types: [...new Set(hybridResults.detections
-        .filter(d => d.type)  // Guard: skip if type missing
-        .map(d => d.type.toLowerCase()))],
-      score: hybridResults.count > 0
-        ? hybridResults.detections.reduce((sum, d) => sum + d.confidence, 0) / hybridResults.count
-        : 0,
-      methods: shouldUseRegex ? ['regex', 'ner'] : ['ner'],
-      performance: hybridResults.performance,
-      sources: hybridResults.sources
-    };
+      console.log('[detectText] Hybrid detection results:', {
+        count: hybridResults.count,
+        regexCount: hybridResults.sources?.regex,
+        nerCount: hybridResults.sources?.ner
+      });
+
+      // Convert hybrid results to existing format with positions
+      results = {
+        piiDetected: hybridResults.count > 0,
+        matches: hybridResults.detections
+          .filter(d => d.type && d.value)  // Guard: skip if type or value missing
+          .map(d => ({
+            type: d.type.toLowerCase(),
+            value: d.value,
+            confidence: d.confidence,
+            category: d.category,
+            source: d.source,
+            nerEntity: d.nerEntity,
+            position: d.start || d.position || 0,  // Include position for masking/highlighting
+            start: d.start,
+            end: d.end
+          })),
+        ambiguousMatches: hybridResults.ambiguousDetections || [],
+        types: [...new Set(hybridResults.detections
+          .filter(d => d.type)  // Guard: skip if type missing
+          .map(d => d.type.toLowerCase()))],
+        score: hybridResults.count > 0
+          ? hybridResults.detections.reduce((sum, d) => sum + d.confidence, 0) / hybridResults.count
+          : 0,
+        methods: shouldUseRegex ? ['regex', 'ner'] : ['ner'],
+        performance: hybridResults.performance,
+        sources: hybridResults.sources
+      };
+
+      // CRITICAL FIX: If hybrid detection returned empty but regex should work, fallback
+      if (!results.piiDetected && shouldUseRegex) {
+        console.log('[detectText] Hybrid returned empty, trying regex fallback...');
+        const regexResults = detectPIIWithRegex(text, minConfidence);
+        if (regexResults.piiDetected) {
+          console.log('[detectText] Regex fallback found PII:', regexResults.types);
+          results = regexResults;
+          results.methods = ['regex'];
+        }
+      }
+    } catch (error) {
+      console.error('[detectText] Hybrid detection failed, using regex fallback:', error);
+      results = detectPIIWithRegex(text, minConfidence);
+      results.methods = ['regex'];
+    }
   } else {
     // Fallback to regex-only detection
+    console.log('[detectText] Using regex-only detection');
     results = detectPIIWithRegex(text, minConfidence);
     results.methods = ['regex'];
   }
+
+  console.log('[detectText] Final results:', {
+    piiDetected: results.piiDetected,
+    matchCount: results.matches?.length,
+    types: results.types,
+    methods: results.methods
+  });
 
   // Filter by enabled types if specified
   if (enabledTypes && enabledTypes.length > 0) {
@@ -112,6 +154,7 @@ export async function detectPII(text, options = {}) {
  */
 export function quickPIICheck(text) {
   if (!text || text.length < 5) {
+    console.log('[detectText] quickPIICheck: text too short or empty');
     return false;
   }
 
@@ -120,7 +163,8 @@ export function quickPIICheck(text) {
   const quickPatterns = [
     /\b\d{4}\s?\d{4}\s?\d{4}\b/,        // Aadhaar-like
     /\b[A-Z]{5}\d{4}[A-Z]\b/,           // PAN-like
-    /(?:^|[^\d])\d{10}(?:[^\d]|$)/,     // Phone-like
+    /(?:^|[^\d])\d{10,11}(?:[^\d]|$)/,  // Phone-like (10-11 digits)
+    /\+\d{1,3}[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{2,4}/, // International phone with +
     /\b[\w.]+@[\w.]+\.\w{2,}\b/,        // Email
     /\b(?:\d{4}[\s\-]?){3}\d{4}\b/,    // Credit card-like
     /\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/, // DOB-like (dd/mm/yyyy, etc.)
@@ -132,7 +176,9 @@ export function quickPIICheck(text) {
     /\bMRN[\s:]?\d{6,10}\b/i             // Medical Record-like
   ];
 
-  return quickPatterns.some(pattern => pattern.test(text));
+  const result = quickPatterns.some(pattern => pattern.test(text));
+  console.log('[detectText] quickPIICheck result:', result, 'for text:', text.substring(0, 50));
+  return result;
 }
 
 /**

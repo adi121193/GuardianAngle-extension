@@ -21,6 +21,9 @@ const DETECTION_DEBOUNCE = 300; // ms - faster like Grammarly
 const cleanupFunctions = new WeakMap();
 const eventHandlers = new WeakMap(); // Store handler references for cleanup
 
+// Flag to show context invalidation warning only once
+let contextInvalidationWarned = false;
+
 /**
  * Initialize floating button for an input element
  * @param {HTMLElement} element - Input element to monitor
@@ -163,7 +166,10 @@ async function runDetection(element) {
   try {
     // Guard: Check if extension context is still valid
     if (!chrome?.runtime?.id) {
-      console.warn('[floatingButton] Extension context invalidated - hiding UI and stopping detection');
+      if (!contextInvalidationWarned) {
+        console.warn('[floatingButton] Extension context invalidated - hiding UI and stopping detection');
+        contextInvalidationWarned = true;
+      }
       hideButton(element);
       closeAllPanels();
       return;
@@ -188,10 +194,19 @@ async function runDetection(element) {
       return;
     }
 
-    // Full detection
+    // Full detection with explicit NER options
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes
+      enabledTypes: settings.enabledPIITypes,
+      useNER: settings.nerEnabled !== false,
+      detectionMode: settings.detectionMode || 'hybrid'
+    });
+
+    console.log('[floatingButton] Detection result:', {
+      piiDetected: detectionResult.piiDetected,
+      matchCount: detectionResult.matches?.length,
+      types: detectionResult.types,
+      methods: detectionResult.methods
     });
 
     if (!detectionResult.piiDetected || detectionResult.matches.length === 0) {
@@ -1086,7 +1101,10 @@ function attachPanelHandlers(panel, element, detectionResult) {
 async function maskSinglePII(element, detectionResult, index) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
-    console.warn('[maskSinglePII] Extension context invalidated - cannot mask');
+    if (!contextInvalidationWarned) {
+      console.warn('[maskSinglePII] Extension context invalidated - cannot mask');
+      contextInvalidationWarned = true;
+    }
     return;
   }
 
@@ -1133,7 +1151,10 @@ async function maskSinglePII(element, detectionResult, index) {
     if (error.message?.includes('context invalidated') ||
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
-      console.warn('[maskSinglePII] Extension context invalidated during operation');
+      if (!contextInvalidationWarned) {
+        console.warn('[maskSinglePII] Extension context invalidated during operation');
+        contextInvalidationWarned = true;
+      }
       return;
     }
     console.error('[maskSinglePII] Error:', error);
@@ -1150,7 +1171,10 @@ async function maskSinglePII(element, detectionResult, index) {
 async function removeSinglePII(element, detectionResult, index) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
-    console.warn('[removeSinglePII] Extension context invalidated - cannot remove');
+    if (!contextInvalidationWarned) {
+      console.warn('[removeSinglePII] Extension context invalidated - cannot remove');
+      contextInvalidationWarned = true;
+    }
     return;
   }
 
@@ -1285,7 +1309,10 @@ async function removeSinglePII(element, detectionResult, index) {
     if (error.message?.includes('context invalidated') ||
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
-      console.warn('[removeSinglePII] Extension context invalidated during operation');
+      if (!contextInvalidationWarned) {
+        console.warn('[removeSinglePII] Extension context invalidated during operation');
+        contextInvalidationWarned = true;
+      }
       return;
     }
     console.error('[removeSinglePII] Error:', error);
@@ -1301,7 +1328,10 @@ async function removeSinglePII(element, detectionResult, index) {
 async function maskAllPII(element, detectionResult) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
-    console.warn('[maskAllPII] Extension context invalidated - cannot mask');
+    if (!contextInvalidationWarned) {
+      console.warn('[maskAllPII] Extension context invalidated - cannot mask');
+      contextInvalidationWarned = true;
+    }
     return;
   }
 
@@ -1338,7 +1368,10 @@ async function maskAllPII(element, detectionResult) {
     if (error.message?.includes('context invalidated') ||
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
-      console.warn('[maskAllPII] Extension context invalidated during operation');
+      if (!contextInvalidationWarned) {
+        console.warn('[maskAllPII] Extension context invalidated during operation');
+        contextInvalidationWarned = true;
+      }
       return;
     }
     console.error('[maskAllPII] Error:', error);

@@ -13,6 +13,32 @@ export class OffscreenManagerProxy {
   }
 
   /**
+   * Initialize NER model via background script
+   * @returns {Promise<Object>} Initialization result
+   */
+  async initializeModel() {
+    try {
+      console.log('[OffscreenManagerProxy] Requesting NER initialization...');
+
+      const response = await chrome.runtime.sendMessage({
+        type: 'INIT_NER'
+      });
+
+      if (response && response.success) {
+        this.isReady = true;
+        console.log('[OffscreenManagerProxy] NER initialization successful');
+        return { success: true };
+      } else {
+        console.warn('[OffscreenManagerProxy] NER initialization failed:', response?.error);
+        return { success: false, error: response?.error || 'Unknown error' };
+      }
+    } catch (error) {
+      console.error('[OffscreenManagerProxy] Failed to initialize NER:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Run NER inference via background script
    * @param {string} text - Text to analyze
    * @returns {Promise<Object>} Inference result

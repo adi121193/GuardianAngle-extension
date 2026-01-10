@@ -117,6 +117,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       switch (message.type) {
         case 'NER_INIT':
+        case 'INIT_NER':  // Accept both message types for compatibility
           const initResult = await initializeModel();
           sendResponse(initResult);
           break;

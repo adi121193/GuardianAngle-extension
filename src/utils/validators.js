@@ -137,6 +137,7 @@ export function validateIndianPhone(phone) {
 
 /**
  * Validate international phone number (non-Indian)
+ * Supports: US (+1), UK (+44), EU, and other international formats
  * @param {string} phone - Phone number
  * @returns {Object} Validation result
  */
@@ -144,24 +145,68 @@ export function validateInternationalPhone(phone) {
   const normalized = normalizePhone(phone);
 
   // International format: country code + number
-  // Minimum 10 digits, maximum 15 digits (ITU-T E.164)
-  if (normalized.length < 10 || normalized.length > 15) {
+  // Minimum 7 digits (some countries have short numbers)
+  // Maximum 15 digits (ITU-T E.164)
+  if (normalized.length < 7 || normalized.length > 15) {
     return { valid: false, reason: 'Invalid length for international number' };
   }
 
-  // Should not start with Indian patterns if it's international
-  const firstDigit = parseInt(normalized[0], 10);
-
-  // If starts with 91 and length is 12, might be Indian
+  // If starts with 91 and length is 12, it's Indian - let Indian validator handle
   if (normalized.startsWith('91') && normalized.length === 12) {
     return { valid: false, reason: 'Looks like Indian number' };
   }
 
-  return {
-    valid: true,
-    normalized,
-    isInternational: true
+  // Common country codes and their expected lengths
+  const countryPatterns = {
+    '1': { minLen: 10, maxLen: 11, name: 'US/Canada' },      // +1 xxx-xxx-xxxx
+    '44': { minLen: 10, maxLen: 12, name: 'UK' },            // +44 xxxx xxxxxx
+    '61': { minLen: 9, maxLen: 11, name: 'Australia' },      // +61 x xxxx xxxx
+    '49': { minLen: 10, maxLen: 13, name: 'Germany' },       // +49 xxx xxxxxxx
+    '33': { minLen: 9, maxLen: 11, name: 'France' },         // +33 x xx xx xx xx
+    '86': { minLen: 11, maxLen: 13, name: 'China' },         // +86 xxx xxxx xxxx
+    '81': { minLen: 10, maxLen: 12, name: 'Japan' },         // +81 xx xxxx xxxx
+    '82': { minLen: 9, maxLen: 12, name: 'South Korea' },    // +82 xx xxxx xxxx
+    '65': { minLen: 8, maxLen: 10, name: 'Singapore' },      // +65 xxxx xxxx
+    '971': { minLen: 9, maxLen: 12, name: 'UAE' },           // +971 xx xxx xxxx
   };
+
+  // Check if it matches a known country code pattern
+  for (const [code, rules] of Object.entries(countryPatterns)) {
+    if (normalized.startsWith(code)) {
+      const numberWithoutCode = normalized.substring(code.length);
+      if (numberWithoutCode.length >= (rules.minLen - code.length) &&
+          normalized.length <= rules.maxLen) {
+        return {
+          valid: true,
+          normalized,
+          isInternational: true,
+          country: rules.name
+        };
+      }
+    }
+  }
+
+  // Generic international: 10-15 digits is likely valid
+  if (normalized.length >= 10 && normalized.length <= 15) {
+    return {
+      valid: true,
+      normalized,
+      isInternational: true
+    };
+  }
+
+  // For shorter numbers (7-9 digits), require context or country code prefix
+  // These could be local numbers without country code
+  if (normalized.length >= 7 && normalized.length <= 9) {
+    return {
+      valid: true,
+      normalized,
+      isInternational: true,
+      confidence: 'low' // Mark as lower confidence
+    };
+  }
+
+  return { valid: false, reason: 'Does not match known phone patterns' };
 }
 
 /**
@@ -291,26 +336,29 @@ export function classifyNumericPII(value, fullText, index) {
     }
   }
 
-  // 3. Check if it's a bank account number
-  if (normalized.length >= 9 && normalized.length <= 18) {
+  // 3. Check if it's a bank account WITH explicit context FIRST
+  // If someone types "Bank account: 12345...", that's clearly a bank account, not a phone
+  if (normalized.length >= 9 && normalized.length <= 18 && context.hasAccountContext) {
     if (validateBankAccount(value)) {
-      result.type = context.hasAccountContext ? 'bankAccount' : 'potential_account';
-      result.confidence = context.hasAccountContext ? 0.7 : 0.4;
-      result.ambiguous = !context.hasAccountContext;
-      result.reasons.push('Matches account number pattern');
-      if (!context.hasAccountContext) {
-        result.reasons.push('Low confidence - no account context');
-      }
+      result.type = 'bankAccount';
+      result.confidence = 0.7 + context.accountScore;
+      result.ambiguous = false;
+      result.reasons.push('Matches account number pattern with explicit context');
       return result;
     }
   }
 
-  // 4. International phone
+  // 4. Check if it's an international phone (after bank account with context)
+  // International phones can be 10-15 digits which overlaps with bank accounts
   const intlPhone = validateInternationalPhone(value);
-  if (intlPhone.valid && normalized.length >= 11) {
+  if (intlPhone.valid && normalized.length >= 10) {
     result.type = 'phone';
     result.confidence = 0.65 + context.phoneScore;
     result.reasons.push('Matches international phone format');
+    if (context.hasPhoneContext || context.hasTimestamp) {
+      result.confidence += 0.15;
+      result.reasons.push('Phone context detected');
+    }
     return result;
   }
 

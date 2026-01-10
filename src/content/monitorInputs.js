@@ -243,16 +243,47 @@ function getTextContent(element) {
 }
 
 /**
- * Set text content to element
+ * Set text content to element (handles ProseMirror, contenteditable, and regular inputs)
  * @param {HTMLElement} element
  * @param {string} text
  */
 function setTextContent(element, text) {
-  if (element.contentEditable === 'true') {
-    // textContent avoids browser reflow/extra whitespace that innerText can introduce
+  const isContentEditable = element.contentEditable === 'true' ||
+                            element.isContentEditable ||
+                            element.classList?.contains('ProseMirror');
+
+  if (isContentEditable) {
+    // For ProseMirror/contenteditable, try multiple approaches
+    console.log('[PII Guardian DEBUG] setTextContent - isContentEditable:', true);
+
+    // Method 1: Use document.execCommand for better editor compatibility
+    // This method works better with ProseMirror/Tiptap because it triggers proper DOM events
+    try {
+      element.focus();
+
+      // Select all content
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Insert the new text (replaces selection)
+      if (document.execCommand('insertText', false, text)) {
+        console.log('[PII Guardian DEBUG] setTextContent via execCommand succeeded');
+        return;
+      }
+    } catch (e) {
+      console.warn('[PII Guardian DEBUG] execCommand failed, falling back to textContent:', e);
+    }
+
+    // Method 2: Fallback to textContent
     element.textContent = text;
+    console.log('[PII Guardian DEBUG] setTextContent via textContent fallback');
   } else {
+    // Regular input/textarea
     element.value = text;
+    console.log('[PII Guardian DEBUG] setTextContent via value property');
   }
 }
 
@@ -329,15 +360,20 @@ async function handleInput(element) {
       const decision = await showWarningModal(detectionResult, element);
 
       // Handle user decision
+      const editableContainer = findEditableContainer(element);
       switch (decision.action) {
         case 'mask':
           // Apply masking
           if (decision.maskedText) {
-            setTextContent(element, decision.maskedText);
+            console.log('[PII Guardian DEBUG] Applying masked text (handleInput) to:', editableContainer.tagName, editableContainer.className);
+            setTextContent(editableContainer, decision.maskedText);
 
             // Trigger input event to update any listeners
             const event = new Event('input', { bubbles: true });
-            element.dispatchEvent(event);
+            editableContainer.dispatchEvent(event);
+
+            const changeEvent = new Event('change', { bubbles: true });
+            editableContainer.dispatchEvent(changeEvent);
           }
           break;
 
@@ -348,9 +384,9 @@ async function handleInput(element) {
         case 'cancel':
           // User cancelled - optionally clear input
           if (settings.blockOnDetection) {
-            setTextContent(element, '');
+            setTextContent(editableContainer, '');
             const event = new Event('input', { bubbles: true });
-            element.dispatchEvent(event);
+            editableContainer.dispatchEvent(event);
           }
           break;
       }
@@ -598,9 +634,23 @@ async function handlePIIDetectionForEnterKey(element, text) {
     switch (decision.action) {
       case 'mask':
         if (decision.maskedText) {
-          setTextContent(element, decision.maskedText);
-          // Optionally auto-send masked version
-          // simulateEnterKey(element);
+          // Find the actual editable container
+          const editableContainer = findEditableContainer(element);
+          console.log('[PII Guardian DEBUG] Applying masked text to:', editableContainer.tagName, editableContainer.className);
+          console.log('[PII Guardian DEBUG] Masked text:', decision.maskedText.substring(0, 100) + '...');
+
+          setTextContent(editableContainer, decision.maskedText);
+
+          // CRITICAL: Dispatch input event to update editor state (ProseMirror, etc.)
+          const event = new Event('input', { bubbles: true });
+          editableContainer.dispatchEvent(event);
+
+          // Also dispatch a change event for frameworks that listen to it
+          const changeEvent = new Event('change', { bubbles: true });
+          editableContainer.dispatchEvent(changeEvent);
+
+          console.log('[PII Guardian DEBUG] Masked text applied and events dispatched');
+          // Note: User needs to press Enter again to send masked version
         }
         break;
 
@@ -840,9 +890,20 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     switch (decision.action) {
       case 'mask':
         if (decision.maskedText) {
-          setTextContent(input, decision.maskedText);
-          // Optionally auto-send masked version
-          // button.click();
+          // Find the actual editable container
+          const editableContainer = findEditableContainer(input);
+          console.log('[PII Guardian DEBUG] Applying masked text (send button) to:', editableContainer.tagName, editableContainer.className);
+
+          setTextContent(editableContainer, decision.maskedText);
+
+          // CRITICAL: Dispatch input event to update editor state
+          const inputEvent = new Event('input', { bubbles: true });
+          editableContainer.dispatchEvent(inputEvent);
+
+          const changeEvent = new Event('change', { bubbles: true });
+          editableContainer.dispatchEvent(changeEvent);
+
+          console.log('[PII Guardian DEBUG] Masked text applied via send button handler');
         }
         break;
 
@@ -854,7 +915,8 @@ async function handlePIIDetectionForSendButton(input, text, button) {
       case 'cancel':
         // User cancelled
         if (settings.blockOnDetection) {
-          setTextContent(input, '');
+          const editableContainer = findEditableContainer(input);
+          setTextContent(editableContainer, '');
         }
         await incrementBlocked();
         break;
