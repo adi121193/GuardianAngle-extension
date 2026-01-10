@@ -959,9 +959,16 @@ async function initializeNER() {
 }
 
 /**
- * Listen for NER_READY message from background script
+ * Listen for messages from background script
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // PING: Health check from service worker
+  if (message.type === 'PING') {
+    sendResponse({ success: true, alive: true });
+    return false;
+  }
+
+  // NER_READY: NER model is initialized
   if (message.type === 'NER_READY') {
     console.log('PII Guardian: NER ready notification received');
 

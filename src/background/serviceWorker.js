@@ -6,11 +6,43 @@
 import { offscreenManager } from '../ml/offscreenManager.js';
 import { detectPIIWithRegex } from '../utils/regexPatterns.js';
 
+// Build timestamp for cache busting (set at build time)
+const BUILD_VERSION = Date.now();
+console.log('[ServiceWorker] Starting with build version:', BUILD_VERSION);
+
 // Track injected tabs to avoid duplicate injection
 const injectedTabs = new Set();
 
 // Track blocked requests to avoid duplicate notifications
 const blockedRequests = new Set();
+
+/**
+ * Clean up on service worker startup
+ * This runs when extension is loaded/reloaded
+ */
+async function cleanupOnStartup() {
+  console.log('[ServiceWorker] Running startup cleanup...');
+
+  // Clear injected tabs tracking (pages need re-injection after reload)
+  injectedTabs.clear();
+  blockedRequests.clear();
+
+  // Close any existing offscreen documents to ensure clean state
+  try {
+    const hasDoc = await offscreenManager.hasDocument();
+    if (hasDoc) {
+      console.log('[ServiceWorker] Closing stale offscreen document...');
+      await offscreenManager.closeDocument();
+    }
+  } catch (error) {
+    console.warn('[ServiceWorker] Error closing offscreen document:', error);
+  }
+
+  console.log('[ServiceWorker] Startup cleanup complete');
+}
+
+// Run cleanup immediately when service worker starts
+cleanupOnStartup();
 
 // Default settings (used for stats initialization)
 const DEFAULT_SETTINGS = {
@@ -126,12 +158,22 @@ function extractTextFromRequestBody(requestBody) {
 
 /**
  * Inject content script into tab
+ * @param {number} tabId - Tab ID to inject into
+ * @param {boolean} forceReload - Force re-injection even if already tracked
  */
-async function injectContentScript(tabId) {
-  // Prevent duplicate injection
-  if (injectedTabs.has(tabId)) {
-    console.log('PII Guardian: Already injected into tab', tabId);
-    return;
+async function injectContentScript(tabId, forceReload = false) {
+  // Check if we've already injected (unless force reload)
+  if (!forceReload && injectedTabs.has(tabId)) {
+    // Verify the content script is still responding
+    try {
+      await chrome.tabs.sendMessage(tabId, { type: 'PING' });
+      console.log('PII Guardian: Content script still active in tab', tabId);
+      return;
+    } catch (error) {
+      // Content script not responding - needs re-injection
+      console.log('PII Guardian: Content script not responding, will re-inject');
+      injectedTabs.delete(tabId);
+    }
   }
 
   try {
@@ -225,12 +267,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
 
   // Inject into existing tabs (on both install and update)
+  // On update, force re-injection to replace orphaned content scripts
+  const forceReload = details.reason === 'update';
   const tabs = await chrome.tabs.query({});
   for (const tab of tabs) {
     if (tab.url && isAIPlatform(tab.url) && tab.id) {
       // Small delay to ensure page is ready
       setTimeout(() => {
-        injectContentScript(tab.id);
+        injectContentScript(tab.id, forceReload);
       }, 1000);
     }
   }
