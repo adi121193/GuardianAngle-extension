@@ -188,8 +188,10 @@ async function runDetection(element) {
       return;
     }
 
-    // Quick check first
-    if (!quickPIICheck(text)) {
+    // Quick check first (only for regex-only mode)
+    // When NER is enabled, skip quick check since NER can detect names/orgs that regex can't
+    const useNER = settings.nerEnabled !== false && settings.detectionMode !== 'regex';
+    if (!useNER && !quickPIICheck(text)) {
       hideButton(element);
       return;
     }
@@ -198,7 +200,7 @@ async function runDetection(element) {
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
       enabledTypes: settings.enabledPIITypes,
-      useNER: settings.nerEnabled !== false,
+      useNER: useNER,
       detectionMode: settings.detectionMode || 'hybrid'
     });
 
