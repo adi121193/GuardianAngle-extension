@@ -682,11 +682,12 @@ async function initializeNER() {
 
 // Handle messages requesting NER initialization and status
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Accept both INIT_NER (from popup) and NER_INIT (internal)
-  if (message.type === 'INIT_NER' || message.type === 'NER_INIT') {
+  // ONLY handle INIT_NER from popup - NER_INIT goes to offscreen document
+  // This is critical: NER_INIT must NOT be handled here or the offscreen document won't receive it
+  if (message.type === 'INIT_NER') {
     const forceDownload = message.forceDownload || false;
 
-    console.log(`[ServiceWorker] NER initialization requested (forceDownload: ${forceDownload})`);
+    console.log(`[ServiceWorker] NER initialization requested from UI (forceDownload: ${forceDownload})`);
 
     // Optional: Send progress updates to popup
     if (forceDownload && sender.tab) {
