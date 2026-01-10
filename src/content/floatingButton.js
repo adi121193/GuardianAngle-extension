@@ -167,7 +167,7 @@ async function runDetection(element) {
     // Guard: Check if extension context is still valid
     if (!chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
-        console.warn('[floatingButton] Extension context invalidated - hiding UI and stopping detection');
+        console.log('[floatingButton] Extension reloaded - old instance stopping (this is normal)');
         contextInvalidationWarned = true;
       }
       hideButton(element);
@@ -1102,7 +1102,7 @@ async function maskSinglePII(element, detectionResult, index) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
     if (!contextInvalidationWarned) {
-      console.warn('[maskSinglePII] Extension context invalidated - cannot mask');
+      console.log('[maskSinglePII] Extension reloaded - skipping (this is normal)');
       contextInvalidationWarned = true;
     }
     return;
@@ -1152,7 +1152,7 @@ async function maskSinglePII(element, detectionResult, index) {
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
-        console.warn('[maskSinglePII] Extension context invalidated during operation');
+        console.log('[maskSinglePII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
       }
       return;
@@ -1172,7 +1172,7 @@ async function removeSinglePII(element, detectionResult, index) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
     if (!contextInvalidationWarned) {
-      console.warn('[removeSinglePII] Extension context invalidated - cannot remove');
+      console.log('[removeSinglePII] Extension reloaded - skipping (this is normal)');
       contextInvalidationWarned = true;
     }
     return;
@@ -1310,7 +1310,7 @@ async function removeSinglePII(element, detectionResult, index) {
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
-        console.warn('[removeSinglePII] Extension context invalidated during operation');
+        console.log('[removeSinglePII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
       }
       return;
@@ -1329,7 +1329,7 @@ async function maskAllPII(element, detectionResult) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
     if (!contextInvalidationWarned) {
-      console.warn('[maskAllPII] Extension context invalidated - cannot mask');
+      console.log('[maskAllPII] Extension reloaded - skipping (this is normal)');
       contextInvalidationWarned = true;
     }
     return;
@@ -1369,7 +1369,7 @@ async function maskAllPII(element, detectionResult) {
         error.message?.includes('Extension context') ||
         !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
-        console.warn('[maskAllPII] Extension context invalidated during operation');
+        console.log('[maskAllPII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
       }
       return;
@@ -1407,6 +1407,7 @@ export function injectFloatingButtonStyles() {
 
   const style = document.createElement('style');
   style.id = 'pii-guardian-floating-btn-styles';
+  style.setAttribute('data-pii-guardian', 'true');
   style.textContent = `
     /* Floating Button */
     .pii-guardian-floating-btn {

@@ -43,7 +43,7 @@ async function safeSendMessage(message) {
   try {
     // Check if extension context is valid
     if (!chrome.runtime?.id) {
-      console.warn('[monitorInputs] Extension context invalidated - skipping message');
+      console.log('[monitorInputs] Extension reloaded - skipping message (this is normal)');
       return null;
     }
 
@@ -53,7 +53,7 @@ async function safeSendMessage(message) {
     if (error.message?.includes('Extension context invalidated') ||
         error.message?.includes('message channel closed') ||
         error.message?.includes('Receiving end does not exist')) {
-      console.warn('[monitorInputs] Extension context invalidated:', error.message);
+      console.log('[monitorInputs] Extension reloaded:', error.message);
       // Could show user notification or reload content script
       return null;
     }
@@ -987,6 +987,40 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false;
 });
 
+// Unique instance ID for this content script
+const INSTANCE_ID = `pii-guardian-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+/**
+ * Clean up any previous PII Guardian instances
+ * This handles the case where extension is reloaded and old scripts are orphaned
+ */
+function cleanupPreviousInstances() {
+  // Check if another instance was running
+  const previousInstanceId = window.__PII_GUARDIAN_INSTANCE_ID__;
+
+  if (previousInstanceId && previousInstanceId !== INSTANCE_ID) {
+    console.log(`[monitorInputs] Cleaning up previous instance: ${previousInstanceId}`);
+
+    // Remove old floating buttons
+    document.querySelectorAll('.pii-guardian-floating-btn').forEach(el => el.remove());
+
+    // Remove old panels
+    document.querySelectorAll('.pii-guardian-panel').forEach(el => el.remove());
+    document.querySelectorAll('.pii-issues-panel').forEach(el => el.remove());
+
+    // Remove old warning modals
+    document.querySelectorAll('.pii-guardian-overlay').forEach(el => el.remove());
+    document.querySelectorAll('.pii-guardian-modal').forEach(el => el.remove());
+
+    // Remove old styles (they'll be re-injected)
+    document.querySelectorAll('style[data-pii-guardian]').forEach(el => el.remove());
+  }
+
+  // Mark this instance as active
+  window.__PII_GUARDIAN_INSTANCE_ID__ = INSTANCE_ID;
+  console.log(`[monitorInputs] Instance ID: ${INSTANCE_ID}`);
+}
+
 /**
  * Initialize monitoring
  */
@@ -997,6 +1031,9 @@ async function initialize() {
     setTimeout(initialize, 100);
     return;
   }
+
+  // Clean up any previous instances (handles extension reload)
+  cleanupPreviousInstances();
 
   console.log('PII Guardian: Input monitoring initialized');
 
