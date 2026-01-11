@@ -18,12 +18,10 @@ export function enableNER(offscreenManagerOrFlag) {
     // Called from content script - just set flag
     // hybridDetector will communicate with background script via messaging
     nerEnabled = true;
-    console.log('[detectText] NER detection enabled (content script mode)');
   } else if (offscreenManagerOrFlag) {
     // Called with actual offscreen manager instance
     hybridDetector.setOffscreenManager(offscreenManagerOrFlag);
     nerEnabled = true;
-    console.log('[detectText] NER detection enabled (direct mode)');
   }
 }
 
@@ -44,22 +42,9 @@ export async function detectPII(text, options = {}) {
 
   let results;
 
-  // CRITICAL DEBUG: Use console.warn for higher visibility
-  console.warn('[detectText] >>> detectPII() ENTRY <<<', {
-    textLength: text?.length,
-    textPreview: text?.substring(0, 50),
-    mode,
-    useNER,
-    nerEnabled,
-    minConfidence,
-    hybridDetectorState: hybridDetector?.getStats?.()
-  });
-
   // Determine detection method based on mode
   const shouldUseNER = (mode === 'hybrid' || mode === 'ner') && useNER && nerEnabled;
   const shouldUseRegex = mode === 'hybrid' || mode === 'regex';
-
-  console.log('[detectText] Detection strategy:', { shouldUseNER, shouldUseRegex });
 
   // Use hybrid detection if NER is enabled and mode allows it
   if (shouldUseNER) {
@@ -68,14 +53,6 @@ export async function detectPII(text, options = {}) {
         ...options,
         mode,
         minConfidence
-      });
-
-      console.log('[detectText] Hybrid detection results:', {
-        count: hybridResults.count,
-        regexCount: hybridResults.sources?.regex,
-        nerCount: hybridResults.sources?.ner,
-        detections: hybridResults.detections,
-        detectionsLength: hybridResults.detections?.length
       });
 
       // Convert hybrid results to existing format with positions
@@ -106,12 +83,10 @@ export async function detectPII(text, options = {}) {
         sources: hybridResults.sources
       };
 
-      // CRITICAL FIX: If hybrid detection returned empty but regex should work, fallback
+      // If hybrid detection returned empty but regex should work, fallback
       if (!results.piiDetected && shouldUseRegex) {
-        console.log('[detectText] Hybrid returned empty, trying regex fallback...');
         const regexResults = detectPIIWithRegex(text, minConfidence);
         if (regexResults.piiDetected) {
-          console.log('[detectText] Regex fallback found PII:', regexResults.types);
           results = regexResults;
           results.methods = ['regex'];
         }
@@ -123,17 +98,9 @@ export async function detectPII(text, options = {}) {
     }
   } else {
     // Fallback to regex-only detection
-    console.log('[detectText] Using regex-only detection');
     results = detectPIIWithRegex(text, minConfidence);
     results.methods = ['regex'];
   }
-
-  console.log('[detectText] Final results:', {
-    piiDetected: results.piiDetected,
-    matchCount: results.matches?.length,
-    types: results.types,
-    methods: results.methods
-  });
 
   // Filter by enabled types if specified
   if (enabledTypes && enabledTypes.length > 0) {
@@ -158,7 +125,6 @@ export async function detectPII(text, options = {}) {
  */
 export function quickPIICheck(text) {
   if (!text || text.length < 5) {
-    console.log('[detectText] quickPIICheck: text too short or empty');
     return false;
   }
 
@@ -180,9 +146,7 @@ export function quickPIICheck(text) {
     /\bMRN[\s:]?\d{6,10}\b/i             // Medical Record-like
   ];
 
-  const result = quickPatterns.some(pattern => pattern.test(text));
-  console.log('[detectText] quickPIICheck result:', result, 'for text:', text.substring(0, 50));
-  return result;
+  return quickPatterns.some(pattern => pattern.test(text));
 }
 
 /**

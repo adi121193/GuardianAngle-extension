@@ -74,25 +74,9 @@ function shouldUseNER(text, regexResults) {
 function convertNERToPII(nerEntities, text) {
   const piiResults = [];
 
-  console.log('[convertNERToPII] Converting entities:', {
-    entityCount: nerEntities?.length,
-    entities: nerEntities,
-    textLength: text?.length,
-    textPreview: text?.substring(0, 100)
-  });
-
   for (const entity of nerEntities) {
     const piiType = NER_TO_PII_MAP[entity.type];
-    console.log('[convertNERToPII] Processing entity:', {
-      entityType: entity.type,
-      entityText: entity.text,
-      mappedPiiType: piiType
-    });
-
-    if (!piiType) {
-      console.warn('[convertNERToPII] No PII type mapping for:', entity.type);
-      continue;
-    }
+    if (!piiType) continue;
 
     // Find entity position in original text (case-insensitive search as fallback)
     const entityText = entity.text;
@@ -101,15 +85,11 @@ function convertNERToPII(nerEntities, text) {
     // Try case-insensitive search if exact match fails
     if (index === -1) {
       index = text.toLowerCase().indexOf(entityText.toLowerCase());
-      console.log('[convertNERToPII] Case-insensitive search for:', entityText, 'found at:', index);
     }
 
-    if (index === -1) {
-      console.warn('[convertNERToPII] Entity text not found in original text:', entityText);
-      continue;
-    }
+    if (index === -1) continue;
 
-    const piiResult = {
+    piiResults.push({
       type: piiType,
       value: entityText,
       category: 'IDENTITY',
@@ -118,13 +98,9 @@ function convertNERToPII(nerEntities, text) {
       start: index,
       end: index + entityText.length,
       nerEntity: entity
-    };
-
-    console.log('[convertNERToPII] Created PII result:', piiResult);
-    piiResults.push(piiResult);
+    });
   }
 
-  console.log('[convertNERToPII] Final results:', piiResults.length, 'PII items');
   return piiResults;
 }
 
@@ -227,7 +203,6 @@ export class HybridDetector {
   setOffscreenManager(manager) {
     // Skip if same manager already set
     if (this.offscreenManager === manager) {
-      console.log('[HybridDetector] Offscreen manager already set, skipping');
       return;
     }
 
@@ -235,7 +210,6 @@ export class HybridDetector {
     // Clear cache when manager changes to avoid stale results
     this.nerCache.clear();
     this.nerInitialized = false; // Reset init state
-    console.log('[HybridDetector] Offscreen manager set, cache cleared');
   }
 
   /**
@@ -243,7 +217,6 @@ export class HybridDetector {
    */
   async initializeNER() {
     if (!this.offscreenManager) {
-      console.warn('[HybridDetector] No offscreen manager set');
       return false;
     }
 
@@ -252,12 +225,10 @@ export class HybridDetector {
     }
 
     try {
-      console.log('[HybridDetector] Initializing NER model...');
       const result = await this.offscreenManager.initializeModel();
 
       if (result.success) {
         this.nerInitialized = true;
-        console.log('[HybridDetector] NER model initialized');
         return true;
       } else {
         console.error('[HybridDetector] NER initialization failed:', result.error);
@@ -274,21 +245,12 @@ export class HybridDetector {
    * NOTE: Only caches non-empty results to avoid caching failures
    */
   async runNER(text) {
-    // CRITICAL DEBUG: Use console.warn for higher visibility
-    console.warn('[HybridDetector] >>> runNER() ENTRY <<<', {
-      hasOffscreenManager: !!this.offscreenManager,
-      offscreenManagerReady: this.offscreenManager?.isNERReady?.(),
-      textLength: text?.length
-    });
-
     if (!this.offscreenManager) {
-      console.warn('[HybridDetector] No offscreen manager - NER unavailable');
       return { entities: [], cached: false, unavailable: true };
     }
 
     // Check if the proxy reports ready
     if (typeof this.offscreenManager.isNERReady === 'function' && !this.offscreenManager.isNERReady()) {
-      console.warn('[HybridDetector] NER not ready (proxy reports not ready)');
       return { entities: [], cached: false, unavailable: true };
     }
 
@@ -298,33 +260,23 @@ export class HybridDetector {
       const cachedEntities = this.nerCache.get(cacheKey);
       // Only use cache if it has actual entities (don't return cached empty results)
       if (cachedEntities && cachedEntities.length > 0) {
-        console.log('[HybridDetector] Using cached NER result:', cachedEntities.length, 'entities');
         return { entities: cachedEntities, cached: true };
       } else {
         // Remove invalid/empty cache entry
-        console.log('[HybridDetector] Removing empty cached result, running fresh inference');
         this.nerCache.delete(cacheKey);
       }
     }
 
     // Ensure NER is initialized
     if (!this.nerInitialized) {
-      console.log('[HybridDetector] NER not initialized, attempting initialization...');
       const initialized = await this.initializeNER();
       if (!initialized) {
-        console.warn('[HybridDetector] NER initialization failed');
         return { entities: [], cached: false, unavailable: true };
       }
     }
 
     try {
-      console.log('[HybridDetector] Running NER inference...');
       const result = await this.offscreenManager.runInference(text);
-      console.log('[HybridDetector] NER inference result:', {
-        success: result.success,
-        entityCount: result.entities?.length,
-        debug: result.debug  // Show debug info from offscreen
-      });
 
       if (result.success && result.entities && result.entities.length > 0) {
         // Only cache non-empty results
@@ -334,15 +286,11 @@ export class HybridDetector {
           this.nerCache.delete(firstKey);
         }
         this.nerCache.set(cacheKey, result.entities);
-        console.log('[HybridDetector] Cached NER result:', result.entities.length, 'entities');
-
         return { entities: result.entities, cached: false };
       } else if (result.success) {
         // Successful but empty - don't cache, just return
-        console.log('[HybridDetector] NER returned empty (no entities detected)');
         return { entities: [], cached: false };
       } else {
-        console.error('[HybridDetector] NER inference failed:', result.error);
         return { entities: [], cached: false, error: result.error };
       }
     } catch (error) {
@@ -358,30 +306,11 @@ export class HybridDetector {
     const startTime = performance.now();
     const mode = options.mode || this.mode;
 
-    // CRITICAL DEBUG: Use console.warn for higher visibility
-    console.warn('[HybridDetector] >>> detect() ENTRY <<<', {
-      textLength: text?.length,
-      textPreview: text?.substring(0, 50),
-      mode,
-      nerEnabled: this.nerEnabled,
-      hasOffscreenManager: !!this.offscreenManager,
-      offscreenManagerReady: this.offscreenManager?.isNERReady?.()
-    });
-
     // Always run regex detection (fast)
     let regexResults = [];
     let ambiguousResults = [];
     if (mode !== DetectionMode.NER_ONLY) {
-      console.log('[HybridDetector] Running regex detection...');
       const regexDetection = detectPIIWithRegex(text, options.minConfidence || 0.6);
-      console.log('[HybridDetector] Regex detection found:', regexDetection.matches?.length, 'matches');
-
-      // Debug logging: track matches BEFORE filtering
-      const invalidMatches = regexDetection.matches.filter(match => !match.type || !match.value);
-      if (invalidMatches.length > 0) {
-        console.warn('[hybridDetector] Found matches with missing type/value:',
-          invalidMatches.map(m => ({ hasType: !!m.type, hasValue: !!m.value, match: m })));
-      }
 
       // Convert to our format with start/end positions
       regexResults = regexDetection.matches
@@ -398,13 +327,6 @@ export class HybridDetector {
         }));
 
       // Include ambiguous matches
-      // Debug logging: track ambiguous matches BEFORE filtering
-      const invalidAmbiguous = (regexDetection.ambiguousMatches || []).filter(match => !match.type || !match.value);
-      if (invalidAmbiguous.length > 0) {
-        console.warn('[hybridDetector] Found ambiguous matches with missing type/value:',
-          invalidAmbiguous.map(m => ({ hasType: !!m.type, hasValue: !!m.value, match: m })));
-      }
-
       ambiguousResults = (regexDetection.ambiguousMatches || [])
         .filter(match => match.type && match.value) // Guard: skip matches without type or value
         .map(match => ({
@@ -473,7 +395,6 @@ export class HybridDetector {
    */
   clearCache() {
     this.nerCache.clear();
-    console.log('[HybridDetector] Cache cleared');
   }
 
   /**

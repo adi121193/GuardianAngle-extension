@@ -16,18 +16,15 @@ let initializationPromise = null;
  */
 async function initializeModel() {
   if (nerModel?.isReady) {
-    console.log('[Offscreen] Model already initialized');
     return { success: true };
   }
 
   if (isInitializing) {
-    console.log('[Offscreen] Model initialization already in progress');
     return initializationPromise;
   }
 
   isInitializing = true;
   initializationPromise = (async () => {
-    console.log('[Offscreen] Starting model initialization...');
     const startTime = performance.now();
 
     try {
@@ -38,9 +35,6 @@ async function initializeModel() {
       const modelPath = chrome.runtime.getURL('models/distilbert-ner/model.onnx');
       const vocabPath = chrome.runtime.getURL('models/distilbert-ner/vocab.txt');
 
-      console.log('[Offscreen] Model path:', modelPath);
-      console.log('[Offscreen] Vocab path:', vocabPath);
-
       // Load model and vocabulary
       await nerModel.loadModel(modelPath);
       await nerModel.loadVocab(vocabPath);
@@ -49,7 +43,6 @@ async function initializeModel() {
       nerModel.setReady();
 
       const totalTime = performance.now() - startTime;
-      console.log(`[Offscreen] Model initialization complete in ${totalTime.toFixed(0)}ms`);
 
       return {
         success: true,
@@ -74,12 +67,9 @@ async function initializeModel() {
  * Run NER inference on text
  */
 async function runNERInference(text, options = {}) {
-  console.log('[Offscreen] Running NER inference on text:', text.substring(0, 100) + '...');
-
   try {
     // Ensure model is initialized
     if (!nerModel?.isReady) {
-      console.log('[Offscreen] Model not ready, initializing...');
       const initResult = await initializeModel();
       if (!initResult.success) {
         throw new Error('Model initialization failed: ' + initResult.error);
@@ -89,37 +79,10 @@ async function runNERInference(text, options = {}) {
     // Run inference
     const result = await nerModel.runInference(text);
 
-    console.log(`[Offscreen] Found ${result.entities.length} entities`);
-
-    // Debug: Log tokens and predictions for troubleshooting
-    const nonOPredictions = result.predictions
-      ?.map((p, i) => ({ index: i, token: result.tokens[i], ...p }))
-      .filter(p => p.label !== 'O') || [];
-
-    if (result.entities.length === 0) {
-      console.log('[Offscreen] DEBUG - Tokens:', result.tokens?.slice(0, 20));
-      console.log('[Offscreen] DEBUG - Non-O predictions:', nonOPredictions);
-      // Also log first 10 predictions to see what labels are being assigned
-      console.log('[Offscreen] DEBUG - First 15 predictions:',
-        result.predictions?.slice(0, 15).map((p, i) => ({ token: result.tokens[i], label: p.label })));
-    } else {
-      console.log('[Offscreen] Entities found:', result.entities.map(e => ({ type: e.type, text: e.text })));
-    }
-
     return {
       success: true,
       entities: result.entities,
-      performance: result.performanceMs,
-      // Include debug info in response for main console
-      debug: {
-        tokenCount: result.tokens?.length,
-        nonOLabels: nonOPredictions.length,
-        nonODetails: nonOPredictions.slice(0, 10), // First 10 non-O labels
-        samplePredictions: result.predictions?.slice(0, 10).map((p, i) => ({
-          token: result.tokens[i],
-          label: p.label
-        }))
-      }
+      performance: result.performanceMs
     };
   } catch (error) {
     console.error('[Offscreen] Inference failed:', error);
@@ -142,8 +105,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Return false to indicate we're not handling this message
     return false;
   }
-
-  console.log('[Offscreen] Received message:', message.type);
 
   // Handle async operations
   (async () => {
@@ -206,14 +167,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 const AUTO_INIT = false; // Set to true to pre-load model
 
 if (AUTO_INIT) {
-  console.log('[Offscreen] Auto-initializing model...');
-  initializeModel().then(result => {
-    if (result.success) {
-      console.log('[Offscreen] Auto-initialization successful');
-    } else {
-      console.error('[Offscreen] Auto-initialization failed:', result.error);
-    }
-  });
+  initializeModel();
 }
-
-console.log('[Offscreen] ML Worker ready');

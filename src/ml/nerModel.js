@@ -46,14 +46,8 @@ export class NERModel {
    * Initialize ONNX Runtime with execution providers
    */
   async initializeRuntime() {
-    console.log('[NERModel] Initializing ONNX Runtime...');
-    console.log('[NERModel] WASM config: proxy=false, threads=4, simd=true');
-    console.log('[NERModel] WASM paths:', ort.env.wasm.wasmPaths);
-
     // Use WASM only - WebGPU requires JSEP proxy which is problematic in extensions
     const executionProviders = ['wasm'];
-
-    console.log('[NERModel] Execution providers:', executionProviders);
     return executionProviders;
   }
 
@@ -61,9 +55,6 @@ export class NERModel {
    * Load the ONNX model
    */
   async loadModel(modelPath) {
-    console.log('[NERModel] Loading model from:', modelPath);
-    const startTime = performance.now();
-
     try {
       // Initialize runtime
       const executionProviders = await this.initializeRuntime();
@@ -75,11 +66,6 @@ export class NERModel {
         enableCpuMemArena: true,
         enableMemPattern: true,
       });
-
-      const loadTime = performance.now() - startTime;
-      console.log(`[NERModel] Model loaded in ${loadTime.toFixed(0)}ms`);
-      console.log('[NERModel] Input names:', this.session.inputNames);
-      console.log('[NERModel] Output names:', this.session.outputNames);
 
       this.modelPath = modelPath;
       return true;
@@ -93,8 +79,6 @@ export class NERModel {
    * Load vocabulary for tokenization
    */
   async loadVocab(vocabPath) {
-    console.log('[NERModel] Loading vocabulary from:', vocabPath);
-
     try {
       const response = await fetch(vocabPath);
       const text = await response.text();
@@ -108,7 +92,6 @@ export class NERModel {
         this.vocab.set(token, idx);
       });
 
-      console.log(`[NERModel] Loaded ${this.vocab.size} vocabulary tokens`);
       return true;
     } catch (error) {
       console.error('[NERModel] Failed to load vocabulary:', error);
@@ -283,8 +266,6 @@ export class NERModel {
 
       const totalTime = performance.now() - startTime;
 
-      console.log(`[NERModel] Inference completed in ${totalTime.toFixed(0)}ms (inference: ${inferenceTime.toFixed(0)}ms)`);
-
       return {
         entities,
         tokens,
@@ -391,7 +372,6 @@ export class NERModel {
    */
   setReady() {
     this.isReady = true;
-    console.log('[NERModel] Model is ready for inference');
   }
 
   /**
@@ -404,6 +384,5 @@ export class NERModel {
     }
     this.vocab = null;
     this.isReady = false;
-    console.log('[NERModel] Model resources released');
   }
 }
