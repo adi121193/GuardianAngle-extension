@@ -29,6 +29,22 @@ let isSimulatedInteraction = false;
 let nerInitialized = false;
 let nerInitializationAttempted = false;
 
+// Cached settings for synchronous access (updated on change)
+let cachedNEREnabled = false;
+let cachedDetectionMode = 'hybrid';
+
+// Listen for settings changes to update cache
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.settings) {
+    const newSettings = changes.settings.newValue;
+    if (newSettings) {
+      cachedNEREnabled = newSettings.nerEnabled !== false;
+      cachedDetectionMode = newSettings.detectionMode || 'hybrid';
+      console.log(`[monitorInputs] Settings updated - NER: ${cachedNEREnabled}, mode: ${cachedDetectionMode}`);
+    }
+  }
+});
+
 // Feature flag: scan visible chat history (now controlled by settings - Priority 3)
 // Default: false (opt-in for performance, prevents costly scans on every mutation)
 let SCAN_HISTORY = false;
@@ -539,11 +555,16 @@ function attachListeners(element) {
       const text = getTextContent(event.target);
       console.log('[PII Guardian DEBUG] Enter pressed, text:', text.substring(0, 50) + '...');
 
-      // Quick PII check (synchronous)
-      const quickCheck = quickPIICheck(text);
-      console.log('[PII Guardian DEBUG] quickPIICheck result:', quickCheck);
+      // Use cached NER settings for synchronous decision
+      // NER can detect names/organizations that quickPIICheck can't
+      const useNER = cachedNEREnabled && cachedDetectionMode !== 'regex';
 
-      if (quickCheck) {
+      // Quick PII check (synchronous) - catches structured PII like phone/email
+      const quickCheck = quickPIICheck(text);
+      console.log('[PII Guardian DEBUG] quickPIICheck result:', quickCheck, 'useNER:', useNER);
+
+      // Block if quickCheck found something OR if NER is enabled (NER can detect things quickCheck can't)
+      if (quickCheck || useNER) {
         // BLOCK IMMEDIATELY - Must be synchronous!
         event.preventDefault();
         event.stopPropagation();
@@ -806,8 +827,14 @@ function blockSendButton() {
 
       const text = getTextContent(input);
 
-      // Quick PII check (synchronous)
-      if (quickPIICheck(text)) {
+      // Use cached NER settings for synchronous decision
+      const useNER = cachedNEREnabled && cachedDetectionMode !== 'regex';
+
+      // Quick PII check (synchronous) - catches structured PII
+      const quickCheck = quickPIICheck(text);
+
+      // Block if quickCheck found something OR if NER is enabled
+      if (quickCheck || useNER) {
         // BLOCK IMMEDIATELY - Must be synchronous!
         event.preventDefault();
         event.stopPropagation();
@@ -943,15 +970,41 @@ async function initializeNER() {
       return;
     }
 
-    console.log('PII Guardian: Requesting NER initialization...');
+    console.log('PII Guardian: Checking NER status...');
+
+    // First, check if NER is already initialized (handles page reload case)
+    const statusResponse = await safeSendMessage({ type: 'NER_STATUS' });
+
+    if (statusResponse && statusResponse.isReady) {
+      console.log('PII Guardian: NER already initialized, enabling...');
+      // NER is already ready - enable it immediately
+      offscreenManagerProxy.setReady(true);
+      enableNER(offscreenManagerProxy);
+      nerInitialized = true;
+      console.log('PII Guardian: NER enabled (was already initialized)');
+      return;
+    }
+
+    // NER not ready - check if model was previously downloaded
+    // If so, we need to re-initialize (e.g., after extension reload)
+    if (settings.nerModelDownloaded) {
+      console.log('PII Guardian: Model was previously downloaded, re-initializing...');
+    } else {
+      console.log('PII Guardian: Requesting NER initialization...');
+    }
 
     // Request NER initialization from background script
     const response = await safeSendMessage({ type: 'INIT_NER' });
 
     if (response && response.success) {
-      console.log('PII Guardian: NER initialization requested successfully');
+      console.log('PII Guardian: NER initialization successful');
+      // Enable NER immediately after successful init
+      offscreenManagerProxy.setReady(true);
+      enableNER(offscreenManagerProxy);
+      nerInitialized = true;
+      console.log('PII Guardian: NER enabled');
     } else {
-      console.warn('PII Guardian: NER initialization request failed');
+      console.warn('PII Guardian: NER initialization request failed:', response?.error);
     }
   } catch (error) {
     console.error('PII Guardian: Error requesting NER initialization:', error);
@@ -970,6 +1023,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // NER_READY: NER model is initialized
   if (message.type === 'NER_READY') {
+    // Only enable if not already initialized (prevents duplicate initialization)
+    if (nerInitialized) {
+      console.log('PII Guardian: NER ready notification received (already initialized, skipping)');
+      sendResponse({ success: true, alreadyInitialized: true });
+      return false;
+    }
+
     console.log('PII Guardian: NER ready notification received');
 
     // Set proxy as ready
@@ -1037,14 +1097,18 @@ async function initialize() {
 
   console.log('PII Guardian: Input monitoring initialized');
 
-  // Load history scanning settings (Priority 3: Opt-in)
+  // Load settings including NER and history scanning
   try {
     const settings = await getSettings();
     SCAN_HISTORY = settings.scanHistory ?? false;
     SCAN_HISTORY_DEPTH = settings.scanHistoryDepth ?? 50;
+    // Cache NER settings for synchronous access in event handlers
+    cachedNEREnabled = settings.nerEnabled !== false;
+    cachedDetectionMode = settings.detectionMode || 'hybrid';
     console.log(`[monitorInputs] History scanning: ${SCAN_HISTORY ? 'enabled (depth: ' + SCAN_HISTORY_DEPTH + ')' : 'disabled (opt-in)'}`);
+    console.log(`[monitorInputs] NER enabled: ${cachedNEREnabled}, mode: ${cachedDetectionMode}`);
   } catch (error) {
-    console.warn('[monitorInputs] Failed to load history scanning settings, using defaults (off):', error);
+    console.warn('[monitorInputs] Failed to load settings, using defaults:', error);
     SCAN_HISTORY = false;
   }
 

@@ -23,7 +23,11 @@ const DEFAULT_SETTINGS = {
     'ifsc',
     'gst',
     'dob',
-    'ipAddress'
+    'ipAddress',
+    // NER-detected entity types
+    'person_name',
+    'organization',
+    'location'
   ],
   notificationSound: true,
   proEnabled: false,
@@ -59,6 +63,7 @@ const DEFAULT_SETTINGS = {
 
 /**
  * Get settings from storage
+ * Merges stored settings with defaults to ensure new settings are always available
  * @returns {Promise<Object>} Settings object
  */
 export async function getSettings() {
@@ -74,11 +79,49 @@ export async function getSettings() {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        const settings = result.settings || DEFAULT_SETTINGS;
-        resolve(settings);
+        // Merge stored settings with defaults to ensure new default values are included
+        // This handles upgrades where new settings are added to defaults
+        const storedSettings = result.settings || {};
+        const mergedSettings = {
+          ...DEFAULT_SETTINGS,
+          ...storedSettings,
+          // Special handling for arrays - merge enabledPIITypes to include new NER types
+          enabledPIITypes: mergeEnabledTypes(
+            DEFAULT_SETTINGS.enabledPIITypes,
+            storedSettings.enabledPIITypes
+          ),
+          // Deep merge stats object
+          stats: {
+            ...DEFAULT_SETTINGS.stats,
+            ...(storedSettings.stats || {})
+          }
+        };
+        resolve(mergedSettings);
       }
     });
   });
+}
+
+/**
+ * Merge enabled PII types, ensuring new default types are included
+ * @param {Array} defaultTypes - Default enabled types
+ * @param {Array} storedTypes - User's stored types (may be undefined)
+ * @returns {Array} Merged types array
+ */
+function mergeEnabledTypes(defaultTypes, storedTypes) {
+  if (!storedTypes || !Array.isArray(storedTypes)) {
+    return defaultTypes;
+  }
+  // Create a Set from stored types, then add any new default types
+  const typeSet = new Set(storedTypes);
+  // Add NER types that might be missing from old settings
+  const nerTypes = ['person_name', 'organization', 'location'];
+  for (const nerType of nerTypes) {
+    if (defaultTypes.includes(nerType) && !typeSet.has(nerType)) {
+      typeSet.add(nerType);
+    }
+  }
+  return Array.from(typeSet);
 }
 
 /**

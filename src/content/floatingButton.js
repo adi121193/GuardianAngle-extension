@@ -197,6 +197,14 @@ async function runDetection(element) {
     }
 
     // Full detection with explicit NER options
+    // DEBUG: Log what enabledTypes we're passing
+    console.log('[floatingButton] Calling detectPII with settings:', {
+      enabledPIITypes: settings.enabledPIITypes,
+      hasNERTypes: settings.enabledPIITypes?.includes('person_name'),
+      nerEnabled: settings.nerEnabled,
+      detectionMode: settings.detectionMode
+    });
+
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
       enabledTypes: settings.enabledPIITypes,

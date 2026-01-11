@@ -91,10 +91,35 @@ async function runNERInference(text, options = {}) {
 
     console.log(`[Offscreen] Found ${result.entities.length} entities`);
 
+    // Debug: Log tokens and predictions for troubleshooting
+    const nonOPredictions = result.predictions
+      ?.map((p, i) => ({ index: i, token: result.tokens[i], ...p }))
+      .filter(p => p.label !== 'O') || [];
+
+    if (result.entities.length === 0) {
+      console.log('[Offscreen] DEBUG - Tokens:', result.tokens?.slice(0, 20));
+      console.log('[Offscreen] DEBUG - Non-O predictions:', nonOPredictions);
+      // Also log first 10 predictions to see what labels are being assigned
+      console.log('[Offscreen] DEBUG - First 15 predictions:',
+        result.predictions?.slice(0, 15).map((p, i) => ({ token: result.tokens[i], label: p.label })));
+    } else {
+      console.log('[Offscreen] Entities found:', result.entities.map(e => ({ type: e.type, text: e.text })));
+    }
+
     return {
       success: true,
       entities: result.entities,
-      performance: result.performanceMs
+      performance: result.performanceMs,
+      // Include debug info in response for main console
+      debug: {
+        tokenCount: result.tokens?.length,
+        nonOLabels: nonOPredictions.length,
+        nonODetails: nonOPredictions.slice(0, 10), // First 10 non-O labels
+        samplePredictions: result.predictions?.slice(0, 10).map((p, i) => ({
+          token: result.tokens[i],
+          label: p.label
+        }))
+      }
     };
   } catch (error) {
     console.error('[Offscreen] Inference failed:', error);
@@ -110,6 +135,14 @@ async function runNERInference(text, options = {}) {
  * Handle messages from service worker
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Only handle messages meant for the offscreen document
+  // Messages like RUN_NER_INFERENCE are for the service worker, not us
+  const handledTypes = ['NER_INIT', 'INIT_NER', 'NER_INFERENCE', 'NER_STATUS', 'NER_DISPOSE'];
+  if (!handledTypes.includes(message.type)) {
+    // Return false to indicate we're not handling this message
+    return false;
+  }
+
   console.log('[Offscreen] Received message:', message.type);
 
   // Handle async operations
@@ -152,12 +185,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ success: true });
           break;
 
-        default:
-          console.warn('[Offscreen] Unknown message type:', message.type);
-          sendResponse({
-            success: false,
-            error: 'Unknown message type'
-          });
+        // No default case needed - unknown messages are filtered above
       }
     } catch (error) {
       console.error('[Offscreen] Error handling message:', error);

@@ -74,17 +74,42 @@ function shouldUseNER(text, regexResults) {
 function convertNERToPII(nerEntities, text) {
   const piiResults = [];
 
+  console.log('[convertNERToPII] Converting entities:', {
+    entityCount: nerEntities?.length,
+    entities: nerEntities,
+    textLength: text?.length,
+    textPreview: text?.substring(0, 100)
+  });
+
   for (const entity of nerEntities) {
     const piiType = NER_TO_PII_MAP[entity.type];
-    if (!piiType) continue;
+    console.log('[convertNERToPII] Processing entity:', {
+      entityType: entity.type,
+      entityText: entity.text,
+      mappedPiiType: piiType
+    });
 
-    // Find entity position in original text
+    if (!piiType) {
+      console.warn('[convertNERToPII] No PII type mapping for:', entity.type);
+      continue;
+    }
+
+    // Find entity position in original text (case-insensitive search as fallback)
     const entityText = entity.text;
-    const index = text.indexOf(entityText);
+    let index = text.indexOf(entityText);
 
-    if (index === -1) continue;
+    // Try case-insensitive search if exact match fails
+    if (index === -1) {
+      index = text.toLowerCase().indexOf(entityText.toLowerCase());
+      console.log('[convertNERToPII] Case-insensitive search for:', entityText, 'found at:', index);
+    }
 
-    piiResults.push({
+    if (index === -1) {
+      console.warn('[convertNERToPII] Entity text not found in original text:', entityText);
+      continue;
+    }
+
+    const piiResult = {
       type: piiType,
       value: entityText,
       category: 'IDENTITY',
@@ -93,9 +118,13 @@ function convertNERToPII(nerEntities, text) {
       start: index,
       end: index + entityText.length,
       nerEntity: entity
-    });
+    };
+
+    console.log('[convertNERToPII] Created PII result:', piiResult);
+    piiResults.push(piiResult);
   }
 
+  console.log('[convertNERToPII] Final results:', piiResults.length, 'PII items');
   return piiResults;
 }
 
@@ -193,9 +222,20 @@ export class HybridDetector {
 
   /**
    * Set offscreen manager for NER
+   * Clears cache only if manager actually changes
    */
   setOffscreenManager(manager) {
+    // Skip if same manager already set
+    if (this.offscreenManager === manager) {
+      console.log('[HybridDetector] Offscreen manager already set, skipping');
+      return;
+    }
+
     this.offscreenManager = manager;
+    // Clear cache when manager changes to avoid stale results
+    this.nerCache.clear();
+    this.nerInitialized = false; // Reset init state
+    console.log('[HybridDetector] Offscreen manager set, cache cleared');
   }
 
   /**
@@ -231,9 +271,15 @@ export class HybridDetector {
 
   /**
    * Run NER detection with caching
+   * NOTE: Only caches non-empty results to avoid caching failures
    */
   async runNER(text) {
-    console.log('[HybridDetector] runNER called, offscreenManager:', !!this.offscreenManager);
+    // CRITICAL DEBUG: Use console.warn for higher visibility
+    console.warn('[HybridDetector] >>> runNER() ENTRY <<<', {
+      hasOffscreenManager: !!this.offscreenManager,
+      offscreenManagerReady: this.offscreenManager?.isNERReady?.(),
+      textLength: text?.length
+    });
 
     if (!this.offscreenManager) {
       console.warn('[HybridDetector] No offscreen manager - NER unavailable');
@@ -246,11 +292,19 @@ export class HybridDetector {
       return { entities: [], cached: false, unavailable: true };
     }
 
-    // Check cache
+    // Check cache - only use cached results if they have entities
     const cacheKey = text.substring(0, 200); // Use first 200 chars as key
     if (this.nerCache.has(cacheKey)) {
-      console.log('[HybridDetector] Using cached NER result');
-      return { entities: this.nerCache.get(cacheKey), cached: true };
+      const cachedEntities = this.nerCache.get(cacheKey);
+      // Only use cache if it has actual entities (don't return cached empty results)
+      if (cachedEntities && cachedEntities.length > 0) {
+        console.log('[HybridDetector] Using cached NER result:', cachedEntities.length, 'entities');
+        return { entities: cachedEntities, cached: true };
+      } else {
+        // Remove invalid/empty cache entry
+        console.log('[HybridDetector] Removing empty cached result, running fresh inference');
+        this.nerCache.delete(cacheKey);
+      }
     }
 
     // Ensure NER is initialized
@@ -266,18 +320,27 @@ export class HybridDetector {
     try {
       console.log('[HybridDetector] Running NER inference...');
       const result = await this.offscreenManager.runInference(text);
-      console.log('[HybridDetector] NER inference result:', { success: result.success, entityCount: result.entities?.length });
+      console.log('[HybridDetector] NER inference result:', {
+        success: result.success,
+        entityCount: result.entities?.length,
+        debug: result.debug  // Show debug info from offscreen
+      });
 
-      if (result.success) {
-        // Cache result
+      if (result.success && result.entities && result.entities.length > 0) {
+        // Only cache non-empty results
         if (this.nerCache.size >= this.maxCacheSize) {
           // Remove oldest entry
           const firstKey = this.nerCache.keys().next().value;
           this.nerCache.delete(firstKey);
         }
         this.nerCache.set(cacheKey, result.entities);
+        console.log('[HybridDetector] Cached NER result:', result.entities.length, 'entities');
 
         return { entities: result.entities, cached: false };
+      } else if (result.success) {
+        // Successful but empty - don't cache, just return
+        console.log('[HybridDetector] NER returned empty (no entities detected)');
+        return { entities: [], cached: false };
       } else {
         console.error('[HybridDetector] NER inference failed:', result.error);
         return { entities: [], cached: false, error: result.error };
@@ -295,11 +358,14 @@ export class HybridDetector {
     const startTime = performance.now();
     const mode = options.mode || this.mode;
 
-    console.log('[HybridDetector] detect() called:', {
+    // CRITICAL DEBUG: Use console.warn for higher visibility
+    console.warn('[HybridDetector] >>> detect() ENTRY <<<', {
       textLength: text?.length,
+      textPreview: text?.substring(0, 50),
       mode,
       nerEnabled: this.nerEnabled,
-      hasOffscreenManager: !!this.offscreenManager
+      hasOffscreenManager: !!this.offscreenManager,
+      offscreenManagerReady: this.offscreenManager?.isNERReady?.()
     });
 
     // Always run regex detection (fast)

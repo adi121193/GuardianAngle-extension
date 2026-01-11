@@ -44,13 +44,15 @@ export async function detectPII(text, options = {}) {
 
   let results;
 
-  // DEBUG: Log detection parameters
-  console.log('[detectText] detectPII called:', {
+  // CRITICAL DEBUG: Use console.warn for higher visibility
+  console.warn('[detectText] >>> detectPII() ENTRY <<<', {
     textLength: text?.length,
+    textPreview: text?.substring(0, 50),
     mode,
     useNER,
     nerEnabled,
-    minConfidence
+    minConfidence,
+    hybridDetectorState: hybridDetector?.getStats?.()
   });
 
   // Determine detection method based on mode
@@ -71,7 +73,9 @@ export async function detectPII(text, options = {}) {
       console.log('[detectText] Hybrid detection results:', {
         count: hybridResults.count,
         regexCount: hybridResults.sources?.regex,
-        nerCount: hybridResults.sources?.ner
+        nerCount: hybridResults.sources?.ner,
+        detections: hybridResults.detections,
+        detectionsLength: hybridResults.detections?.length
       });
 
       // Convert hybrid results to existing format with positions

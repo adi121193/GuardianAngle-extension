@@ -14,16 +14,17 @@ ort.env.logLevel = 'warning';
 ort.env.wasm.wasmPaths = chrome.runtime.getURL('onnxruntime-web/');
 
 // Label mapping for BERT-base NER
+// CRITICAL: Must match model's config.json id2label mapping exactly!
 const LABEL_MAP = {
   0: 'O',      // Outside entity
-  1: 'B-PER',  // Begin Person
-  2: 'I-PER',  // Inside Person
-  3: 'B-ORG',  // Begin Organization
-  4: 'I-ORG',  // Inside Organization
-  5: 'B-LOC',  // Begin Location
-  6: 'I-LOC',  // Inside Location
-  7: 'B-MISC', // Begin Miscellaneous
-  8: 'I-MISC'  // Inside Miscellaneous
+  1: 'B-MISC', // Begin Miscellaneous
+  2: 'I-MISC', // Inside Miscellaneous
+  3: 'B-PER',  // Begin Person
+  4: 'I-PER',  // Inside Person
+  5: 'B-ORG',  // Begin Organization
+  6: 'I-ORG',  // Inside Organization
+  7: 'B-LOC',  // Begin Location
+  8: 'I-LOC'   // Inside Location
 };
 
 // Entity types we care about for PII
@@ -118,50 +119,71 @@ export class NERModel {
   /**
    * BERT-style tokenizer (improved word-piece tokenization)
    * Handles punctuation and special characters better
+   * IMPORTANT: Preserves case for CASED models - capitalization is crucial for NER
    */
   tokenize(text) {
     const tokens = ['[CLS]'];
 
-    // Normalize whitespace and lowercase
+    // Normalize whitespace only (DO NOT lowercase - this is a CASED model!)
     const normalized = text.trim().replace(/\s+/g, ' ');
 
     // Split on whitespace and punctuation while preserving punctuation
     const rawWords = normalized.split(/(\s+|[.,!?;:()\[\]{}'"<>\/\\@#$%^&*+=|~`-])/g)
       .filter(w => w.trim().length > 0);
 
-    for (let word of rawWords) {
+    for (const originalWord of rawWords) {
       // Skip pure whitespace
-      if (/^\s+$/.test(word)) continue;
+      if (/^\s+$/.test(originalWord)) continue;
 
-      // Lowercase for vocabulary lookup
-      word = word.toLowerCase();
+      // CASED model: Try original case first, then lowercase fallback
+      // This preserves important case signals for NER (e.g., "Amazon" vs "amazon")
+      let word = originalWord;
 
-      // Try full word first
+      // Try full word as-is first (preserving case)
       if (this.vocab.has(word)) {
         tokens.push(word);
-      } else {
-        // Word-piece tokenization
-        let start = 0;
-        while (start < word.length) {
-          let end = word.length;
-          let found = false;
+        continue;
+      }
 
-          while (start < end) {
-            const substr = start === 0 ? word.substring(start, end) : '##' + word.substring(start, end);
-            if (this.vocab.has(substr)) {
-              tokens.push(substr);
-              start = end;
-              found = true;
-              break;
-            }
-            end--;
+      // Try lowercase version
+      const lowerWord = word.toLowerCase();
+      if (this.vocab.has(lowerWord)) {
+        tokens.push(lowerWord);
+        continue;
+      }
+
+      // Word-piece tokenization - try cased first, then uncased
+      let start = 0;
+      while (start < word.length) {
+        let end = word.length;
+        let found = false;
+
+        while (start < end) {
+          // Try original case
+          const substrCased = start === 0 ? word.substring(start, end) : '##' + word.substring(start, end);
+          if (this.vocab.has(substrCased)) {
+            tokens.push(substrCased);
+            start = end;
+            found = true;
+            break;
           }
 
-          if (!found) {
-            // Unknown token
-            tokens.push('[UNK]');
-            start++; // Move forward to avoid infinite loop
+          // Try lowercase
+          const substrLower = start === 0 ? lowerWord.substring(start, end) : '##' + lowerWord.substring(start, end);
+          if (this.vocab.has(substrLower)) {
+            tokens.push(substrLower);
+            start = end;
+            found = true;
+            break;
           }
+
+          end--;
+        }
+
+        if (!found) {
+          // Unknown token
+          tokens.push('[UNK]');
+          start++; // Move forward to avoid infinite loop
         }
       }
     }
