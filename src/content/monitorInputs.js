@@ -25,6 +25,40 @@ const lastCheckedValues = new WeakMap();
 // This prevents infinite loops when we programmatically click send button or dispatch Enter key
 let isSimulatedInteraction = false;
 
+// Track text that user explicitly chose to "Send Anyway"
+// This allows the text through when user manually presses Enter after choosing to send
+let bypassedText = null;
+let bypassedTextTimestamp = 0;
+const BYPASS_EXPIRY_MS = 10000; // 10 seconds expiry
+
+/**
+ * Check if text should bypass PII detection (user chose "Send Anyway")
+ * @param {string} text - Text to check
+ * @returns {boolean}
+ */
+function isTextBypassed(text) {
+  if (!bypassedText) return false;
+
+  // Check if bypass has expired
+  if (Date.now() - bypassedTextTimestamp > BYPASS_EXPIRY_MS) {
+    bypassedText = null;
+    bypassedTextTimestamp = 0;
+    return false;
+  }
+
+  // Check if text matches (trim to handle whitespace differences)
+  return text.trim() === bypassedText.trim();
+}
+
+/**
+ * Mark text as bypassed (user chose "Send Anyway")
+ * @param {string} text - Text to bypass
+ */
+function setTextBypassed(text) {
+  bypassedText = text;
+  bypassedTextTimestamp = Date.now();
+}
+
 // NER initialization state
 let nerInitialized = false;
 let nerInitializationAttempted = false;
@@ -537,12 +571,23 @@ function attachListeners(element) {
     if (event.key === 'Enter' && !event.shiftKey) {
       const text = getTextContent(event.target);
 
+      // Check if user already chose "Send Anyway" for this exact text
+      if (isTextBypassed(text)) {
+        console.log('[PII Guardian] Bypassing detection - user chose Send Anyway');
+        // Clear the bypass after use
+        bypassedText = null;
+        bypassedTextTimestamp = 0;
+        return; // Allow through without blocking
+      }
+
       // Use cached NER settings for synchronous decision
       // NER can detect names/organizations that quickPIICheck can't
       const useNER = cachedNEREnabled && cachedDetectionMode !== 'regex';
 
       // Quick PII check (synchronous) - catches structured PII like phone/email
       const quickCheck = quickPIICheck(text);
+
+      console.log('[PII Guardian] Enter key check:', { textLen: text.length, quickCheck, useNER, cachedNEREnabled, cachedDetectionMode });
 
       // Block if quickCheck found something OR if NER is enabled (NER can detect things quickCheck can't)
       if (quickCheck || useNER) {
@@ -644,7 +689,8 @@ async function handlePIIDetectionForEnterKey(element, text) {
         break;
 
       case 'send':
-        // User chose to send anyway - actually send it
+        // User chose to send anyway - mark text as bypassed and try to send
+        setTextBypassed(text);
         simulateEnterKey(element);
         break;
 
@@ -795,6 +841,14 @@ function blockSendButton() {
 
       const text = getTextContent(input);
 
+      // Check if user already chose "Send Anyway" for this exact text
+      if (isTextBypassed(text)) {
+        // Clear the bypass after use
+        bypassedText = null;
+        bypassedTextTimestamp = 0;
+        return; // Allow through without blocking
+      }
+
       // Use cached NER settings for synchronous decision
       const useNER = cachedNEREnabled && cachedDetectionMode !== 'regex';
 
@@ -900,7 +954,8 @@ async function handlePIIDetectionForSendButton(input, text, button) {
         break;
 
       case 'send':
-        // User chose to send anyway - click the button
+        // User chose to send anyway - mark text as bypassed and try to click
+        setTextBypassed(text);
         button.click();
         break;
 
