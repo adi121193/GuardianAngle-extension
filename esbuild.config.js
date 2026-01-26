@@ -32,6 +32,7 @@ const buildOptions = {
     'ui/dashboard': 'src/ui/dashboard.js',
     'ui/license': 'src/ui/license.js',
     'ui/history': 'src/ui/history.js',
+    'ui/debugOcr': 'src/ui/debugOcr.js',
 
     // Background script
     'background/serviceWorker': 'src/background/serviceWorker.js',
@@ -143,6 +144,21 @@ async function build() {
       }
       console.log(`     Copied ${ortFiles.length} ORT files (.wasm, .mjs, .js)`);
     }
+
+    // 7. Copy Tesseract.js files
+    console.log('  → tesseract.js files');
+    mkdirSync('dist/ocr', { recursive: true });
+
+    // Copy worker
+    copyFileSync('node_modules/tesseract.js/dist/worker.min.js', 'dist/ocr/worker.min.js');
+
+    // Copy core JS
+    copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm.js', 'dist/ocr/tesseract-core.wasm.js');
+
+    // Copy core WASM (CRITICAL missing file)
+    copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm', 'dist/ocr/tesseract-core.wasm');
+
+    console.log('     Copied Tesseract worker and core files');
 
     console.log('\n✅ Build complete!\n');
     console.log('📂 Output directory: dist/');

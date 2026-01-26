@@ -154,7 +154,7 @@ class OffscreenManager {
    * Run NER inference
    */
   async runInference(text, options = {}) {
-    console.log('[OffscreenManager] Running inference...');
+    console.log('[OffscreenManager] Running NER inference...');
 
     try {
       const response = await this.sendMessage({
@@ -164,14 +164,14 @@ class OffscreenManager {
       });
 
       if (response.success) {
-        console.log(`[OffscreenManager] Inference complete: ${response.entities.length} entities found`);
+        console.log(`[OffscreenManager] NER Inference complete: ${response.entities.length} entities found`);
         return {
           success: true,
           entities: response.entities,
           performance: response.performance
         };
       } else {
-        console.error('[OffscreenManager] Inference failed:', response.error);
+        console.error('[OffscreenManager] NER Inference failed:', response.error);
         return {
           success: false,
           error: response.error,
@@ -179,11 +179,44 @@ class OffscreenManager {
         };
       }
     } catch (error) {
-      console.error('[OffscreenManager] Failed to run inference:', error);
+      console.error('[OffscreenManager] Failed to run NER inference:', error);
       return {
         success: false,
         error: error.message,
         entities: []
+      };
+    }
+  }
+
+  /**
+   * Run OCR inference
+   */
+  async runOCR(imageData) {
+    console.log('[OffscreenManager] Running OCR inference...');
+
+    try {
+      const response = await this.sendMessage({
+        type: 'OCR_DETECT',
+        image: imageData
+      });
+
+      if (response.success) {
+        console.log(`[OffscreenManager] OCR Inference complete: ${response.count} matches`);
+        return response; // Pass full response (piiDetected, matches, text)
+      } else {
+        console.error('[OffscreenManager] OCR Inference failed:', response.error);
+        return {
+          success: false,
+          error: response.error,
+          piiDetected: false
+        };
+      }
+    } catch (error) {
+      console.error('[OffscreenManager] Failed to run OCR inference:', error);
+      return {
+        success: false,
+        error: error.message,
+        piiDetected: false
       };
     }
   }

@@ -1,61 +1,73 @@
-import { activateLicense, deactivateLicense, checkLicenseStatus } from '../utils/licenseValidation.js';
+/**
+ * License Activation Logic
+ */
 
+import { setProStatus, getProStatus } from '../utils/storage.js';
+
+const elements = {
+  licenseKey: document.getElementById('licenseKey'),
+  activateBtn: document.getElementById('activateBtn'),
+  errorMsg: document.getElementById('errorMsg'),
+  activationForm: document.getElementById('activationForm'),
+  successScreen: document.getElementById('successScreen'),
+  closeBtn: document.getElementById('closeBtn')
+};
+
+/**
+ * Initialize
+ */
 async function init() {
-  await loadLicenseStatus();
+  const isPro = await getProStatus();
+  if (isPro) {
+    showSuccess();
+  }
 
-  document.getElementById('activateBtn').addEventListener('click', async () => {
-    const licenseKey = document.getElementById('licenseKeyInput').value.trim();
-    const statusMessage = document.getElementById('statusMessage');
+  elements.activateBtn.addEventListener('click', handleActivation);
+  elements.closeBtn.addEventListener('click', () => window.close());
 
-    if (!licenseKey) {
-      showMessage('Please enter a license key', 'error');
-      return;
-    }
-
-    const result = await activateLicense(licenseKey);
-
-    if (result.success) {
-      showMessage('License activated successfully!', 'success');
-      await loadLicenseStatus();
-      document.getElementById('licenseKeyInput').value = '';
-    } else {
-      showMessage('Activation failed: ' + result.error, 'error');
-    }
-  });
-
-  document.getElementById('deactivateBtn').addEventListener('click', async () => {
-    if (confirm('Deactivate Pro license?')) {
-      await deactivateLicense();
-      showMessage('License deactivated', 'success');
-      await loadLicenseStatus();
-    }
-  });
-
-  document.getElementById('closeBtn').addEventListener('click', () => {
-    window.close();
+  elements.licenseKey.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleActivation();
   });
 }
 
-async function loadLicenseStatus() {
-  const status = await checkLicenseStatus();
-  const currentSection = document.getElementById('currentLicenseSection');
+/**
+ * Handle Activation Logic
+ */
+async function handleActivation() {
+  const key = elements.licenseKey.value.trim();
 
-  if (status.active) {
-    currentSection.style.display = 'block';
-    document.getElementById('licenseProduct').textContent = status.product;
-    document.getElementById('licenseExpiry').textContent = new Date(status.expiry).toLocaleDateString();
-    document.getElementById('licenseDaysRemaining').textContent = status.daysRemaining;
+  elements.activateBtn.textContent = 'Verifying...';
+  elements.activateBtn.disabled = true;
+  elements.errorMsg.style.display = 'none';
+
+  // Simulate network delay
+  await new Promise(r => setTimeout(r, 800));
+
+  // Mock Validation Logic
+  // Any key starting with 'PRO-' or 'TEST' is valid for MVP
+  // In Phase 2: Call Supabase/Stripe API here
+  const isValid = key.toUpperCase().startsWith('PRO-') || key.toUpperCase().startsWith('TEST');
+
+  if (isValid) {
+    // Save Pro Status
+    // Expiry: 1 year from now
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1);
+
+    await setProStatus(true, key, expiry.toISOString());
+    showSuccess();
   } else {
-    currentSection.style.display = 'none';
+    elements.errorMsg.style.display = 'block';
+    elements.activateBtn.textContent = 'Activate Now';
+    elements.activateBtn.disabled = false;
+    elements.licenseKey.classList.add('error-shake');
+    setTimeout(() => elements.licenseKey.classList.remove('error-shake'), 500);
   }
 }
 
-function showMessage(message, type) {
-  const statusMessage = document.getElementById('statusMessage');
-  statusMessage.textContent = message;
-  statusMessage.style.display = 'block';
-  statusMessage.style.backgroundColor = type === 'success' ? '#e8f5e9' : '#ffebee';
-  statusMessage.style.color = type === 'success' ? '#2e7d32' : '#c62828';
+function showSuccess() {
+  elements.activationForm.style.display = 'none';
+  elements.successScreen.style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', init);

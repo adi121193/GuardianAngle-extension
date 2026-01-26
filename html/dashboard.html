@@ -1,46 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PII Guardian - Dashboard</title>
-  <link rel="stylesheet" href="/dist/styles/settings.css">
+  <title>PII Guardian - Protection Dashboard</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
 </head>
+
 <body>
-  <div class="container">
-    <header class="header">
-      <h1>Dashboard</h1>
-      <button class="btn-close" id="closeBtn">×</button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <span>PII Guardian</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Overview
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+        Detections
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+        Settings
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="pro-badge">
+        <h4>Upgrade to Pro</h4>
+        <p>Get Image OCR & Teams</p>
+        <button class="btn-sm-white">Upgrade</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+    <header class="top-bar">
+      <h2 class="page-title">Dashboard Overview</h2>
+      <div class="user-profile">
+        <span style="font-weight: 500; font-size: 14px;">Local Session</span>
+        <div class="avatar"></div>
+      </div>
     </header>
 
-    <div class="settings-content">
-      <section class="settings-section">
-        <h2>Statistics Overview</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px;">
-            <div style="font-size: 32px; font-weight: bold;" id="totalDetections">0</div>
-            <div style="opacity: 0.9;">Total Detections</div>
+    <div class="content-scroll">
+
+      <!-- Stats Cards -->
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon icon-blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+            </div>
           </div>
-          <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px;">
-            <div style="font-size: 32px; font-weight: bold;" id="totalMasked">0</div>
-            <div style="opacity: 0.9;">Total Masked</div>
+          <div class="stat-value" id="totalDetections">0</div>
+          <div class="stat-label">Total PII Detections</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon icon-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
           </div>
-          <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 12px;">
-            <div style="font-size: 32px; font-weight: bold;" id="totalBlocked">0</div>
-            <div style="opacity: 0.9;">Total Blocked</div>
+          <div class="stat-value" id="totalMasked">0</div>
+          <div class="stat-label">Items Masked</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon icon-orange">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="totalBlocked">0</div>
+          <div class="stat-label">Blocked Attempts</div>
+        </div>
+      </div>
+
+      <!-- Detection Analysis -->
+      <section>
+        <div class="section-header">
+          <h3 class="section-title">Detection Analysis</h3>
+        </div>
+
+        <div class="chart-card">
+          <div id="noDataMessage"
+            style="display: none; color: var(--text-secondary); text-align: center; padding: 20px;">
+            No detection data available yet. Start typing in chat inputs to see analytics.
+          </div>
+
+          <div id="chartContainer" class="chart-bar-container">
+            <!-- Dynamic Chart Bars will go here -->
           </div>
         </div>
       </section>
 
-      <section class="settings-section">
-        <h2>Detections by Type</h2>
-        <div id="detectionsByType" style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
-          <p style="color: #666;">No detections yet</p>
-        </div>
-      </section>
     </div>
-  </div>
+  </main>
 
-  <script src="/dist/ui/dashboard.js"></script>
+  <script src="../ui/dashboard.js" type="module"></script>
 </body>
+
 </html>

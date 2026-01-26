@@ -685,27 +685,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // ONLY handle INIT_NER from popup - NER_INIT goes to offscreen document
   // This is critical: NER_INIT must NOT be handled here or the offscreen document won't receive it
   if (message.type === 'INIT_NER') {
-    const forceDownload = message.forceDownload || false;
-
-    console.log(`[ServiceWorker] NER initialization requested from UI (forceDownload: ${forceDownload})`);
-
-    // Optional: Send progress updates to popup
-    if (forceDownload && sender.tab) {
-      // Simulate progress for user download experience
-      // In real implementation, this would track actual model download
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress += 10;
-        if (progress <= 100) {
-          chrome.runtime.sendMessage({
-            type: 'NER_DOWNLOAD_PROGRESS',
-            progress: progress
-          }).catch(() => clearInterval(progressInterval));
-        } else {
-          clearInterval(progressInterval);
-        }
-      }, 300);
-    }
+    console.log('[ServiceWorker] NER initialization requested from UI');
 
     initializeNER().then(() => {
       sendResponse({ success: true });
@@ -768,5 +748,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })();
 
     return true; // Keep channel open for async response
+  }
+
+  // Handle OCR inference requests from content scripts
+  if (message.type === 'RUN_OCR_INFERENCE') {
+    console.log(`[ServiceWorker] Received OCR inference request`);
+
+    (async () => {
+      try {
+        const result = await offscreenManager.runOCR(message.image);
+        console.log(`[ServiceWorker] OCR inference complete: ${result.success ? 'success' : 'failed'}`);
+        sendResponse(result);
+      } catch (error) {
+        console.error('[ServiceWorker] OCR inference error:', error);
+        sendResponse({
+          success: false,
+          error: error.message,
+          piiDetected: false
+        });
+      }
+    })();
+
+    return true; // Keep channel open
   }
 });

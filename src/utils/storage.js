@@ -40,7 +40,7 @@ const DEFAULT_SETTINGS = {
   detectionMode: 'hybrid',        // 'regex_only', 'ner_only', 'hybrid'
   nerAutoInit: false,             // Auto-initialize NER on startup (false = lazy load)
   // v1.3.0: NER Model Download & Popup UI Settings
-  nerModelDownloaded: false,      // Track if NER model has been downloaded
+  nerModelDownloaded: true,       // Track if NER model has been downloaded
   nerNeverAsk: false,             // User chose "Always use regex only" - permanently disable
   nerDownloadPromptShown: false,  // Track if download prompt has been shown
   // History Scanning (Priority 3: Opt-in for performance)

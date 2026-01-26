@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PII Guardian - OCR Debugger</title>
+    <link rel="stylesheet" href="../styles/popup.css">
+</head>
+
+<body style="padding: 20px; width: 600px; height: auto;">
+    <h1>OCR Debugger</h1>
+    <p>Upload an image to test Tesseract detection in isolation.</p>
+
+    <div style="margin: 20px 0;">
+        <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <div id="status" style="margin: 10px 0; padding: 10px; background: #eee;">
+        Status: Waiting...
+    </div>
+
+    <pre id="logs"
+        style="background: #333; color: #0f0; padding: 10px; height: 300px; overflow: auto; font-size: 12px;"></pre>
+
+    <script src="../ui/debugOcr.js"></script>
+</body>
+
+</html>

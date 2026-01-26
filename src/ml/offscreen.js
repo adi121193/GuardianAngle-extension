@@ -5,6 +5,7 @@
  */
 
 import { NERModel } from './nerModel.js';
+import { imageDetectorImplementation } from '../detection/imageDetectorImplementation.js';
 
 // Global model instance
 let nerModel = null;
@@ -100,7 +101,7 @@ async function runNERInference(text, options = {}) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Only handle messages meant for the offscreen document
   // Messages like RUN_NER_INFERENCE are for the service worker, not us
-  const handledTypes = ['NER_INIT', 'INIT_NER', 'NER_INFERENCE', 'NER_STATUS', 'NER_DISPOSE'];
+  const handledTypes = ['NER_INIT', 'INIT_NER', 'NER_INFERENCE', 'NER_STATUS', 'NER_DISPOSE', 'OCR_DETECT'];
   if (!handledTypes.includes(message.type)) {
     // Return false to indicate we're not handling this message
     return false;
@@ -111,23 +112,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       switch (message.type) {
         case 'NER_INIT':
-        case 'INIT_NER':  // Accept both message types for compatibility
+        case 'INIT_NER':
           const initResult = await initializeModel();
           sendResponse(initResult);
           break;
 
         case 'NER_INFERENCE':
+          // ... (existing NER logic)
           if (!message.text) {
-            sendResponse({
-              success: false,
-              error: 'No text provided',
-              entities: []
-            });
+            sendResponse({ success: false, error: 'No text' });
             break;
           }
+          const nerRes = await runNERInference(message.text, message.options);
+          sendResponse(nerRes);
+          break;
 
-          const inferenceResult = await runNERInference(message.text, message.options);
-          sendResponse(inferenceResult);
+        case 'OCR_DETECT':
+          try {
+            // Ensure initialized
+            try {
+              await imageDetectorImplementation.initialize();
+            } catch (e) { console.error('OCR Init fail', e); }
+
+            // Run detection
+            const ocrRes = await imageDetectorImplementation.detect(message.image);
+            sendResponse({
+              success: !ocrRes.error,
+              piiDetected: ocrRes.piiDetected,
+              text: ocrRes.text,
+              matches: ocrRes.matches,
+              count: ocrRes.count,
+              error: ocrRes.error
+            });
+          } catch (err) {
+            console.error('OCR Detect Fatal', err);
+            sendResponse({ success: false, error: err.message });
+          }
           break;
 
         case 'NER_STATUS':
@@ -145,19 +165,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           }
           sendResponse({ success: true });
           break;
-
-        // No default case needed - unknown messages are filtered above
       }
     } catch (error) {
       console.error('[Offscreen] Error handling message:', error);
-      sendResponse({
-        success: false,
-        error: error.message
-      });
+      sendResponse({ success: false, error: error.message });
     }
   })();
 
-  // Return true to indicate async response
   return true;
 });
 

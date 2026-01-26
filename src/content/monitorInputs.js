@@ -4,11 +4,14 @@
  */
 
 import { detectPII, quickPIICheck, enableNER } from './detectText.js';
+import { imageDetector } from '../detection/imageDetector.js';
 import { showWarningModal, isModalActive } from './injectWarningUI.js';
-import { getSettings, incrementDetection, incrementBlocked, isEnabled } from '../utils/storage.js';
+import { getSettings, incrementDetection, incrementBlocked, isEnabled, getProStatus } from '../utils/storage.js';
 import { initializeInlineHighlighting, injectHighlightStyles } from './inlineHighlighter.js';
 import { initializeFloatingButton, injectFloatingButtonStyles } from './floatingButton.js';
 import { offscreenManagerProxy } from '../ml/offscreenManagerProxy.js';
+import { ManualMaskUI } from './ui/manualMaskOverlay.js';
+import { redactImage } from '../utils/imageRedact.js';
 
 // Debounce timers
 const debounceTimers = new WeakMap();
@@ -101,8 +104,8 @@ async function safeSendMessage(message) {
   } catch (error) {
     // Check for specific context invalidation errors
     if (error.message?.includes('Extension context invalidated') ||
-        error.message?.includes('message channel closed') ||
-        error.message?.includes('Receiving end does not exist')) {
+      error.message?.includes('message channel closed') ||
+      error.message?.includes('Receiving end does not exist')) {
       console.log('[monitorInputs] Extension reloaded:', error.message);
       // Could show user notification or reload content script
       return null;
@@ -164,10 +167,10 @@ function isAIChatInput(element) {
   return aiInputPatterns.some(pattern => {
     const regex = new RegExp(pattern, 'i');
     return regex.test(className) ||
-           regex.test(id) ||
-           regex.test(placeholder) ||
-           regex.test(ariaLabel) ||
-           regex.test(role);
+      regex.test(id) ||
+      regex.test(placeholder) ||
+      regex.test(ariaLabel) ||
+      regex.test(role);
   });
 }
 
@@ -211,15 +214,15 @@ function findEditableContainer(element) {
 
   // Look for ProseMirror editor (Claude.ai uses this)
   const proseMirror = element.closest('.ProseMirror') ||
-                      element.closest('[contenteditable="true"]') ||
-                      document.querySelector('.ProseMirror');
+    element.closest('[contenteditable="true"]') ||
+    document.querySelector('.ProseMirror');
   if (proseMirror) {
     return proseMirror;
   }
 
   // Look for textarea (fallback)
   const textarea = element.closest('textarea') ||
-                   document.querySelector('textarea[data-testid="chat-input-ssr"]');
+    document.querySelector('textarea[data-testid="chat-input-ssr"]');
   if (textarea) {
     return textarea;
   }
@@ -247,9 +250,9 @@ function getTextContent(element) {
 
   // Check if it's a contenteditable element (handles 'true', 'inherit', truthy values)
   const isContentEditable = container.contentEditable === 'true' ||
-                            container.contentEditable === true ||
-                            container.isContentEditable ||
-                            container.classList?.contains('ProseMirror');
+    container.contentEditable === true ||
+    container.isContentEditable ||
+    container.classList?.contains('ProseMirror');
 
   if (isContentEditable || container.innerHTML) {
     // Try multiple methods to get text from ProseMirror/contenteditable
@@ -291,8 +294,8 @@ function getTextContent(element) {
  */
 function setTextContent(element, text) {
   const isContentEditable = element.contentEditable === 'true' ||
-                            element.isContentEditable ||
-                            element.classList?.contains('ProseMirror');
+    element.isContentEditable ||
+    element.classList?.contains('ProseMirror');
 
   if (isContentEditable) {
     // For ProseMirror/contenteditable, try multiple approaches
@@ -517,6 +520,69 @@ async function handlePaste(event) {
           break;
       }
     }
+    // Check for image paste
+    if (event.clipboardData.files && event.clipboardData.files.length > 0) {
+      const file = event.clipboardData.files[0];
+      if (file.type.startsWith('image/')) {
+        console.log('[PII Guardian] Image paste detected.');
+
+        // CHECK PRO LICENSE
+        const isPro = await getProStatus();
+        if (!isPro) {
+          console.log('[PII Guardian] Image OCR blocked - Upgrade required.');
+          // Show "Upgrade to Pro" modal/alert
+          // For MVP: Just a simple alert or redirect
+          // Ideally we show a nice modal, but for speed:
+          const confirmUpgrade = confirm('📷 Image PII Detection is a Pro Feature.\n\nProtect your privacy in screenshots and images.\n\nUpgrade to Pro now?');
+          if (confirmUpgrade) {
+            window.open(chrome.runtime.getURL('html/license.html'), '_blank');
+          }
+          return;
+        }
+
+        // Handle image OCR
+        console.log('[PII Guardian] Pro Active - Running OCR...');
+
+        // Notify user we are scanning (optional UI update could go here)
+
+        const ocrResult = await imageDetector.detect(file);
+
+        if (ocrResult.piiDetected) {
+          event.preventDefault(); // Block paste
+
+          // Increment counters
+          ocrResult.matches.forEach(m => incrementDetection(m.type));
+
+          // Show modal
+          const tempElement = document.createElement('div'); // Dummy element
+          const decision = await showWarningModal({
+            ...ocrResult,
+            matches: ocrResult.matches.map(m => ({ ...m, source: 'ocr', bbox: m.bbox })), // Pass bbox
+            types: [...new Set(ocrResult.matches.map(m => m.type))]
+          }, tempElement);
+
+          if (decision.action === 'mask') {
+            console.log('[PII Guardian] Redacting pasted image...');
+            const redactedFile = await redactImage(file, ocrResult.matches);
+
+            // For Paste, we CAN manipulate the Clipboard (sometimes) or fallback to download
+            // Try to write to clipboard? Requires permissions.
+            // Safer fallback: Download
+
+            alert('✅ PII Redacted! The safe image has been downloaded. Please paste the "redacted_' + file.name + '" file.');
+            const url = URL.createObjectURL(redactedFile);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = redactedFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+          } else if (decision.action === 'send') {
+            // Re-dispatch paste logic or info user
+            alert('Please paste again to confirm (PII Guardian limitation: cannot auto-paste image after blocking)');
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error('PII Guardian: Error handling paste:', error);
   }
@@ -558,7 +624,8 @@ function attachListeners(element) {
   });
 
   // Paste event (immediate check)
-  element.addEventListener('paste', handlePaste);
+  // Use capture phase to intercept before React/website handles it
+  element.addEventListener('paste', handlePaste, true);
 
   // Enter key event - CRITICAL: Block submission if PII detected
   // NOTE: NOT async - must call preventDefault() synchronously!
@@ -834,8 +901,8 @@ function blockSendButton() {
 
       // Find the input element
       const input = document.querySelector('[contenteditable="true"]') ||
-                    document.querySelector('textarea') ||
-                    document.querySelector('input[type="text"]');
+        document.querySelector('textarea') ||
+        document.querySelector('input[type="text"]');
 
       if (!input || !isAIChatInput(input)) return;
 
@@ -1174,53 +1241,53 @@ async function initialize() {
               if (isAIChatInput(element)) {
                 attachListeners(element);
               }
-});
+            });
 
-/**
- * Scan visible chat history for PII (does not modify DOM)
- * Uses quickPIICheck first, then full detectPII; increments stats but no masking.
- */
-async function scanChatHistory() {
-  try {
-    const messages = findChatMessages();
-    if (!messages.length) return;
+            /**
+             * Scan visible chat history for PII (does not modify DOM)
+             * Uses quickPIICheck first, then full detectPII; increments stats but no masking.
+             */
+            async function scanChatHistory() {
+              try {
+                const messages = findChatMessages();
+                if (!messages.length) return;
 
-    const settings = await getSettings();
-    if (!settings.enabled) return;
+                const settings = await getSettings();
+                if (!settings.enabled) return;
 
-    // Limit scan depth to prevent performance issues (Priority 3)
-    const maxMessages = Math.min(messages.length, SCAN_HISTORY_DEPTH);
-    const messagesToScan = messages.slice(-maxMessages); // Scan most recent messages
+                // Limit scan depth to prevent performance issues (Priority 3)
+                const maxMessages = Math.min(messages.length, SCAN_HISTORY_DEPTH);
+                const messagesToScan = messages.slice(-maxMessages); // Scan most recent messages
 
-    console.log(`[scanChatHistory] Scanning ${messagesToScan.length}/${messages.length} messages (depth limit: ${SCAN_HISTORY_DEPTH})`);
+                console.log(`[scanChatHistory] Scanning ${messagesToScan.length}/${messages.length} messages (depth limit: ${SCAN_HISTORY_DEPTH})`);
 
-    for (const msg of messagesToScan) {
-      // Avoid reprocessing the same node
-      monitoredHistory.add(msg);
+                for (const msg of messagesToScan) {
+                  // Avoid reprocessing the same node
+                  monitoredHistory.add(msg);
 
-      const text = msg.innerText || msg.textContent || '';
-      if (!text || text.length < 5) continue;
+                  const text = msg.innerText || msg.textContent || '';
+                  if (!text || text.length < 5) continue;
 
-      if (!quickPIICheck(text)) continue;
+                  if (!quickPIICheck(text)) continue;
 
-      const detectionResult = await detectPII(text, {
-        minConfidence: settings.minConfidence,
-        enabledTypes: settings.enabledPIITypes,
-        useNER: settings.nerEnabled !== false,
-        detectionMode: settings.detectionMode || 'hybrid'
-      });
+                  const detectionResult = await detectPII(text, {
+                    minConfidence: settings.minConfidence,
+                    enabledTypes: settings.enabledPIITypes,
+                    useNER: settings.nerEnabled !== false,
+                    detectionMode: settings.detectionMode || 'hybrid'
+                  });
 
-      if (detectionResult.piiDetected) {
-        // Increment detection counters
-        for (const type of detectionResult.types) {
-          await incrementDetection(type);
-        }
-      }
-    }
-  } catch (error) {
-    console.error('PII Guardian: Error scanning chat history:', error);
-  }
-}
+                  if (detectionResult.piiDetected) {
+                    // Increment detection counters
+                    for (const type of detectionResult.types) {
+                      await incrementDetection(type);
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error('PII Guardian: Error scanning chat history:', error);
+              }
+            }
 
             // Re-scan for send buttons
             blockSendButton();
@@ -1237,11 +1304,130 @@ async function scanChatHistory() {
   });
 }
 
+// Global paste/drop/change listener (capture phase)
+// Intercepts image uploads before web apps (like React/ChatGPT) can stop propagation
+
+const handleExternalImage = (file, event) => {
+  console.log('[PII Guardian] Global capture: Image upload detected', event.type);
+
+  // Reuse handlePaste logic but with a mocked event object if needed
+  // Or better, extract the core logic to a shared function. 
+  // For now, we simulate a clipboarData structure to reuse handlePaste or call handling logic directly.
+
+  // Since handlePaste expects a ClipboardEvent, let's create a specialized handler for direct files
+  handleDirectFile(file, event);
+};
+
+// 1. Paste
+document.addEventListener('paste', (event) => {
+  if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type.startsWith('image/')) {
+    handlePaste(event);
+  }
+}, true);
+
+// 2. Drag & Drop
+document.addEventListener('drop', (event) => {
+  if (event.dataTransfer?.files?.length > 0) {
+    const file = event.dataTransfer.files[0];
+    if (file.type.startsWith('image/')) {
+      handleExternalImage(file, event);
+    }
+  }
+}, true);
+
+// 3. File Input Change (Clicking the + button)
+document.addEventListener('change', (event) => {
+  if (event.target.tagName === 'INPUT' && event.target.type === 'file') {
+    if (event.target.files?.length > 0) {
+      const file = event.target.files[0];
+      if (file.type.startsWith('image/')) {
+        handleExternalImage(file, event);
+      }
+    }
+  }
+}, true);
+
+/**
+ * Handle direct file upload (Drop/Change)
+ */
+async function handleDirectFile(file, event) {
+  try {
+    const settings = await getSettings();
+    if (!settings.enabled) return;
+
+    // Check Pro Status
+    const isPro = await getProStatus();
+    if (!isPro) {
+      if (confirm('📷 Image PII Detection is a Pro Feature. Upgrade now?')) {
+        window.open(chrome.runtime.getURL('html/license.html'), '_blank');
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    console.log('[PII Guardian] Processing image upload...');
+    const ocrResult = await imageDetector.detect(file);
+
+    if (ocrResult.piiDetected) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Show warning
+      const tempElement = document.createElement('div');
+      ocrResult.matches.forEach(m => incrementDetection(m.type));
+
+      // DEBUG LOGGING: Check if bboxes made it back
+      console.log('[monitorInputs] OCR Matches Received:', JSON.stringify(ocrResult.matches.map(m => ({
+        text: m.value,
+        bbox: m.bbox
+      })), null, 2));
+
+      const decision = await showWarningModal({
+        ...ocrResult,
+        matches: ocrResult.matches.map(m => ({ ...m, source: 'ocr', bbox: m.bbox })),
+        types: [...new Set(ocrResult.matches.map(m => m.type))],
+        originalFile: file // PASS FILE FOR MANUAL MASKING
+      }, tempElement);
+
+      if (decision.action === 'mask') {
+        console.log('[PII Guardian] User chose to mask image (Auto-Redaction)');
+        const redactedFile = await redactImage(file, ocrResult.matches, ocrResult.debugWords);
+        downloadSafeImage(redactedFile, file.name);
+      } else if (decision.action === 'manual_mask') {
+        console.log('[PII Guardian] User chose to mask image (Manual Redaction)');
+        // The file is already redacted from the UI
+        const redactedFile = decision.file;
+        downloadSafeImage(redactedFile, file.name);
+      }
+    }
+  } catch (err) {
+    console.error('[PII Guardian] Image upload error:', err);
+    // FAIL LOUDLY: Tell the user
+    if (err.message.includes('Redaction') || err.message.includes('Canvas')) {
+      alert('❌ Redaction Failed: ' + err.message);
+    }
+  }
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initialize);
 } else {
   initialize();
+}
+
+// Helper to download redacted image
+function downloadSafeImage(file, originalName) {
+  alert('✅ PII Redacted! The safe image has been downloaded. Please upload the "redacted_' + originalName + '" file.');
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = file.name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // Re-scan periodically for inputs and buttons (fallback for complex SPAs)

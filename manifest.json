@@ -66,11 +66,14 @@
         "models/*",
         "styles/*",
         "assets/*",
+        "ocr/*",
         "onnxruntime-web/*.wasm",
         "onnxruntime-web/*.mjs",
         "onnxruntime-web/*.js"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "content_security_policy": {

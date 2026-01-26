@@ -5,6 +5,7 @@
 
 import { maskText } from '../utils/maskRules.js';
 import { incrementMasked } from '../utils/storage.js';
+import { ManualMaskUI } from './ui/manualMaskOverlay.js';
 
 // Track active modals to prevent duplicates
 let activeModal = null;
@@ -97,14 +98,19 @@ function createModalHTML(detectionResult, originalText = '') {
 
   // Create detailed PII list with actual detected values
   const piiDetailsList = matches.map(match => {
-    const { type, value, name, confidence } = match;
+    const { type, value, confidence } = match;
+    // Fallback if name is missing
+    const name = match.name || type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1');
     const suggestion = getSuggestions(type);
 
     return `
       <li class="pii-detail-item">
         <div class="pii-detail-header">
           <span class="pii-detail-type">${name}</span>
-          <span class="pii-detail-confidence">${Math.round(confidence * 100)}%</span>
+          <div class="pii-detail-badges">
+            <span class="pii-detail-source pii-source-${match.source || 'regex'}">${(match.source || 'regex').toUpperCase()}</span>
+            <span class="pii-detail-confidence">${Math.round(confidence * 100)}%</span>
+          </div>
         </div>
         <div class="pii-detail-value">
           <strong>Detected:</strong>
@@ -240,6 +246,19 @@ function createModalHTML(detectionResult, originalText = '') {
             Cancel & Edit
           </button>
         </div>
+        
+        <!-- MANUAL MASK BTN INSERT -->
+        <div style="padding: 0 24px 16px; display: flex; justify-content: center;">
+             <button class="pii-btn" id="pii-manual-btn" style="background: #f59e0b; color: white; width: 100%;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                  <path d="M2 2l7.586 7.586"/>
+                  <circle cx="11" cy="11" r="2"/>
+                </svg>
+                Open Manual Redaction Studio (Beta)
+             </button>
+        </div>
 
         <div class="pii-modal-footer">
           <small>🔒 PII Guardian v1.1.0 - Protecting your privacy locally</small>
@@ -298,9 +317,10 @@ export async function showWarningModal(detectionResult, targetElement) {
     const sendBtn = shadow.getElementById('pii-send-btn');
     const cancelBtn = shadow.getElementById('pii-cancel-btn');
     const closeBtn = shadow.getElementById('pii-close-btn');
+    const manualBtn = shadow.getElementById('pii-manual-btn'); // New Button
 
     // Handle user decisions
-    const handleDecision = async (action) => {
+    const handleDecision = async (action, payload = null) => {
       container.remove();
       activeModal = null;
 
@@ -308,23 +328,72 @@ export async function showWarningModal(detectionResult, targetElement) {
       const result = {
         action,
         maskedText: null,
-        originalText: originalText
+        originalText: originalText,
+        file: payload // For manual mask file return
       };
 
-      if (action === 'mask') {
+      if (action === 'mask' && !payload) { // Auto-mask text
         result.maskedText = maskText(originalText, detectionResult.matches);
         await incrementMasked();
       }
-      // Note: incrementBlocked() is now called in monitorInputs.js only when actual blocking occurs
 
       resolve(result);
     };
 
+    // Auto-Mask Button Logic (Conditional)
+    if (maskBtn) {
+      // Hide Auto-Mask if it's an image (force manual)
+      // Check if originalFile exists in detectionResult to determine if it's an image
+      if (detectionResult.originalFile) {
+        maskBtn.style.display = 'none';
+      } else {
+        maskBtn.style.display = 'flex'; // Show for text
+      }
+
+      maskBtn.addEventListener('click', () => handleDecision('mask'));
+    }
+
     // Attach event listeners
-    maskBtn.addEventListener('click', () => handleDecision('mask'));
+    // maskBtn.addEventListener('click', () => handleDecision('mask')); // Handled above
     sendBtn.addEventListener('click', () => handleDecision('send'));
     cancelBtn.addEventListener('click', () => handleDecision('cancel'));
     closeBtn.addEventListener('click', () => handleDecision('cancel'));
+
+    // Manual Mask Logic
+    if (manualBtn) {
+      manualBtn.addEventListener('click', async () => {
+        // Temporarily hide modal but keep it effectively closed
+        container.style.display = 'none'; // Or just remove it? 
+        // Logic says remove it to avoid z-index wars.
+
+        try {
+          const ui = new ManualMaskUI();
+          // We need the original file. 
+          // Problem: 'detectionResult' usually doesn't have the file object unless we passed it.
+          // We passed 'detectionResult' from monitorInputs.js which was 'ocrResult'.
+          // Let's assume we can get the file from 'detectionResult.originalFile' if we modify monitorInputs to pass it.
+
+          // CRITICAL: We need the File object here.
+          // I will assume for now 'targetElement' might help or detectionResult has it.
+          // Actually, showWarningModal signature is (detectionResult, targetElement).
+          // In monitorInputs.js (line 1386), we call it. I need to make sure we pass the file there.
+
+          // Fallback: If no file, we can't manual mask images.
+          // But wait, Manual Mask is ONLY for images.
+          if (detectionResult.originalFile) {
+            const redactedFile = await ui.open(detectionResult.originalFile, detectionResult.matches);
+            handleDecision('manual_mask', redactedFile);
+          } else {
+            alert('Error: Original image lost. Cannot open studio.');
+            handleDecision('cancel');
+          }
+        } catch (err) {
+          console.log('Manual mask cancelled');
+          // Re-show modal? Or just cancel.
+          handleDecision('cancel');
+        }
+      });
+    }
 
     // Handle escape key
     const handleEscape = (e) => {
@@ -521,6 +590,38 @@ function getModalStyles() {
       font-size: 13px;
       color: #333;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .pii-detail-badges {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pii-detail-source {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px; /** Smaller than confidence */
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pii-source-regex {
+      background: #e0e0e0;
+      color: #555;
+      border: 1px solid #ccc;
+    }
+
+    .pii-source-ner {
+      background: #E1BEE7; /* Purple-ish */
+      color: #4A148C;
+      border: 1px solid #CE93D8;
+    }
+
+    .pii-source-ocr {
+      background: #FFCCBC; /* Orange-ish */
+      color: #BF360C;
+      border: 1px solid #FFAB91;
     }
 
     .pii-detail-confidence {
