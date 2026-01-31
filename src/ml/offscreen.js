@@ -12,21 +12,71 @@ let nerModel = null;
 let isInitializing = false;
 let initializationPromise = null;
 
+/** Lazy load Tesseract */
+let tesseractWorker = null;
+let tesseractCore = null;
+
+async function getOCRWorker() {
+  if (tesseractWorker) return tesseractWorker;
+
+  console.log('[Offscreen] Lazy-loading Tesseract...');
+
+  // Import Tesseract dynamically (assuming it's available globally or via importScript in worker context)
+  // Since we are in an offscreen document (DOM access), we can use script tags or dynamic imports
+  // Standard Tesseract.js usage:
+  const { createWorker } = window.Tesseract;
+
+  // Initialize worker
+  const worker = await createWorker('eng', 1, {
+    logger: m => console.debug(m),
+    workerPath: chrome.runtime.getURL('ocr/worker.min.js'),
+    corePath: chrome.runtime.getURL('ocr/tesseract-core.wasm.js'),
+  });
+
+  tesseractWorker = worker;
+  return tesseractWorker;
+}
+// Helper to send debug logs to main process
+function debugLog(type, message, data = null) {
+  const logEntry = {
+    type: 'DEBUG_LOG',
+    source: 'offscreen',
+    level: type, // 'info', 'warn', 'error'
+    message: message,
+    data: data,
+    timestamp: new Date().toISOString()
+  };
+
+  console.log(`[Offscreen:${type}]`, message, data || '');
+
+  // Try to send to runtime (might fail if background closed, but worth trying)
+  try {
+    chrome.runtime.sendMessage(logEntry).catch(() => { });
+  } catch (e) {
+    // Ignore send errors
+  }
+}
+
 /**
  * Initialize the NER model
  */
 async function initializeModel() {
+  debugLog('info', 'initializeModel called');
+
   if (nerModel?.isReady) {
+    debugLog('info', 'Model already ready');
     return { success: true };
   }
 
   if (isInitializing) {
+    debugLog('info', 'Initialization already in progress');
     return initializationPromise;
   }
 
   isInitializing = true;
   initializationPromise = (async () => {
     const startTime = performance.now();
+    debugLog('info', 'Starting model initialization sequence');
 
     try {
       // Create model instance
@@ -36,25 +86,37 @@ async function initializeModel() {
       const modelPath = chrome.runtime.getURL('models/distilbert-ner/model.onnx');
       const vocabPath = chrome.runtime.getURL('models/distilbert-ner/vocab.txt');
 
+      debugLog('info', 'Model Paths resolved', { modelPath, vocabPath });
+
       // Load model and vocabulary
+      debugLog('info', 'Loading model...');
       await nerModel.loadModel(modelPath);
+      debugLog('info', 'Model loaded successfully');
+
+      debugLog('info', 'Loading vocab...');
       await nerModel.loadVocab(vocabPath);
+      debugLog('info', 'Vocab loaded successfully');
 
       // Mark as ready
       nerModel.setReady();
 
       const totalTime = performance.now() - startTime;
+      debugLog('info', `Initialization complete in ${totalTime}ms`);
 
       return {
         success: true,
         initTimeMs: totalTime
       };
     } catch (error) {
+      debugLog('error', 'Model initialization FAILED', {
+        message: error.message,
+        stack: error.stack
+      });
       console.error('[Offscreen] Model initialization failed:', error);
       nerModel = null;
       return {
         success: false,
-        error: error.message
+        error: error.message + (error.stack ? `\n${error.stack}` : '')
       };
     } finally {
       isInitializing = false;

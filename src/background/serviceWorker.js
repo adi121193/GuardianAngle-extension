@@ -197,6 +197,12 @@ async function injectContentScript(tabId, forceReload = false) {
     injectedTabs.add(tabId);
     console.log('PII Guardian: Content script injected successfully into tab', tabId);
   } catch (error) {
+    // Suppress "Cannot access contents of url" errors - these are expected for strict domains
+    if (error.message?.includes('Cannot access') || error.message?.includes('Extension manifest')) {
+      // Just log debug, don't scream error
+      return;
+    }
+
     console.error('PII Guardian: Failed to inject content script into tab', tabId, ':', error.message);
 
     // If injection fails, show notification to user
@@ -260,7 +266,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
     // Open welcome page
     chrome.tabs.create({
-      url: chrome.runtime.getURL('html/popup.html')
+      url: chrome.runtime.getURL('html/welcome.html')
     });
   } else if (details.reason === 'update') {
     console.log('Extension updated from', details.previousVersion);

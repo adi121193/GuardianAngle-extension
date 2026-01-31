@@ -67,6 +67,7 @@
         "styles/*",
         "assets/*",
         "ocr/*",
+        "html/*.html",
         "onnxruntime-web/*.wasm",
         "onnxruntime-web/*.mjs",
         "onnxruntime-web/*.js"

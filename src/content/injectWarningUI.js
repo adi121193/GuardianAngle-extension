@@ -6,6 +6,7 @@
 import { maskText } from '../utils/maskRules.js';
 import { incrementMasked } from '../utils/storage.js';
 import { ManualMaskUI } from './ui/manualMaskOverlay.js';
+import { DESIGN_SYSTEM_CSS } from './ui/designSystem.js';
 
 // Track active modals to prevent duplicates
 let activeModal = null;
@@ -421,10 +422,13 @@ export async function showWarningModal(detectionResult, targetElement) {
  */
 function getModalStyles() {
   return `
+    ${DESIGN_SYSTEM_CSS}
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: var(--font-sans); /* System UI */
     }
 
     .pii-modal-overlay {
@@ -433,8 +437,8 @@ function getModalStyles() {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.7); /* Slate 950 alpha */
+      backdrop-filter: blur(8px); /* Modern Glass */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -443,84 +447,84 @@ function getModalStyles() {
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .pii-modal {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-bg-hover);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.05); /* Subtle inner border */
       max-width: 500px;
       width: 90%;
       max-height: 90vh;
       overflow: auto;
-      animation: slideUp 0.3s ease-out;
+      color: var(--color-text-primary);
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Elegant spring */
     }
 
     @keyframes slideUp {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+      from { transform: translateY(10px) scale(0.98); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
     }
 
     .pii-modal-header {
       padding: 24px;
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      border-bottom: 1px solid #e0e0e0;
+      gap: 16px;
+      border-bottom: 1px solid var(--color-bg-hover);
       position: relative;
+      background: var(--color-bg-surface);
     }
 
     .pii-modal-icon {
-      color: #FF9800;
+      color: var(--color-warning);
       flex-shrink: 0;
+      background: rgba(245, 158, 11, 0.1); /* Amber alpha */
+      padding: 10px;
+      border-radius: var(--radius-md);
     }
 
     .pii-modal-header h3 {
       font-size: 18px;
       font-weight: 600;
-      color: #333;
-      margin: 0 0 8px 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--color-text-primary);
+      margin: 0 0 4px 0;
+      letter-spacing: -0.01em;
     }
 
     .pii-risk-badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      color: white;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--color-bg-primary); 
+      border: 1px solid var(--color-bg-hover);
+      color: var(--color-text-secondary);
     }
 
     .pii-modal-close {
       position: absolute;
       top: 20px;
       right: 20px;
-      background: none;
+      background: transparent;
       border: none;
-      color: #666;
+      color: var(--color-text-muted);
       cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
+      padding: 6px;
+      border-radius: var(--radius-sm);
       transition: all 0.2s;
     }
 
     .pii-modal-close:hover {
-      background: #f5f5f5;
-      color: #333;
+      background: var(--color-bg-hover);
+      color: var(--color-text-primary);
     }
 
     .pii-modal-body {
@@ -528,54 +532,26 @@ function getModalStyles() {
     }
 
     .pii-warning-text {
-      color: #555;
-      margin-bottom: 16px;
+      color: var(--color-text-secondary);
+      margin-bottom: 20px;
       font-size: 14px;
-      line-height: 1.5;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
     }
 
-    .pii-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 16px 0;
-      background: #f9f9f9;
-      border-radius: 8px;
-      padding: 16px;
-    }
-
-    .pii-list li {
-      padding: 8px 0;
-      color: #333;
-      font-size: 14px;
-      border-bottom: 1px solid #e0e0e0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-list li:last-child {
-      border-bottom: none;
-    }
-
-    .pii-list li:before {
-      content: "⚠️ ";
-      margin-right: 8px;
-    }
-
-    /* Enhanced PII Details List */
+    /* Details List */
     .pii-details-list {
-      list-style: none;
-      padding: 0;
-      margin: 16px 0;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-bottom: 24px;
     }
 
     .pii-detail-item {
-      background: #f9f9f9;
-      border-radius: 8px;
-      padding: 12px;
-      border-left: 3px solid #FF9800;
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-bg-hover);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      transition: transform 0.1s;
     }
 
     .pii-detail-header {
@@ -588,8 +564,10 @@ function getModalStyles() {
     .pii-detail-type {
       font-weight: 600;
       font-size: 13px;
-      color: #333;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .pii-detail-badges {
@@ -597,279 +575,131 @@ function getModalStyles() {
       gap: 6px;
     }
 
-    .pii-detail-source {
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px; /** Smaller than confidence */
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .pii-source-regex {
-      background: #e0e0e0;
-      color: #555;
-      border: 1px solid #ccc;
-    }
-
-    .pii-source-ner {
-      background: #E1BEE7; /* Purple-ish */
-      color: #4A148C;
-      border: 1px solid #CE93D8;
-    }
-
-    .pii-source-ocr {
-      background: #FFCCBC; /* Orange-ish */
-      color: #BF360C;
-      border: 1px solid #FFAB91;
-    }
-
     .pii-detail-confidence {
-      background: #2196F3;
-      color: white;
+      background: var(--color-bg-primary);
+      color: var(--color-primary);
+      border: 1px solid var(--color-bg-hover);
       padding: 2px 8px;
-      border-radius: 4px;
+      border-radius: var(--radius-full);
       font-size: 11px;
       font-weight: 600;
     }
 
     .pii-detail-value {
-      margin: 8px 0;
+      background: var(--color-bg-primary);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-bg-hover);
+      font-family: var(--font-mono);
       font-size: 13px;
-      color: #666;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-detail-value strong {
-      color: #333;
-      font-weight: 600;
+      color: var(--color-text-secondary);
+      word-break: break-all;
     }
 
     .pii-detected-value {
-      display: inline-block;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 12px;
-      color: #856404;
-      margin-left: 6px;
-      word-break: break-all;
+        color: var(--color-warning);
+        background: transparent;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+    }
+
+    .pii-detected-value-masked {
+        color: var(--color-primary);
     }
 
     .pii-detail-suggestion {
       display: flex;
-      align-items: flex-start;
       gap: 8px;
-      margin-top: 8px;
-      padding: 8px;
-      background: #e3f2fd;
-      border-radius: 4px;
+      margin-top: 12px;
       font-size: 12px;
-      color: #1565c0;
+      color: var(--color-text-muted);
       line-height: 1.5;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-bg-hover);
     }
-
+    
     .pii-detail-suggestion svg {
-      flex-shrink: 0;
-      margin-top: 2px;
-      color: #2196F3;
+        color: var(--color-info);
     }
 
-    /* Ambiguous PII Detections */
-    .pii-ambiguous-section {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    .pii-ambiguous-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-ambiguous-title svg {
-      color: #9E9E9E;
-    }
-
-    .pii-detail-ambiguous {
-      border-left-color: #9E9E9E;
-      background: #fafafa;
-    }
-
-    .pii-confidence-low {
-      background: #9E9E9E;
-    }
-
-    .pii-suggestion-info {
-      background: #f5f5f5;
-      color: #666;
-    }
-
-    .pii-suggestion-info svg {
-      color: #9E9E9E;
-    }
-
-    /* Preview Section */
-    .pii-preview-section {
-      margin: 16px 0;
-      padding: 16px;
-      background: #f5f5f5;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
-    }
-
-    .pii-preview-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-preview-title svg {
-      color: #2196F3;
-    }
-
-    .pii-preview-box {
-      background: white;
-      border: 2px solid #2196F3;
-      border-radius: 6px;
-      padding: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #333;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .pii-preview-hint {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #666;
-      text-align: center;
-      font-style: italic;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-confidence {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .pii-confidence strong {
-      color: #333;
-    }
-
-    .pii-info {
-      color: #555;
-      font-size: 14px;
-      margin-bottom: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
+    /* Actions */
     .pii-modal-actions {
       padding: 0 24px 24px 24px;
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      flex-wrap: wrap;
+    }
+    
+    /* Full width buttons at bottom */
+    .pii-actions-row {
+        grid-column: span 2;
+        display: flex;
+        gap: 12px;
     }
 
     .pii-btn {
-      flex: 1;
-      min-width: 120px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      border: 1px solid transparent;
+      outline: none; /* Accessible focus provided by focus-visible */
+    }
+    
+    .pii-btn:focus-visible {
+        box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
     }
 
-    .pii-btn-primary {
-      background: #2196F3;
-      color: white;
+    .pii-btn-primary { 
+        background: var(--color-primary);
+        color: #fff;
+        font-weight: 600;
     }
-
     .pii-btn-primary:hover {
-      background: #1976D2;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        background: var(--color-primary-hover);
+        transform: translateY(-1px);
     }
 
     .pii-btn-secondary {
-      background: #f5f5f5;
-      color: #333;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-bg-hover);
+        color: var(--color-text-secondary);
     }
-
     .pii-btn-secondary:hover {
-      background: #e0e0e0;
+        background: var(--color-bg-hover);
+        color: var(--color-text-primary);
     }
-
+    
     .pii-btn-danger {
-      background: #f5f5f5;
-      color: #D32F2F;
-      border: 1px solid #e0e0e0;
+        background: transparent;
+        border: 1px solid var(--color-bg-hover);
+        color: var(--color-danger);
     }
-
     .pii-btn-danger:hover {
-      background: #ffebee;
-      border-color: #D32F2F;
+        border-color: var(--color-danger);
+        background: rgba(244, 63, 94, 0.1);
     }
 
-    .pii-btn:active {
-      transform: translateY(0);
-    }
-
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--color-bg-hover); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+    
     .pii-modal-footer {
-      padding: 16px 24px;
-      background: #f9f9f9;
-      border-top: 1px solid #e0e0e0;
-      text-align: center;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+       display: none; /* Hide footer for modern look */
     }
-
-    .pii-modal-footer small {
-      color: #666;
-      font-size: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
+    
     @media (max-width: 600px) {
-      .pii-modal {
-        width: 95%;
-      }
-
-      .pii-modal-actions {
-        flex-direction: column;
-      }
-
-      .pii-btn {
-        width: 100%;
-      }
+      .pii-modal { width: 95%; }
+      .pii-modal-actions { grid-template-columns: 1fr; }
     }
   `;
 }

@@ -128,12 +128,11 @@ export class NERModel {
         continue;
       }
 
-      // Try lowercase version
+      // REMOVED: Aggressive lowercase fallback (Broken for Cased models)
+      // const lowerWord = word.toLowerCase();
+      // if (this.vocab.has(lowerWord)) ...
+
       const lowerWord = word.toLowerCase();
-      if (this.vocab.has(lowerWord)) {
-        tokens.push(lowerWord);
-        continue;
-      }
 
       // Word-piece tokenization - try cased first, then uncased
       let start = 0;
@@ -151,7 +150,8 @@ export class NERModel {
             break;
           }
 
-          // Try lowercase
+          // REMOVED: Aggressive subword lowercase fallback
+          /*
           const substrLower = start === 0 ? lowerWord.substring(start, end) : '##' + lowerWord.substring(start, end);
           if (this.vocab.has(substrLower)) {
             tokens.push(substrLower);
@@ -159,6 +159,7 @@ export class NERModel {
             found = true;
             break;
           }
+          */
 
           end--;
         }
@@ -227,7 +228,7 @@ export class NERModel {
     return {
       input_ids: inputIdsTensor,
       attention_mask: attentionMaskTensor,
-      token_type_ids: tokenTypeIdsTensor
+      // token_type_ids: tokenTypeIdsTensor // Not used by DistilBERT
     };
   }
 

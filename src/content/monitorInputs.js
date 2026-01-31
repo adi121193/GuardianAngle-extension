@@ -535,7 +535,7 @@ async function handlePaste(event) {
           // Ideally we show a nice modal, but for speed:
           const confirmUpgrade = confirm('📷 Image PII Detection is a Pro Feature.\n\nProtect your privacy in screenshots and images.\n\nUpgrade to Pro now?');
           if (confirmUpgrade) {
-            window.open(chrome.runtime.getURL('html/license.html'), '_blank');
+            window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
           }
           return;
         }
@@ -1359,7 +1359,7 @@ async function handleDirectFile(file, event) {
     const isPro = await getProStatus();
     if (!isPro) {
       if (confirm('📷 Image PII Detection is a Pro Feature. Upgrade now?')) {
-        window.open(chrome.runtime.getURL('html/license.html'), '_blank');
+        window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
       }
       event.preventDefault();
       event.stopPropagation();

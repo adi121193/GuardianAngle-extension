@@ -39,7 +39,8 @@ export function initializeFloatingButton(element) {
     focus: () => scheduleDetection(element, true),
     paste: () => setTimeout(() => scheduleDetection(element, true), 50),
     blur: () => {
-      removeHighlights(element);
+      // Fix: Don't remove highlights on blur, as DOM modification closes attachment menus
+      // removeHighlights(element);
       scheduleDetection(element, true);
     }
   };
@@ -80,7 +81,6 @@ export function initializeFloatingButton(element) {
 
   // CRITICAL FIX BUG002: Create cleanup function
   const cleanup = () => {
-    console.info('PII Guardian: Cleaning up element', element);
 
     // Disconnect observer
     if (element._piiObserver) {
@@ -127,7 +127,6 @@ export function initializeFloatingButton(element) {
     detectionResults.delete(element);
     originalText.delete(element);
 
-    console.info('PII Guardian: Cleanup complete');
   };
 
   // Store cleanup function
@@ -167,7 +166,6 @@ async function runDetection(element) {
     // Guard: Check if extension context is still valid
     if (!chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
-        console.log('[floatingButton] Extension reloaded - old instance stopping (this is normal)');
         contextInvalidationWarned = true;
       }
       hideButton(element);
@@ -247,8 +245,18 @@ function highlightPII(element, detectionResult) {
   // CRITICAL FIX BUG001: Skip highlighting if element has focus (user is actively typing)
   // This prevents cursor position loss caused by innerHTML replacement during typing
   if (document.activeElement === element) {
-    console.info('PII Guardian: Skipping highlight during active typing to prevent cursor loss');
     return; // Only show floating button, no DOM manipulation
+  }
+
+  // CRITICAL FIX BUG003: Skip highlighting if user has text selected
+  // This prevents the extension from "blocking" selection by constantly resetting innerHTML
+  const currentSelection = window.getSelection();
+  if (currentSelection && currentSelection.toString().length > 0) {
+    // Check if selection is within our element
+    if (element.contains(currentSelection.anchorNode)) {
+      console.info('PII Guardian: Skipping highlight during active selection');
+      return;
+    }
   }
 
   // Check if already highlighted to avoid re-highlighting
@@ -267,7 +275,8 @@ function highlightPII(element, detectionResult) {
 
   try {
     // Get current text representation that matches detection
-    const currentText = element.innerText || element.textContent || '';
+    // Use textContent to preserve NBSPs and raw whitespace
+    const currentText = element.textContent || '';
 
     // Build a map of what needs to be highlighted
     // Sort by position descending to handle replacements correctly
@@ -306,16 +315,25 @@ function highlightPII(element, detectionResult) {
 
       // Verify the match actually exists at this position
       const actualValue = currentText.substring(position, position + value.length);
-      if (actualValue !== value) {
-        // Position mismatch - try to find it
-        const foundIndex = currentText.indexOf(value, Math.max(0, position - 50));
+
+      // Normalize both for comparison (ignore NBSP difference)
+      const normActual = actualValue.replace(/\u00A0/g, ' ');
+      const normExpect = value.replace(/\u00A0/g, ' ');
+
+      if (normActual !== normExpect) {
+        // Position mismatch - try to find it (using normalized text)
+        // We create a normalized version of text just for searching
+        const normText = currentText.replace(/\u00A0/g, ' ');
+        const foundIndex = normText.indexOf(normExpect, Math.max(0, position - 50));
+
         if (foundIndex === -1) continue; // Skip if can't find
 
         // Update position
         match.position = foundIndex;
       }
 
-      // Add text before this match (escaped)
+      // Use the match.position (possibly updated) to slice the ORIGINAL text
+      // This preserves the original whitespace/NBSPs in the non-highlighted parts
       highlightedHTML += escapeHtml(currentText.substring(lastIndex, match.position));
 
       // Add highlighted PII
@@ -496,15 +514,18 @@ function getTextContent(element, options = {}) {
     text = element.value || '';
   }
 
-  // Preserve separators: convert newlines to spaces and strip invisible chars
+  // Preserve separators: convert newlines to spaces but PRESERVE visible spacing
+  // We strictly replace NBSP with normal space for regex compatibility, but do NOT collapse multiple spaces
   const cleaned = text
     .replace(/\u00A0/g, ' ')   // NBSP -> space
     .replace(/\u200B/g, '')    // ZWSP
     .replace(/\u200C/g, '')    // ZWNJ
     .replace(/\u200D/g, '')    // ZWJ
-    .replace(/\s*\n\s*/g, ' ') // collapse line breaks to single space
-    .replace(/\s{2,}/g, ' ')   // collapse multiple spaces
-    .trim();
+    .replace(/\r\n/g, ' ')     // Windows newline
+    .replace(/\n/g, ' ')       // Unix newline
+    .replace(/\r/g, ' ');      // Mac newline
+  // .replace(/\s{2,}/g, ' ') // REMOVED: Do not collapse multiple spaces
+  // .trim(); // REMOVED: Do not trim, as it shifts indices if start has spaces
 
   return cleaned;
 }
@@ -608,6 +629,12 @@ function createButton(element, detectionResult) {
   button.addEventListener('click', (e) => {
     e.stopPropagation();
     togglePanel(element, button, detectionResult);
+  });
+
+  // CRITICAL FIX: Prevent input blur when clicking the button
+  // This ensures the input stays focused and we don't trigger blur logic
+  button.addEventListener('mousedown', (e) => {
+    e.preventDefault();
   });
 
   return button;
@@ -1037,13 +1064,16 @@ function formatPIIType(type) {
 
 /**
  * Escape HTML
+ * Preserves whitespace by converting multiple spaces to &nbsp; patterns
  * @param {string} text
  * @returns {string}
  */
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
-  return div.innerHTML;
+  // Convert consecutive spaces to preserve visual spacing in HTML
+  // "  " -> " &nbsp;" which renders as two spaces
+  return div.innerHTML.replace(/  /g, ' &nbsp;');
 }
 
 /**
@@ -1074,10 +1104,22 @@ function attachPanelHandlers(panel, element, detectionResult) {
   });
 
   // Mask all
-  panel.querySelector('[data-action="mask-all"]')?.addEventListener('click', async () => {
-    await maskAllPII(element, detectionResult);
-    closePanel(element);
-    scheduleDetection(element);
+  panel.querySelector('[data-action="mask-all"]')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const originalText = btn.innerText;
+
+    try {
+      btn.innerText = 'Masking...';
+      btn.disabled = true;
+
+      await maskAllPII(element, detectionResult);
+    } catch (error) {
+      console.error('Mask All failed:', error);
+      alert('Failed to mask text. Please try masking individual items.');
+    } finally {
+      closePanel(element);
+      scheduleDetection(element);
+    }
   });
 
   // Dismiss
@@ -1144,8 +1186,8 @@ async function maskSinglePII(element, detectionResult, index) {
     // Next mask action will re-detect automatically
   } catch (error) {
     if (error.message?.includes('context invalidated') ||
-        error.message?.includes('Extension context') ||
-        !chrome?.runtime?.id) {
+      error.message?.includes('Extension context') ||
+      !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
         console.log('[maskSinglePII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
@@ -1181,129 +1223,129 @@ async function removeSinglePII(element, detectionResult, index) {
     const { normalizeText, findNthOccurrence, findClosestOccurrence, getOccurrenceIndex, enhanceMatch } =
       await import('../utils/textNormalization.js');
 
-  // Use stored original text to avoid whitespace corruption from HTML conversion
-  const text = originalText.get(element) || getTextContent(element);
-  const originalDetectionText = originalText.get(element) || text;
-  const match = detectionResult.matches[index];
+    // Use stored original text to avoid whitespace corruption from HTML conversion
+    const text = originalText.get(element) || getTextContent(element);
+    const originalDetectionText = originalText.get(element) || text;
+    const match = detectionResult.matches[index];
 
-  const { value, position, start, end } = match;
+    const { value, position, start, end } = match;
 
-  // Enhance match with occurrence tracking
-  const enhanced = enhanceMatch(match, originalDetectionText);
-  const { occurrence, normalizedValue } = enhanced;
+    // Enhance match with occurrence tracking
+    const enhanced = enhanceMatch(match, originalDetectionText);
+    const { occurrence, normalizedValue } = enhanced;
 
-  const actualPosition = position ?? start ?? -1;
-  const actualEnd = end ?? (actualPosition >= 0 ? actualPosition + value.length : -1);
+    const actualPosition = position ?? start ?? -1;
+    const actualEnd = end ?? (actualPosition >= 0 ? actualPosition + value.length : -1);
 
-  let removalStart = -1;
-  let removalEnd = -1;
+    let removalStart = -1;
+    let removalEnd = -1;
 
-  // Strategy 1: Try exact position match
-  if (actualPosition >= 0 && actualEnd <= text.length) {
-    const textAtPosition = text.substring(actualPosition, actualEnd);
+    // Strategy 1: Try exact position match
+    if (actualPosition >= 0 && actualEnd <= text.length) {
+      const textAtPosition = text.substring(actualPosition, actualEnd);
 
-    if (textAtPosition === value) {
-      // Exact match - use it
-      removalStart = actualPosition;
-      removalEnd = actualEnd;
-    } else {
-      // Try normalized comparison
-      const normalizedAtPosition = normalizeText(textAtPosition);
-      if (normalizedAtPosition === normalizedValue) {
+      if (textAtPosition === value) {
+        // Exact match - use it
         removalStart = actualPosition;
         removalEnd = actualEnd;
-      }
-    }
-  }
-
-  // Strategy 2: Try nth-occurrence (most robust for duplicates)
-  if (removalStart < 0 && occurrence >= 0) {
-    console.log(`[removeSinglePII] Position mismatch, trying nth-occurrence (${occurrence}) for "${value}"`);
-
-    const nthMatch = findNthOccurrence(text, value, occurrence);
-
-    if (nthMatch) {
-      removalStart = nthMatch.start;
-      removalEnd = nthMatch.end;
-    } else {
-      // Try with normalized text
-      const normalizedText = normalizeText(text);
-      const nthNormMatch = findNthOccurrence(normalizedText, normalizedValue, occurrence);
-
-      if (nthNormMatch) {
-        // Map back to actual text position
-        let actualPos = 0;
-        let normPos = 0;
-
-        for (let i = 0; i < text.length && normPos < nthNormMatch.start; i++) {
-          const char = text[i];
-          const normChar = normalizeText(char);
-          if (normChar) normPos += normChar.length;
-          actualPos = i + 1;
+      } else {
+        // Try normalized comparison
+        const normalizedAtPosition = normalizeText(textAtPosition);
+        if (normalizedAtPosition === normalizedValue) {
+          removalStart = actualPosition;
+          removalEnd = actualEnd;
         }
-
-        removalStart = actualPos;
-        removalEnd = actualPos + value.length;
       }
     }
-  }
 
-  // Strategy 3: Find closest occurrence to expected position
-  if (removalStart < 0 && actualPosition >= 0) {
-    console.log(`[removeSinglePII] Trying closest occurrence near position ${actualPosition}`);
+    // Strategy 2: Try nth-occurrence (most robust for duplicates)
+    if (removalStart < 0 && occurrence >= 0) {
+      console.log(`[removeSinglePII] Position mismatch, trying nth-occurrence (${occurrence}) for "${value}"`);
 
-    const closestMatch = findClosestOccurrence(text, value, actualPosition, 200);
+      const nthMatch = findNthOccurrence(text, value, occurrence);
 
-    if (closestMatch) {
-      removalStart = closestMatch.start;
-      removalEnd = closestMatch.end;
-      console.log(`[removeSinglePII] Found at position ${closestMatch.start} (drift: ${closestMatch.distance} chars)`);
+      if (nthMatch) {
+        removalStart = nthMatch.start;
+        removalEnd = nthMatch.end;
+      } else {
+        // Try with normalized text
+        const normalizedText = normalizeText(text);
+        const nthNormMatch = findNthOccurrence(normalizedText, normalizedValue, occurrence);
+
+        if (nthNormMatch) {
+          // Map back to actual text position
+          let actualPos = 0;
+          let normPos = 0;
+
+          for (let i = 0; i < text.length && normPos < nthNormMatch.start; i++) {
+            const char = text[i];
+            const normChar = normalizeText(char);
+            if (normChar) normPos += normChar.length;
+            actualPos = i + 1;
+          }
+
+          removalStart = actualPos;
+          removalEnd = actualPos + value.length;
+        }
+      }
     }
-  }
 
-  // Strategy 4: Last resort - find first occurrence (only if no duplicates)
-  if (removalStart < 0) {
-    const allOccurrences = [];
-    let searchIndex = 0;
+    // Strategy 3: Find closest occurrence to expected position
+    if (removalStart < 0 && actualPosition >= 0) {
+      console.log(`[removeSinglePII] Trying closest occurrence near position ${actualPosition}`);
 
-    while (searchIndex < text.length) {
-      const idx = text.indexOf(value, searchIndex);
-      if (idx === -1) break;
-      allOccurrences.push(idx);
-      searchIndex = idx + 1;
+      const closestMatch = findClosestOccurrence(text, value, actualPosition, 200);
+
+      if (closestMatch) {
+        removalStart = closestMatch.start;
+        removalEnd = closestMatch.end;
+        console.log(`[removeSinglePII] Found at position ${closestMatch.start} (drift: ${closestMatch.distance} chars)`);
+      }
     }
 
-    if (allOccurrences.length === 1) {
-      // Only one occurrence, safe to remove
-      removalStart = allOccurrences[0];
-      removalEnd = allOccurrences[0] + value.length;
-      console.log(`[removeSinglePII] Single occurrence found at ${removalStart}`);
-    } else if (allOccurrences.length > 1) {
-      console.error(`[removeSinglePII] Multiple occurrences found (${allOccurrences.length}), cannot determine which to remove - SKIPPING`);
-      return;
+    // Strategy 4: Last resort - find first occurrence (only if no duplicates)
+    if (removalStart < 0) {
+      const allOccurrences = [];
+      let searchIndex = 0;
+
+      while (searchIndex < text.length) {
+        const idx = text.indexOf(value, searchIndex);
+        if (idx === -1) break;
+        allOccurrences.push(idx);
+        searchIndex = idx + 1;
+      }
+
+      if (allOccurrences.length === 1) {
+        // Only one occurrence, safe to remove
+        removalStart = allOccurrences[0];
+        removalEnd = allOccurrences[0] + value.length;
+        console.log(`[removeSinglePII] Single occurrence found at ${removalStart}`);
+      } else if (allOccurrences.length > 1) {
+        console.error(`[removeSinglePII] Multiple occurrences found (${allOccurrences.length}), cannot determine which to remove - SKIPPING`);
+        return;
+      }
     }
-  }
 
-  // Perform removal if we found the position
-  if (removalStart >= 0 && removalEnd > removalStart) {
-    const newText = text.substring(0, removalStart) + ' ' + text.substring(removalEnd);
+    // Perform removal if we found the position
+    if (removalStart >= 0 && removalEnd > removalStart) {
+      const newText = text.substring(0, removalStart) + ' ' + text.substring(removalEnd);
 
-    // Normalize spacing to avoid double spaces and convert NBSP
-    const normalizedText = normalizeText(newText).replace(/\s{2,}/g, ' ').trim();
+      // Normalize spacing to avoid double spaces and convert NBSP
+      const normalizedText = normalizeText(newText).replace(/\s{2,}/g, ' ').trim();
 
-    setTextContent(element, normalizedText);
+      setTextContent(element, normalizedText);
 
-    // Note: Detection results are now stale after removal
-    // Panel should be closed or detection re-run if needed
+      // Note: Detection results are now stale after removal
+      // Panel should be closed or detection re-run if needed
 
-    console.log(`[removeSinglePII] Removed "${value}" at position ${removalStart}-${removalEnd}`);
-  } else {
-    console.error(`[removeSinglePII] FAILED to find "${value}" for removal`);
-  }
+      console.log(`[removeSinglePII] Removed "${value}" at position ${removalStart}-${removalEnd}`);
+    } else {
+      console.error(`[removeSinglePII] FAILED to find "${value}" for removal`);
+    }
   } catch (error) {
     if (error.message?.includes('context invalidated') ||
-        error.message?.includes('Extension context') ||
-        !chrome?.runtime?.id) {
+      error.message?.includes('Extension context') ||
+      !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
         console.log('[removeSinglePII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
@@ -1338,31 +1380,31 @@ async function maskAllPII(element, detectionResult) {
     const { maskText } = await import('../utils/maskRules.js');
     const { detectPIIWithRegex } = await import('../utils/regexPatterns.js');
 
-  // Get current text (may have changed due to contenteditable quirks)
-  const currentText = getTextContent(element);
-  const originalDetectionText = originalText.get(element) || currentText;
+    // Get current text (may have changed due to contenteditable quirks)
+    const currentText = getTextContent(element);
+    const originalDetectionText = originalText.get(element) || currentText;
 
-  // Re-detect on current text for fresh positions
-  const freshDetection = detectPIIWithRegex(currentText, 0.6);
+    // Re-detect on current text for fresh positions
+    const freshDetection = detectPIIWithRegex(currentText, 0.6);
 
-  if (freshDetection.matches.length > 0) {
-    console.log(`[maskAllPII] Using fresh detection (${freshDetection.matches.length} matches)`);
-    const maskedText = maskText(currentText, freshDetection.matches);
-    setTextContent(element, maskedText);
-    markAllIssuesMasked(element, detectionResult.matches);
-  } else {
-    // Fallback: Use original matches with resilient masking
-    console.log(`[maskAllPII] Fresh detection found nothing, using resilient masking`);
-    const maskedText = maskText(currentText, detectionResult.matches, { originalText: originalDetectionText });
-    setTextContent(element, maskedText);
-    markAllIssuesMasked(element, detectionResult.matches);
-  }
+    if (freshDetection.matches.length > 0) {
+      console.log(`[maskAllPII] Using fresh detection (${freshDetection.matches.length} matches)`);
+      const maskedText = maskText(currentText, freshDetection.matches);
+      setTextContent(element, maskedText);
+      markAllIssuesMasked(element, detectionResult.matches);
+    } else {
+      // Fallback: Use original matches with resilient masking
+      console.log(`[maskAllPII] Fresh detection found nothing, using resilient masking`);
+      const maskedText = maskText(currentText, detectionResult.matches, { originalText: originalDetectionText });
+      setTextContent(element, maskedText);
+      markAllIssuesMasked(element, detectionResult.matches);
+    }
 
-  await incrementMasked();
+    await incrementMasked();
   } catch (error) {
     if (error.message?.includes('context invalidated') ||
-        error.message?.includes('Extension context') ||
-        !chrome?.runtime?.id) {
+      error.message?.includes('Extension context') ||
+      !chrome?.runtime?.id) {
       if (!contextInvalidationWarned) {
         console.log('[maskAllPII] Extension reloaded during operation - skipping');
         contextInvalidationWarned = true;
@@ -1410,7 +1452,7 @@ export function injectFloatingButtonStyles() {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 2147483640; /* Lower than Modal (...45) and Mask Overlay (...47) */
       cursor: pointer;
       transition: transform 0.2s ease;
       animation: piiButtonSlideIn 0.3s ease-out;

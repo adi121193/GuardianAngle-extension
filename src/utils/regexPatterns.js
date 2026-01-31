@@ -51,7 +51,7 @@ export const PII_PATTERNS = {
     validator: (match, fullText, index) => {
       // Reject if it looks like a date (yyyy-mm-dd, dd-mm-yyyy, etc.)
       if (/^\d{4}[-\/\.]\d{1,2}[-\/\.]\d{1,2}$/.test(match) ||
-          /^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{2,4}$/.test(match)) {
+        /^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{2,4}$/.test(match)) {
         return false; // Let DOB pattern handle this
       }
 
@@ -232,11 +232,13 @@ export const PII_PATTERNS = {
  * @returns {Object} Detection results
  */
 export function detectPIIWithRegex(text, minConfidence = 0.6) {
+  /*
   console.log('[regexPatterns] detectPIIWithRegex called:', {
     textLength: text?.length,
     minConfidence,
     textPreview: text?.substring(0, 100)
   });
+  */
 
   const results = {
     piiDetected: false,
@@ -313,7 +315,6 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
         // For PAN and Aadhaar, add as ambiguous match even if validation fails
         // This helps users who type invalid but PII-like patterns
         if (type === 'pan' || type === 'aadhaar') {
-          console.log(`[regexPatterns] ${type} validation failed for "${matchedText}" - adding as ambiguous`);
           results.ambiguousMatches.push({
             type,
             value: matchedText,
@@ -426,6 +427,9 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
   results.types = Array.from(detectedTypes);
   results.score = matchCount > 0 ? totalConfidence / matchCount : 0;
 
+  results.score = matchCount > 0 ? totalConfidence / matchCount : 0;
+
+  /*
   console.log('[regexPatterns] Detection complete:', {
     piiDetected: results.piiDetected,
     matchCount: results.matches.length,
@@ -433,6 +437,7 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
     types: results.types,
     matches: results.matches.map(m => ({ type: m.type, value: m.value?.substring(0, 20) }))
   });
+  */
 
   return results;
 }
