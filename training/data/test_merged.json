@@ -1,0 +1,4865 @@
+[
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Send the package to Cyprus, thanks!",
+    "entities": [
+      [
+        20,
+        26,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Email:scottgraeme@example.org",
+    "entities": [
+      [
+        6,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Nadiad.",
+    "entities": [
+      [
+        26,
+        32,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "email:avig@example.orgphone:750-663-3461x432",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ],
+      [
+        28,
+        44,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 391-937-5475",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Andrew Dominguez|Email-ekarajpillay@example.com",
+    "entities": [
+      [
+        18,
+        42,
+        "EMAIL"
+      ],
+      [
+        5,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is tkapoor@example.com, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "From: bachittarpillay@example.net\nTo: Raymond Joyce\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        33,
+        "EMAIL"
+      ],
+      [
+        38,
+        51,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Tracy Fischer@5913 Aguirre Island Suite 088",
+    "entities": [
+      [
+        0,
+        13,
+        "PER"
+      ],
+      [
+        14,
+        43,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Kristin Evans\nEmail: zinal92@example.org\nPhone: 259-768-1438",
+    "entities": [
+      [
+        20,
+        39,
+        "EMAIL"
+      ],
+      [
+        47,
+        59,
+        "PHONE"
+      ],
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Randall Gamble and I work at Wilkins-Dean.",
+    "entities": [
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "I'm Dr Frederick Thomas, nice to meet you!",
+    "entities": [
+      [
+        4,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Sally Wood, nice to meet you!",
+    "entities": [
+      [
+        4,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Hi, I'm Dr Kirsty McDonald and I work at Nelson, Walsh and Duncan.",
+    "entities": [
+      [
+        8,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Please contact Colin Butler at (894) 909-6085 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Rudra Contractor@Gurgaon, AL",
+    "entities": [
+      [
+        0,
+        16,
+        "PER"
+      ],
+      [
+        17,
+        28,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "Send the package to Andrealand, thanks!",
+    "entities": [
+      [
+        20,
+        30,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Niharika Rajagopal and I work at Ramaswamy LLC.",
+    "entities": [
+      [
+        8,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: Vaishnavi Sahni\nLocation: Henrybury, MN\nPhone: (149) 817-5980",
+    "entities": [
+      [
+        41,
+        55,
+        "PHONE"
+      ],
+      [
+        6,
+        21,
+        "PER"
+      ],
+      [
+        32,
+        45,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Contact:Clive Swift-Hale,irya06@example.net,601-957-8740",
+    "entities": [
+      [
+        15,
+        33,
+        "EMAIL"
+      ],
+      [
+        34,
+        46,
+        "PHONE"
+      ],
+      [
+        8,
+        24,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Sophia Taylor",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Gavin Graham-Walton and I work at Arnold Group.",
+    "entities": [
+      [
+        8,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to upadhritidhawan@example.net about the meeting.",
+    "entities": [
+      [
+        18,
+        45,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Omkaar Wable, nice to meet you!",
+    "entities": [
+      [
+        4,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Parth Venkatesh at +91-8948675650 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        30,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 692-451-4569.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Sophia Anderson active",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Dr Phillip Robinson and I work at Dhar Inc.",
+    "entities": [
+      [
+        8,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Oliver Brown",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Johnsonborough, PW, thanks!",
+    "entities": [
+      [
+        20,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is william76@example.com, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        38,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Name:Isaac Bava",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at philip47@example.com or 841-230-2079.",
+    "entities": [
+      [
+        20,
+        40,
+        "EMAIL"
+      ],
+      [
+        44,
+        56,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Saanvi Ganguly",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Scottfurt, AS, thanks!",
+    "entities": [
+      [
+        20,
+        33,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to 67/15, Goda Circle, thanks!",
+    "entities": [
+      [
+        20,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call:373-986-7526",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to cooksarah@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        39,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact David Madan at (140) 409-2841 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is stevensonmichelle@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        46,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "My contact info: Teresa Khan, sylviajohnson@example.com, +911899196621",
+    "entities": [
+      [
+        25,
+        50,
+        "EMAIL"
+      ],
+      [
+        52,
+        65,
+        "PHONE"
+      ],
+      [
+        17,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Ucchal Mutti, nice to meet you!",
+    "entities": [
+      [
+        4,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 213-497-6489? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Ishanvi Vaidya, nice to meet you!",
+    "entities": [
+      [
+        4,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is cfox@example.com, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Miguel Hanson, nice to meet you!",
+    "entities": [
+      [
+        4,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Balhaar Sane",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Name-Michael Obrien|Email-cadams@example.com",
+    "entities": [
+      [
+        18,
+        36,
+        "EMAIL"
+      ],
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is yadams@example.com, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        35,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "From: kschmidt@example.net\nTo: Brian Dickerson\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ],
+      [
+        31,
+        46,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "email:dhritibali@example.comphone:+91-6966291719",
+    "entities": [
+      [
+        6,
+        28,
+        "EMAIL"
+      ],
+      [
+        34,
+        48,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Michael Hopkins, mohammednixon@example.org, (0909)8790134",
+    "entities": [
+      [
+        25,
+        50,
+        "EMAIL"
+      ],
+      [
+        52,
+        65,
+        "PHONE"
+      ],
+      [
+        17,
+        32,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Krish Merchant,rachana85@example.com,(734) 856-3966",
+    "entities": [
+      [
+        15,
+        36,
+        "EMAIL"
+      ],
+      [
+        37,
+        51,
+        "PHONE"
+      ],
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "mike.23@example.org is my address.",
+    "entities": [
+      [
+        0,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is sdavis@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        35,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Caitlyn Knight and I work at Hall and Sons.",
+    "entities": [
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Location:New Judithstad",
+    "entities": [
+      [
+        9,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Keith Robinson at 729-831-3949 for more details.",
+    "entities": [
+      [
+        25,
+        37,
+        "PHONE"
+      ],
+      [
+        15,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 493-500-7687? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Contact: Ryan Kirk \ud83d\udcde 528-282-8231",
+    "entities": [
+      [
+        18,
+        30,
+        "PHONE"
+      ],
+      [
+        9,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Tina Mitchell)catherinerichards@example.org",
+    "entities": [
+      [
+        8,
+        37,
+        "EMAIL"
+      ],
+      [
+        1,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to gunbir80@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        38,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:jane.94@work.net",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "emma.94@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location:Agartala",
+    "entities": [
+      [
+        9,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Draft an email to johnmorrison@example.net about the meeting.",
+    "entities": [
+      [
+        18,
+        42,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Dear Dr Douglas Robinson,\n\nPlease contact me at iyoung@example.net.\n\nBest regards,",
+    "entities": [
+      [
+        35,
+        53,
+        "EMAIL"
+      ],
+      [
+        5,
+        24,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "DM me at donna41@example.net \ud83d\udce7",
+    "entities": [
+      [
+        9,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "Hey, my email is kritika24@example.com, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        38,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "You can reach me at jmurray@example.net or +91-6102186113.",
+    "entities": [
+      [
+        20,
+        39,
+        "EMAIL"
+      ],
+      [
+        43,
+        57,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Call:(950) 911-1665",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Dear Jessica Powers,\n\nPlease contact me at brent63@example.org.\n\nBest regards,",
+    "entities": [
+      [
+        35,
+        54,
+        "EMAIL"
+      ],
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Hey, my email is berrysandra@example.net, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        40,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 368-595-9080? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "User: Miss Rachael Moore\nLocation: Mau\nPhone: 579-882-9601",
+    "entities": [
+      [
+        41,
+        53,
+        "PHONE"
+      ],
+      [
+        6,
+        24,
+        "PER"
+      ],
+      [
+        35,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:563-509-7226",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "From: adamsjustin@example.net\nTo: Yashvi Wadhwa\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        29,
+        "EMAIL"
+      ],
+      [
+        34,
+        47,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at sverma@example.net or (982) 932-5346.",
+    "entities": [
+      [
+        20,
+        38,
+        "EMAIL"
+      ],
+      [
+        42,
+        56,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Contact:Hredhaan Narula,jessicasmith@example.org,+91-6517665202",
+    "entities": [
+      [
+        15,
+        39,
+        "EMAIL"
+      ],
+      [
+        40,
+        54,
+        "PHONE"
+      ],
+      [
+        8,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Matthew Williams@83/709, Tripathi Road",
+    "entities": [
+      [
+        0,
+        16,
+        "PER"
+      ],
+      [
+        17,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "email:vkapoor@example.comphone:(0909) 8790676",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ],
+      [
+        31,
+        45,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Call:+91-9296302419",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Please contact Alexis Thomas at +91-9123013167 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to South Laura, AS, thanks!",
+    "entities": [
+      [
+        20,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to North Robert, RI, thanks!",
+    "entities": [
+      [
+        20,
+        36,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to dilloneric@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        40,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Chakradev Sahni, weberkim@example.org, 818-414-7426",
+    "entities": [
+      [
+        25,
+        45,
+        "EMAIL"
+      ],
+      [
+        47,
+        59,
+        "PHONE"
+      ],
+      [
+        17,
+        32,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Kevin Ganesh@42 Smith Camp",
+    "entities": [
+      [
+        0,
+        12,
+        "PER"
+      ],
+      [
+        13,
+        26,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Denis Foster,naveenmadan@example.net,562-849-1712",
+    "entities": [
+      [
+        15,
+        38,
+        "EMAIL"
+      ],
+      [
+        39,
+        51,
+        "PHONE"
+      ],
+      [
+        8,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at ohiggins@example.org or (906) 128-2331.",
+    "entities": [
+      [
+        20,
+        40,
+        "EMAIL"
+      ],
+      [
+        44,
+        58,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(Meghana Venkatesh)tthompson@example.com",
+    "entities": [
+      [
+        8,
+        29,
+        "EMAIL"
+      ],
+      [
+        1,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: Samantha Baker\nLocation: British Indian Ocean Territory (Chagos Archipelago)\nPhone: 683-259-2690",
+    "entities": [
+      [
+        41,
+        53,
+        "PHONE"
+      ],
+      [
+        6,
+        20,
+        "PER"
+      ],
+      [
+        31,
+        82,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Nigel Carr|Email-guyrobinson@example.net",
+    "entities": [
+      [
+        18,
+        41,
+        "EMAIL"
+      ],
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at ronald28@example.net or 231-627-7995.",
+    "entities": [
+      [
+        20,
+        40,
+        "EMAIL"
+      ],
+      [
+        44,
+        56,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 772-706-1718? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(Chanchal Kothari)browndale@example.org",
+    "entities": [
+      [
+        8,
+        29,
+        "EMAIL"
+      ],
+      [
+        1,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Location: UAE",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "From: onveer40@example.com\nTo: Marion Lewis\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ],
+      [
+        31,
+        43,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Name-Anya Krish|Email-qarinjani@example.org",
+    "entities": [
+      [
+        18,
+        39,
+        "EMAIL"
+      ],
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "User: Qushi Ram\nLocation: South Christophershire\nPhone: +91-8800128129",
+    "entities": [
+      [
+        41,
+        55,
+        "PHONE"
+      ],
+      [
+        6,
+        15,
+        "PER"
+      ],
+      [
+        26,
+        48,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I am Charlie Thompson.",
+    "entities": [
+      [
+        5,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Iran, thanks!",
+    "entities": [
+      [
+        20,
+        24,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Sarah Ross|Email-timothy04@example.net",
+    "entities": [
+      [
+        18,
+        39,
+        "EMAIL"
+      ],
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Destiny Cox@59134 Keith Manors Suite 809",
+    "entities": [
+      [
+        0,
+        11,
+        "PER"
+      ],
+      [
+        12,
+        40,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "email:wfrench@example.orgphone:(532) 376-8049",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ],
+      [
+        31,
+        45,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Full Name: Geetika Khosla\nAddress: 055 Mathis Village Apt. 166",
+    "entities": [
+      [
+        11,
+        25,
+        "PER"
+      ],
+      [
+        35,
+        62,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Nathaniel Cox, nice to meet you!",
+    "entities": [
+      [
+        4,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 951-258-2127",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Devansh Basak and I work at Carter LLC.",
+    "entities": [
+      [
+        8,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi Yutika Bahri,\n\nYou can reach me at 139-914-7380 or nicolawilliams@example.org.",
+    "entities": [
+      [
+        43,
+        69,
+        "EMAIL"
+      ],
+      [
+        32,
+        44,
+        "PHONE"
+      ],
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "DM me at glenncoates@example.com \ud83d\udce7",
+    "entities": [
+      [
+        9,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at (755) 795-5433? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        33,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: Victor Bhasin \ud83d\udcde 924-273-9271",
+    "entities": [
+      [
+        18,
+        30,
+        "PHONE"
+      ],
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call:(611) 154-7886",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Cassandra Avila, nice to meet you!",
+    "entities": [
+      [
+        4,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in 527 Wilkinson Crest.",
+    "entities": [
+      [
+        26,
+        45,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Contact Information:\nName: Robert Bates\nEmail: bevanjune@example.org",
+    "entities": [
+      [
+        41,
+        62,
+        "EMAIL"
+      ],
+      [
+        27,
+        39,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: David Arnold, janani17@example.com, +91-7415218550",
+    "entities": [
+      [
+        25,
+        45,
+        "EMAIL"
+      ],
+      [
+        47,
+        61,
+        "PHONE"
+      ],
+      [
+        17,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Andrew Knox)briggssean@example.org",
+    "entities": [
+      [
+        8,
+        30,
+        "EMAIL"
+      ],
+      [
+        1,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "You can reach me at chanchal09@example.org or +91-7264903719.",
+    "entities": [
+      [
+        20,
+        42,
+        "EMAIL"
+      ],
+      [
+        46,
+        60,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Mrs Gillian Yates@Kyrgyz Republic",
+    "entities": [
+      [
+        0,
+        17,
+        "PER"
+      ],
+      [
+        18,
+        33,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Samantha Harmon, nice to meet you!",
+    "entities": [
+      [
+        4,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Hi Antonio Hughes,\n\nYou can reach me at +4429 2018 0711 or louisslater@example.com.",
+    "entities": [
+      [
+        43,
+        66,
+        "EMAIL"
+      ],
+      [
+        32,
+        47,
+        "PHONE"
+      ],
+      [
+        3,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Tanveer Sur,lmckinney@example.net,304.625.8875x822",
+    "entities": [
+      [
+        15,
+        36,
+        "EMAIL"
+      ],
+      [
+        37,
+        53,
+        "PHONE"
+      ],
+      [
+        8,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Follow me! Akshay Roy | kala41@example.net",
+    "entities": [
+      [
+        20,
+        38,
+        "EMAIL"
+      ],
+      [
+        11,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Full Name: Albert Wilson\nAddress: 190",
+    "entities": [
+      [
+        11,
+        24,
+        "PER"
+      ],
+      [
+        34,
+        37,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "I'm Damini Sehgal, nice to meet you!",
+    "entities": [
+      [
+        4,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call:+91-6782758056",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at harperchristian@example.org or +91-9451966207.",
+    "entities": [
+      [
+        20,
+        47,
+        "EMAIL"
+      ],
+      [
+        51,
+        65,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "email:mooreowen@example.orgphone:+91-6973235151",
+    "entities": [
+      [
+        6,
+        27,
+        "EMAIL"
+      ],
+      [
+        33,
+        47,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact Information:\nName: Megan Moore\nEmail: anshom@example.com",
+    "entities": [
+      [
+        41,
+        59,
+        "EMAIL"
+      ],
+      [
+        27,
+        38,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Vincent Ortiz at (858) 611-2078 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Kristi Tyler is now at Marshall Islands!",
+    "entities": [
+      [
+        0,
+        12,
+        "PER"
+      ],
+      [
+        23,
+        39,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Send the package to Flat 7, thanks!",
+    "entities": [
+      [
+        20,
+        26,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Singapore",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Full Name: Harita Sandhu\nAddress: Gabon",
+    "entities": [
+      [
+        11,
+        24,
+        "PER"
+      ],
+      [
+        34,
+        39,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is kalpit36@example.net, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        37,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Full Name: Heather Edwards\nAddress: Karawal Nagar",
+    "entities": [
+      [
+        11,
+        26,
+        "PER"
+      ],
+      [
+        36,
+        49,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Lake Ashleigh, AS.",
+    "entities": [
+      [
+        26,
+        43,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in New Natashaport, CA.",
+    "entities": [
+      [
+        26,
+        45,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call:(632) 884-4868",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Follow me! Pamela Anderson | spencer12@example.com",
+    "entities": [
+      [
+        20,
+        41,
+        "EMAIL"
+      ],
+      [
+        11,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Email:alice.89@gmail.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Draft an email to johnsonjonathan@example.com about the meeting.",
+    "entities": [
+      [
+        18,
+        45,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Email:crystalwest@example.net",
+    "entities": [
+      [
+        6,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:alicia22@example.net",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is bob.83@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is newtonjulian@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        41,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "living in India.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:mike.37@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Sylvia Payne-Grant is now at 695 Gray Locks!",
+    "entities": [
+      [
+        0,
+        18,
+        "PER"
+      ],
+      [
+        29,
+        43,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:emma.43@yahoo.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Dr Jane Thompson at +91-7952062369 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        31,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "from:USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "email:eric49@example.orgphone:+91-9125968372",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ],
+      [
+        30,
+        44,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Simon Karnik\nLocation: Burkina Faso\nPhone: (495) 551-3630",
+    "entities": [
+      [
+        41,
+        55,
+        "PHONE"
+      ],
+      [
+        6,
+        18,
+        "PER"
+      ],
+      [
+        29,
+        41,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Draft an email to leonardgail@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        41,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Debra Garcia|Email-jennifer71@example.net",
+    "entities": [
+      [
+        18,
+        40,
+        "EMAIL"
+      ],
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "(Tarak Krish)gagandalia@example.net",
+    "entities": [
+      [
+        8,
+        30,
+        "EMAIL"
+      ],
+      [
+        1,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Harshil Taneja|Email-sarah45@example.com",
+    "entities": [
+      [
+        18,
+        37,
+        "EMAIL"
+      ],
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 870-565-4131.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Leah Perry, nice to meet you!",
+    "entities": [
+      [
+        4,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at bob.8@example.orgthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "The event will be held in Orai, FL.",
+    "entities": [
+      [
+        26,
+        34,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in 7 Neil Junctions.",
+    "entities": [
+      [
+        26,
+        42,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is steve10@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi Zaitra Lad,\n\nYou can reach me at +91-9124986109 or samantha19@example.com.",
+    "entities": [
+      [
+        43,
+        65,
+        "EMAIL"
+      ],
+      [
+        32,
+        46,
+        "PHONE"
+      ],
+      [
+        3,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:653-505-8259",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-586-560-4922",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "From: npillai@example.com\nTo: Bishakha Kurian\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ],
+      [
+        30,
+        45,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is ginastokes@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        39,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Draft an email to marilyn72@example.com about the meeting.",
+    "entities": [
+      [
+        18,
+        39,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is saimutti@example.net, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        37,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Antigua and Barbuda.",
+    "entities": [
+      [
+        26,
+        45,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(Ayaan Sha)ebutler@example.org",
+    "entities": [
+      [
+        8,
+        27,
+        "EMAIL"
+      ],
+      [
+        1,
+        10,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:David Bishop",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Arin Krish|Email-victoriaramos@example.net",
+    "entities": [
+      [
+        18,
+        43,
+        "EMAIL"
+      ],
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Follow me! Josh Jarvis | susanhudson@example.com",
+    "entities": [
+      [
+        20,
+        43,
+        "EMAIL"
+      ],
+      [
+        11,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Rosiechester.",
+    "entities": [
+      [
+        26,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Can you call me at +91-6871467613? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        33,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Chasmum Rau, nice to meet you!",
+    "entities": [
+      [
+        4,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Email:jane.88@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Hi Maanas Chahal,\n\nYou can reach me at (290) 934-5043 or dcharles@example.org.",
+    "entities": [
+      [
+        43,
+        63,
+        "EMAIL"
+      ],
+      [
+        32,
+        46,
+        "PHONE"
+      ],
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Sirsa, FM.",
+    "entities": [
+      [
+        26,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to North Macedonia, thanks!",
+    "entities": [
+      [
+        20,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at (0191)4960874? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        32,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Tanya Harris is now at Lake Rosie, MA!",
+    "entities": [
+      [
+        0,
+        12,
+        "PER"
+      ],
+      [
+        23,
+        37,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Waida Suri is now at Turkey!",
+    "entities": [
+      [
+        0,
+        10,
+        "PER"
+      ],
+      [
+        21,
+        27,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "Name-Hitesh Shroff|Email-narulasiddharth@example.net",
+    "entities": [
+      [
+        18,
+        45,
+        "EMAIL"
+      ],
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Damini Sani at +44292018501 for more details.",
+    "entities": [
+      [
+        25,
+        37,
+        "PHONE"
+      ],
+      [
+        15,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Please contact Nicole Jackson at 0141 4960833 for more details.",
+    "entities": [
+      [
+        25,
+        37,
+        "PHONE"
+      ],
+      [
+        15,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 950-559-5569.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at heather33@example.com or +91-9955800659.",
+    "entities": [
+      [
+        20,
+        41,
+        "EMAIL"
+      ],
+      [
+        45,
+        59,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Send the package to Lake Tinahaven, OH, thanks!",
+    "entities": [
+      [
+        20,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "email:vwalker@example.netphone:252-260-1552",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ],
+      [
+        31,
+        43,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Ethan Mitra, hannah18@example.net, 01632960321",
+    "entities": [
+      [
+        25,
+        45,
+        "EMAIL"
+      ],
+      [
+        47,
+        58,
+        "PHONE"
+      ],
+      [
+        17,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Rajkot, FM.",
+    "entities": [
+      [
+        26,
+        36,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "(Ekantika Barman)warjas81@example.com",
+    "entities": [
+      [
+        8,
+        28,
+        "EMAIL"
+      ],
+      [
+        1,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Aashi Buch)bradley43@example.org",
+    "entities": [
+      [
+        8,
+        29,
+        "EMAIL"
+      ],
+      [
+        1,
+        11,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:hollandjoshua@example.net",
+    "entities": [
+      [
+        6,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Mitchell Russell-Griffin\nEmail: oratta@example.org\nPhone: 592-489-7135",
+    "entities": [
+      [
+        20,
+        38,
+        "EMAIL"
+      ],
+      [
+        46,
+        58,
+        "PHONE"
+      ],
+      [
+        6,
+        30,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "email:ubala@example.orgphone:4849763978",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ],
+      [
+        29,
+        39,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Avni Bhatti",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is skorpal@example.org, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Dear Jenna Sherman,\n\nPlease contact me at johnbates@example.net.\n\nBest regards,",
+    "entities": [
+      [
+        35,
+        56,
+        "EMAIL"
+      ],
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Hredhaan Kakar at +91-8451596637 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Forsterberg, CO, thanks!",
+    "entities": [
+      [
+        20,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "email:earlwolfe@example.orgphone:+44(0)118 4960374",
+    "entities": [
+      [
+        6,
+        27,
+        "EMAIL"
+      ],
+      [
+        33,
+        50,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "email:julieacosta@example.orgphone:+91-7999063031",
+    "entities": [
+      [
+        6,
+        29,
+        "EMAIL"
+      ],
+      [
+        35,
+        49,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Heather Knight and I work at Harrison, Horton and Allen.",
+    "entities": [
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Kevin Graham@Chile",
+    "entities": [
+      [
+        0,
+        12,
+        "PER"
+      ],
+      [
+        13,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Megan Wright, logan47@example.org, +1-996-653-9544",
+    "entities": [
+      [
+        25,
+        44,
+        "EMAIL"
+      ],
+      [
+        46,
+        61,
+        "PHONE"
+      ],
+      [
+        17,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Jack Bath,pvala@example.net,+44131 496 0242",
+    "entities": [
+      [
+        15,
+        32,
+        "EMAIL"
+      ],
+      [
+        33,
+        48,
+        "PHONE"
+      ],
+      [
+        8,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Varanasi, NJ, thanks!",
+    "entities": [
+      [
+        20,
+        32,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:omminhas@example.com",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "email:jacksonsahni@example.netphone:(189) 981-8838",
+    "entities": [
+      [
+        6,
+        30,
+        "EMAIL"
+      ],
+      [
+        36,
+        50,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Email:smithjames@example.com",
+    "entities": [
+      [
+        6,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Martin",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "User: Mr Roger Walker\nLocation: Belgium\nPhone: (665) 664-3413",
+    "entities": [
+      [
+        41,
+        55,
+        "PHONE"
+      ],
+      [
+        6,
+        21,
+        "PER"
+      ],
+      [
+        32,
+        39,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "My contact info: Falguni Balakrishnan, yvetteatkinson@example.org, 287-652-1723",
+    "entities": [
+      [
+        25,
+        51,
+        "EMAIL"
+      ],
+      [
+        53,
+        65,
+        "PHONE"
+      ],
+      [
+        17,
+        37,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "john.72@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 452-566-3993",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hey, my email is joe17@example.net, let me know when you get this!",
+    "entities": [
+      [
+        17,
+        34,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "(Chameli Mohanty)johnmoore@example.net",
+    "entities": [
+      [
+        8,
+        29,
+        "EMAIL"
+      ],
+      [
+        1,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "email:margaret63@example.orgphone:+91-6692263675",
+    "entities": [
+      [
+        6,
+        28,
+        "EMAIL"
+      ],
+      [
+        34,
+        48,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Hi, I'm Gautami Vig and I work at Sundaram, Bal and Varty.",
+    "entities": [
+      [
+        8,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Paris",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Sean Stein is now at East Zoeburgh!",
+    "entities": [
+      [
+        0,
+        10,
+        "PER"
+      ],
+      [
+        21,
+        34,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:hannahfoster@example.com",
+    "entities": [
+      [
+        6,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Hi, I'm Michael Watson Jr. and I work at Williams, West and Rodriguez.",
+    "entities": [
+      [
+        8,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Send the package to Amroha, KS, thanks!",
+    "entities": [
+      [
+        20,
+        30,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "reach: 501-156-2773",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Jonathan Hale@El Salvador",
+    "entities": [
+      [
+        0,
+        13,
+        "PER"
+      ],
+      [
+        14,
+        25,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-326-611-7080",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Full Name: Elaine Jones-Goddard\nAddress: Flat 3",
+    "entities": [
+      [
+        11,
+        31,
+        "PER"
+      ],
+      [
+        41,
+        47,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Faras Mody, mitchellchelsea@example.com, (211) 951-1125",
+    "entities": [
+      [
+        25,
+        52,
+        "EMAIL"
+      ],
+      [
+        54,
+        68,
+        "PHONE"
+      ],
+      [
+        17,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in 65 Judith Haven.",
+    "entities": [
+      [
+        26,
+        41,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "meet Isabella White!",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 0112645149? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        29,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Contact:Chelsea Webb,eric55@example.com,(144) 337-7844",
+    "entities": [
+      [
+        15,
+        33,
+        "EMAIL"
+      ],
+      [
+        34,
+        48,
+        "PHONE"
+      ],
+      [
+        8,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to North Alexfurt, PR, thanks!",
+    "entities": [
+      [
+        20,
+        38,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Name:Lucas Martin",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at birdnathan@example.net or 372-322-5483.",
+    "entities": [
+      [
+        20,
+        42,
+        "EMAIL"
+      ],
+      [
+        46,
+        58,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "email:leelakala@example.comphone:(610) 259-7404",
+    "entities": [
+      [
+        6,
+        27,
+        "EMAIL"
+      ],
+      [
+        33,
+        47,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Name-Tanveer Chanda|Email-masonmark@example.com",
+    "entities": [
+      [
+        18,
+        39,
+        "EMAIL"
+      ],
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Geoffrey Clarke and I work at Doshi-Raman.",
+    "entities": [
+      [
+        8,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please contact Miss Debra Morgan at 348-880-6644 for more details.",
+    "entities": [
+      [
+        25,
+        37,
+        "PHONE"
+      ],
+      [
+        15,
+        32,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to Falkland Islands (Malvinas), thanks!",
+    "entities": [
+      [
+        20,
+        47,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "Name: Krish Modi\nEmail: xingram@example.net\nPhone: +918482027990",
+    "entities": [
+      [
+        20,
+        39,
+        "EMAIL"
+      ],
+      [
+        47,
+        60,
+        "PHONE"
+      ],
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call:(701) 131-3923",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Anamika Parikh@79748 Castro Estates",
+    "entities": [
+      [
+        0,
+        14,
+        "PER"
+      ],
+      [
+        15,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "User: Jonathan Cantrell\nLocation: Allahabad, WV\nPhone: 712-448-4917",
+    "entities": [
+      [
+        41,
+        53,
+        "PHONE"
+      ],
+      [
+        6,
+        23,
+        "PER"
+      ],
+      [
+        34,
+        47,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Zachary Gutierrez|Email-davidtorres@example.com",
+    "entities": [
+      [
+        18,
+        41,
+        "EMAIL"
+      ],
+      [
+        5,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Chaaya Agate)anewman@example.org",
+    "entities": [
+      [
+        8,
+        27,
+        "EMAIL"
+      ],
+      [
+        1,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Mob-736-193-7417",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Email:emma.11@yahoo.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to mark93@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Ms Tracy Marsh\nEmail: greg47@example.net\nPhone: (319) 128-2639",
+    "entities": [
+      [
+        20,
+        38,
+        "EMAIL"
+      ],
+      [
+        46,
+        60,
+        "PHONE"
+      ],
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "I'm Aarav Shetty, nice to meet you!",
+    "entities": [
+      [
+        4,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "email:rivasmarie@example.netphone:(145) 858-6326",
+    "entities": [
+      [
+        6,
+        28,
+        "EMAIL"
+      ],
+      [
+        34,
+        48,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 455-143-5787",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in H.No. 414.",
+    "entities": [
+      [
+        26,
+        35,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to petersenjaclyn@example.org about the meeting.",
+    "entities": [
+      [
+        18,
+        44,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call:+91-7288374670",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Kimberly Hernandez, nice to meet you!",
+    "entities": [
+      [
+        4,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The event will be held in Singrauli, MT.",
+    "entities": [
+      [
+        26,
+        39,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to zashilmalhotra@example.com about the meeting.",
+    "entities": [
+      [
+        18,
+        44,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Rachael Byrne is now at H.No. 339!",
+    "entities": [
+      [
+        0,
+        13,
+        "PER"
+      ],
+      [
+        24,
+        33,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call:+91-7164934633",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "DM me at nmiller@example.org \ud83d\udce7",
+    "entities": [
+      [
+        9,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Can you call me at 132-865-4282? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Hemani Shah,ehutchinson@example.com,+91-6565301797",
+    "entities": [
+      [
+        15,
+        38,
+        "EMAIL"
+      ],
+      [
+        39,
+        53,
+        "PHONE"
+      ],
+      [
+        8,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Thanks for your help!",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Email:nihaldeshmukh@example.com",
+    "entities": [
+      [
+        6,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call:517-663-8935",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Can you call me at 671-183-1783? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Carol Wood|Email-ojas07@example.com",
+    "entities": [
+      [
+        18,
+        36,
+        "EMAIL"
+      ],
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "email:lawrencemathew@example.comphone:(198) 379-7615",
+    "entities": [
+      [
+        6,
+        32,
+        "EMAIL"
+      ],
+      [
+        38,
+        52,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My contact info: Krisha Char, jeevikaperi@example.net, (843) 401-4914",
+    "entities": [
+      [
+        25,
+        48,
+        "EMAIL"
+      ],
+      [
+        50,
+        64,
+        "PHONE"
+      ],
+      [
+        17,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "User: Ms Irene Nelson\nLocation: Morocco\nPhone: +91-6301838486",
+    "entities": [
+      [
+        41,
+        55,
+        "PHONE"
+      ],
+      [
+        6,
+        21,
+        "PER"
+      ],
+      [
+        32,
+        39,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I'm Hamsini Swaminathan, nice to meet you!",
+    "entities": [
+      [
+        4,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update on the project.",
+    "entities": []
+  },
+  {
+    "text": "Can you call me at (897) 363-3567? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        33,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call:+91-8870123610",
+    "entities": [
+      [
+        5,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi Zachary Best,\n\nYou can reach me at +91-7441924846 or wjones@example.net.",
+    "entities": [
+      [
+        43,
+        61,
+        "EMAIL"
+      ],
+      [
+        32,
+        46,
+        "PHONE"
+      ],
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can you call me at 953-304-5653? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Chakrika Sahni@Chambershaven, TX",
+    "entities": [
+      [
+        0,
+        14,
+        "PER"
+      ],
+      [
+        15,
+        32,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Jodie Lane-Bevan@6344 Gonzalez Cove Apt. 275",
+    "entities": [
+      [
+        0,
+        16,
+        "PER"
+      ],
+      [
+        17,
+        44,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to andersonronald@example.net about the meeting.",
+    "entities": [
+      [
+        18,
+        44,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Full Name: Glenn Ross\nAddress: 933 Newman Drive",
+    "entities": [
+      [
+        11,
+        21,
+        "PER"
+      ],
+      [
+        31,
+        47,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The meeting is scheduled for tomorrow.",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "reach me at david.1@example.orgthanks",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact Information:\nName: Mohamed Dean-Gilbert\nEmail: lwhitaker@example.com",
+    "entities": [
+      [
+        41,
+        62,
+        "EMAIL"
+      ],
+      [
+        27,
+        47,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Grace Brown",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "living in Canada.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "DM me at hollylloyd@example.org \ud83d\udce7",
+    "entities": [
+      [
+        9,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi, I'm Deepa Tripathi and I work at Webster and Sons.",
+    "entities": [
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to steven22@example.net about the meeting.",
+    "entities": [
+      [
+        18,
+        38,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact Information:\nName: Jordan Gregory\nEmail: adhingra@example.net",
+    "entities": [
+      [
+        41,
+        61,
+        "EMAIL"
+      ],
+      [
+        27,
+        41,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Send the package to H.No. 837, thanks!",
+    "entities": [
+      [
+        20,
+        29,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Isabella Anderson active",
+    "entities": [
+      [
+        6,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Cell:195-709-6634",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Mugdha Shankar,anirudhdatta@example.com,369-924-4555",
+    "entities": [
+      [
+        15,
+        39,
+        "EMAIL"
+      ],
+      [
+        40,
+        52,
+        "PHONE"
+      ],
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Sai Bhattacharyya)cknight@example.org",
+    "entities": [
+      [
+        8,
+        27,
+        "EMAIL"
+      ],
+      [
+        1,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "The report is almost ready.",
+    "entities": []
+  },
+  {
+    "text": "From: henrygoodwin@example.com\nTo: Ethan Snow\nSubject: Meeting",
+    "entities": [
+      [
+        6,
+        30,
+        "EMAIL"
+      ],
+      [
+        35,
+        45,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Full Name: Amber Johnson\nAddress: Gibraltar",
+    "entities": [
+      [
+        11,
+        24,
+        "PER"
+      ],
+      [
+        34,
+        43,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Follow me! Yachana Chopra | rajansuhani@example.com",
+    "entities": [
+      [
+        20,
+        43,
+        "EMAIL"
+      ],
+      [
+        11,
+        25,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Dear Toni Hill,\n\nPlease contact me at jean09@example.net.\n\nBest regards,",
+    "entities": [
+      [
+        35,
+        53,
+        "EMAIL"
+      ],
+      [
+        5,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Sabrina Bishop\nEmail: radhamore@example.com\nPhone: 422-245-3922",
+    "entities": [
+      [
+        20,
+        41,
+        "EMAIL"
+      ],
+      [
+        49,
+        61,
+        "PHONE"
+      ],
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to emma.61@gmail.com asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "You can reach me at gareth10@example.net or (291) 684-4859.",
+    "entities": [
+      [
+        20,
+        40,
+        "EMAIL"
+      ],
+      [
+        44,
+        58,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Paris",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:carl.42@work.netEnd",
+    "entities": [
+      [
+        5,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Rebecca Simmons|Email-newtonsandra@example.org",
+    "entities": [
+      [
+        18,
+        42,
+        "EMAIL"
+      ],
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "email:bachittarnagarajan@example.comphone:670-525-5678",
+    "entities": [
+      [
+        6,
+        36,
+        "EMAIL"
+      ],
+      [
+        42,
+        54,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Anna Cummings|Email-smallshannon@example.org",
+    "entities": [
+      [
+        18,
+        42,
+        "EMAIL"
+      ],
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:holmesdenise@example.com",
+    "entities": [
+      [
+        6,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact:Barbara Newman,chaitanya17@example.com,957-883-9124x7790",
+    "entities": [
+      [
+        15,
+        38,
+        "EMAIL"
+      ],
+      [
+        39,
+        56,
+        "PHONE"
+      ],
+      [
+        8,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Lucas Wilson",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: John Brown",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name-Abha Shenoy|Email-garimachaudry@example.org",
+    "entities": [
+      [
+        18,
+        43,
+        "EMAIL"
+      ],
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Contact:Ekiya Oak,parekhurishilla@example.net,(380) 133-7336",
+    "entities": [
+      [
+        15,
+        42,
+        "EMAIL"
+      ],
+      [
+        43,
+        57,
+        "PHONE"
+      ],
+      [
+        8,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "dial 730-524-4715...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "You can reach me at lawsonrussell@example.com or 279-395-6813.",
+    "entities": [
+      [
+        20,
+        45,
+        "EMAIL"
+      ],
+      [
+        49,
+        61,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Send the package to H.No. 44, thanks!",
+    "entities": [
+      [
+        20,
+        28,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Can you call me at 520-726-6581? I'm available after 5pm.",
+    "entities": [
+      [
+        19,
+        31,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "Great work on the presentation!",
+    "entities": []
+  },
+  {
+    "text": "You can reach me at smithjill@example.net or (801) 256-1189.",
+    "entities": [
+      [
+        20,
+        41,
+        "EMAIL"
+      ],
+      [
+        45,
+        59,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I'll send the details later.",
+    "entities": []
+  },
+  {
+    "text": "You can reach me at finchglen@example.org or (257) 208-2290.",
+    "entities": [
+      [
+        20,
+        41,
+        "EMAIL"
+      ],
+      [
+        45,
+        59,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(carl.15@example.org)",
+    "entities": [
+      [
+        1,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Please review the attached document.",
+    "entities": []
+  },
+  {
+    "text": "See you at the conference.",
+    "entities": []
+  },
+  {
+    "text": "Dear Michelle Lewis-Parker,\n\nPlease contact me at fphillips@example.net.\n\nBest regards,",
+    "entities": [
+      [
+        35,
+        56,
+        "EMAIL"
+      ],
+      [
+        5,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(Justin Williams)ryan30@example.net",
+    "entities": [
+      [
+        8,
+        26,
+        "EMAIL"
+      ],
+      [
+        1,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let me know if you have any questions.",
+    "entities": []
+  },
+  {
+    "text": "Please contact Sheila Gilbert at (940) 562-4848 for more details.",
+    "entities": [
+      [
+        25,
+        39,
+        "PHONE"
+      ],
+      [
+        15,
+        29,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Draft an email to steelekelly@example.com about the meeting.",
+    "entities": [
+      [
+        18,
+        41,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can we reschedule for next week?",
+    "entities": []
+  },
+  {
+    "text": "Location:Junagadh, SD",
+    "entities": [
+      [
+        9,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "DM me at colebrian@example.net \ud83d\udce7",
+    "entities": [
+      [
+        9,
+        30,
+        "EMAIL"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,12396 @@
+[
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Thompson",
+    "entities": [
+      [
+        9,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(363-433-9434)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Mob-751-323-2282",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Berlin.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "My email is john.85@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Email:sarah.66@work.net",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Japan",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: mike.54@yahoo.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is mike.14@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "call me(989-966-1213)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "from:Chicago",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "meet David Thompson!",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Isabella Taylor",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Charlie Anderson",
+    "entities": [
+      [
+        14,
+        30,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "User: Henry Wilson active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: David Martin",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:William Doe",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 272-241-5571",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "I am David Taylor.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "from:Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at mike.71@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Address:Tokyo",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:david.13@gmail.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I am Emma Harris.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Hi,Isabella Harris here",
+    "entities": [
+      [
+        3,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(593-898-6363)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 304-446-1026",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Jane Anderson",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 595-463-8216...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 598-411-9765",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Bob Thompson here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "call me(830-548-9593)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "call me(832-176-8871)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "from:Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-477-924-9424",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Mob-731-540-5836",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Japan",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "City-Canada",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 139-627-5633",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 224-187-9802...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Send details to carl.63@example.org asap.",
+    "entities": [
+      [
+        16,
+        35,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 840-446-1473.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Address:New York",
+    "entities": [
+      [
+        8,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I am John Thompson.",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "shipping to London.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at carl.91@work.netthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "david.4@example.org is my address.",
+    "entities": [
+      [
+        0,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "City-Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Dubai",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "reach: 693-256-7791",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "reach me at alice.18@gmail.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to USA.",
+    "entities": [
+      [
+        12,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: carl.26@yahoo.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 207-635-2560",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "living in UAE.",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Send details to emma.73@yahoo.com asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "call me(693-153-6548)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Ph: 670-610-7141",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 552-408-3350",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Mob-281-311-7900",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Grace Taylor",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 377-534-4111",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Address:India",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Address:Berlin",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: San Francisco",
+    "entities": [
+      [
+        10,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "mike.67@gmail.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 724-384-4446...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:alice.86@work.netEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-560-837-9104",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "My email is mike.19@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is jane.32@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "from:Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Address:Canada",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Mob-141-152-8929",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "(mike.71@example.org)",
+    "entities": [
+      [
+        1,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:829-320-1417",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(carl.60@example.org)",
+    "entities": [
+      [
+        1,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Lucas Johnson here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Lucas Thomas",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 463-902-8535",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Emma Taylor",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: William Brown",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Canada",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "mail: alice.1@yahoo.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "from:Dubai",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Alice Doe here",
+    "entities": [
+      [
+        3,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Chicago.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "call me(387-764-8348)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Send details to mike.21@work.net asap.",
+    "entities": [
+      [
+        16,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Sophia Wilson",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Cell:687-900-8711",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in Tokyo.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Cell:779-102-4441",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Jane Martin here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Data:alice.27@example.orgEnd",
+    "entities": [
+      [
+        5,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Call 671-167-2052.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "(jane.77@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Alice Smith",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Email:emma.75@yahoo.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Lucas Johnson",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 433-279-5160",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Call 199-354-1429.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-512-584-3570",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Name: Alice Smith",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 305-772-5483",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Address:Mumbai",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Oliver Harris",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: UAE",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Data:mike.25@work.netEnd",
+    "entities": [
+      [
+        5,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Email:emma.22@gmail.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-992-914-7514",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "from:Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Cell:378-178-5577",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Name:Sophia Johnson",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "User: Jack Harris active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Contact: bob.68@yahoo.com",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: jane.99@gmail.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to India.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "User: John Brown active",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: mike.36@example.org",
+    "entities": [
+      [
+        9,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,William White here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-John Doe",
+    "entities": [
+      [
+        9,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "jane.59@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "reach: 973-148-6051",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: David Johnson",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in New York.",
+    "entities": [
+      [
+        10,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Lucas White",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My email is john.30@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Cell:938-505-7074",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "alice.39@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Singapore.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: bob.27@yahoo.com",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I am Henry Doe.",
+    "entities": [
+      [
+        5,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 966-822-2517.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "meet Jane Martin!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "alice.13@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Sophia Thompson",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Isabella Thompson",
+    "entities": [
+      [
+        5,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "carl.18@gmail.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 567-890-6399...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Lucas White",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Address:Japan",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Location: UAE",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:957-265-1438",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "My email is bob.41@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Call 909-142-6727.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "from:UAE",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Lucas Smith",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My email is john.85@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "City-USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:591-319-6041",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "living in Singapore.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Emma Johnson",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Singapore",
+    "entities": [
+      [
+        8,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(871-358-6396)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "meet Oliver Anderson!",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-899-731-9080",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Location: Japan",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 111-569-7895...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "I am Isabella Smith.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "living in Mumbai.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "meet Isabella Thompson!",
+    "entities": [
+      [
+        5,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:sarah.95@gmail.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "mail: john.71@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:283-884-7590",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: William Brown",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Canada",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "My email is alice.68@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "User: Grace Taylor active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in Dubai.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "meet Grace Taylor!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Mumbai",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Send details to alice.66@yahoo.com asap.",
+    "entities": [
+      [
+        16,
+        34,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Location: San Francisco",
+    "entities": [
+      [
+        10,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:sarah.54@example.org",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Toronto",
+    "entities": [
+      [
+        8,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-574-508-1297",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to UK.",
+    "entities": [
+      [
+        12,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "User: Frank Smith active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Paris",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Dubai",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "from:USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Call 442-763-7679.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Data:mike.3@example.orgEnd",
+    "entities": [
+      [
+        5,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 761-187-9691...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 594-210-3268...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "User: Jane Thomas active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:542-928-5758",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Email:carl.63@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: John Johnson",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 983-519-6013",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Ph: 704-152-5195",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Cell:544-491-3950",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "dial 283-301-6969...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Thompson",
+    "entities": [
+      [
+        9,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Address:Sydney",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Emma Thompson here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Call 313-410-1190.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "meet John Smith!",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "City-Japan",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "reach me at alice.18@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "mail: bob.53@yahoo.com.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Name: Henry Thompson",
+    "entities": [
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 297-610-9016...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My email is bob.30@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "City-San Francisco",
+    "entities": [
+      [
+        5,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "from:Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,William Brown here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "mail: emma.83@gmail.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: bob.90@example.org",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "I am Henry Smith.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "meet John White!",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: UAE",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(435-174-6349)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "meet William Johnson!",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 603-739-2919",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Name: Charlie Thompson",
+    "entities": [
+      [
+        6,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Mob-359-619-6348",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Mob-267-709-6705",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 622-413-5547",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I am Sophia Brown.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Isabella Harris here",
+    "entities": [
+      [
+        3,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 952-670-2815",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 800-116-2229",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "City-Boston",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Address:Chicago",
+    "entities": [
+      [
+        8,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Email:john.96@gmail.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "(sarah.73@work.net)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 359-337-5523...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 863-674-2089.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "dial 979-315-4176...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Mob-806-401-6889",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at carl.64@work.netthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: David Wilson",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "I am Emma Brown.",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Call 878-428-2052.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-779-276-2276",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Charlie White here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to bob.92@work.net asap.",
+    "entities": [
+      [
+        16,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Location: France",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: UK",
+    "entities": [
+      [
+        10,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Frank Anderson",
+    "entities": [
+      [
+        14,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Berlin",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 494-878-4671",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Alice Taylor",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(354-703-1339)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in India.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:London",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Sophia Anderson",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Contact: mike.18@yahoo.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is bob.92@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Name: William Smith",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 903-116-5304",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "from:Dubai",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(jane.91@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in UK.",
+    "entities": [
+      [
+        10,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Charlie Brown",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:emma.21@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is david.47@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "City-USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in Berlin.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Send details to carl.54@gmail.com asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is alice.25@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name: David Doe",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(127-139-7289)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "I am Frank White.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "meet John White!",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in UK.",
+    "entities": [
+      [
+        10,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 228-684-6762",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Data:jane.68@gmail.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "david.65@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Berlin",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: sarah.25@example.org",
+    "entities": [
+      [
+        9,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "from:Japan",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Name: Henry Doe",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Call 315-939-1392.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-William Anderson",
+    "entities": [
+      [
+        9,
+        25,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "reach me at alice.18@work.netthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "(sarah.54@work.net)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "I am Jane Wilson.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "I am Frank Taylor.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "shipping to USA.",
+    "entities": [
+      [
+        12,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "living in India.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Bob Johnson here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My email is mike.1@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Paris",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Dubai",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "meet Sophia Brown!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-564-331-1895",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: alice.61@gmail.com",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Data:bob.48@work.netEnd",
+    "entities": [
+      [
+        5,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at sarah.56@gmail.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "shipping to Japan.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Location: New York",
+    "entities": [
+      [
+        10,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Grace Doe here",
+    "entities": [
+      [
+        3,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Name: Emma Martin",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 640-210-8542",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at mike.57@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 665-517-9112.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: carl.83@work.net",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Name:Sophia White",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at david.50@example.orgthanks",
+    "entities": [
+      [
+        12,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Chicago",
+    "entities": [
+      [
+        8,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "reach me at mike.2@example.orgthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is alice.41@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is jane.30@yahoo.com please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "City-Chicago",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call 254-952-3395.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: emma.42@work.net.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "meet Grace Brown!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Name:Charlie Harris",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(653-169-1406)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: emma.86@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Data:john.90@yahoo.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:john.38@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "(mike.51@gmail.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:alice.67@yahoo.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(417-519-8352)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 841-577-1222...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Emma Harris active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Mumbai",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "shipping to London.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Hi,John Brown here",
+    "entities": [
+      [
+        3,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-774-187-4776",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "City-Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Chicago",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:David Wilson",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Mob-834-762-7826",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Jack Thompson active",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "living in San Francisco.",
+    "entities": [
+      [
+        10,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "meet Henry Anderson!",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "dial 394-497-9979...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:UK",
+    "entities": [
+      [
+        5,
+        7,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Grace Doe",
+    "entities": [
+      [
+        14,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: David Wilson active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Sophia Taylor",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "mail: bob.80@gmail.com.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "meet Henry Brown!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Mumbai",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I am Charlie Wilson.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,William Taylor here",
+    "entities": [
+      [
+        3,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 692-433-7964",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(carl.28@gmail.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 810-801-8474.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 111-712-8064...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Isabella Doe",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in Berlin.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "I am Henry Anderson.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My email is david.33@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "mail: mike.6@gmail.com.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 376-732-2256",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Location: London",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Wilson",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Grace Smith",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:bob.24@work.netEnd",
+    "entities": [
+      [
+        5,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to david.67@yahoo.com asap.",
+    "entities": [
+      [
+        16,
+        34,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 161-782-1316",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: carl.5@gmail.com",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Mob-404-483-2372",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-621-779-8179",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: jane.45@yahoo.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "living in Germany.",
+    "entities": [
+      [
+        10,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "jane.40@example.org is my address.",
+    "entities": [
+      [
+        0,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: India",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "dial 377-990-9637...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:435-250-4325",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "shipping to Japan.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "meet John Taylor!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Cell:709-804-6067",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Jack Taylor",
+    "entities": [
+      [
+        14,
+        25,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-San Francisco",
+    "entities": [
+      [
+        5,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:david.65@yahoo.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 167-314-1225",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Grace Johnson",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Sophia Martin",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(emma.77@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "City-Berlin",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Sophia Martin",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(461-713-8142)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Sophia Johnson",
+    "entities": [
+      [
+        14,
+        28,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Employee-Jane Anderson",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "meet Emma White!",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 677-492-5898",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Grace Harris",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "User: Henry Taylor active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Germany",
+    "entities": [
+      [
+        10,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call 755-480-4052.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at carl.32@work.netthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 545-949-4481.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Bob Johnson",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "mail: jane.28@gmail.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Singapore",
+    "entities": [
+      [
+        8,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "reach me at carl.72@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "My email is alice.6@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "mail: bob.35@work.net.",
+    "entities": [
+      [
+        6,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 567-365-3754",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 337-712-3425...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Isabella Smith",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Emma Johnson",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Call 425-243-6409.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "(emma.28@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 358-342-4826.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "shipping to Sydney.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "meet William Anderson!",
+    "entities": [
+      [
+        5,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "My email is bob.46@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "dial 193-269-9979...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "I am John Brown.",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at sarah.64@gmail.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Grace Martin",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:436-665-5526",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "sarah.39@work.net is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Grace Thomas",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I am Bob Doe.",
+    "entities": [
+      [
+        5,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Call 730-965-2752.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 254-760-5116",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Address:Toronto",
+    "entities": [
+      [
+        8,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "User: William Martin active",
+    "entities": [
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Boston",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: John Doe",
+    "entities": [
+      [
+        14,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Lucas Thompson here",
+    "entities": [
+      [
+        3,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:684-407-3592",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-317-339-9842",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in Dubai.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-365-750-6296",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in Japan.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Japan",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Name: John Brown",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at jane.81@work.netthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:316-333-9917",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "User: Grace Harris active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "from:Berlin",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 777-837-1256...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I am Frank Thomas.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "living in San Francisco.",
+    "entities": [
+      [
+        10,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "My email is david.50@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Location: New York",
+    "entities": [
+      [
+        10,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Lucas Johnson active",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in Sydney.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-France",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 503-170-7904...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Cell:178-599-9160",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Jack Doe",
+    "entities": [
+      [
+        6,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "City-Singapore",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Jack Wilson here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "david.96@gmail.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Hi,Oliver Thomas here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Send details to emma.69@example.org asap.",
+    "entities": [
+      [
+        16,
+        35,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "My email is carl.72@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Email:sarah.84@work.net",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 345-316-9486...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 374-756-1844.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-118-769-9002",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "meet Bob Anderson!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "My email is jane.6@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "mail: david.87@work.net.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Grace Taylor",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "meet Jack Thompson!",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "call me(908-233-4734)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My email is jane.98@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "mail: bob.82@work.net.",
+    "entities": [
+      [
+        6,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "shipping to Boston.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Call 635-982-6534.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to UK.",
+    "entities": [
+      [
+        12,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 720-734-3682",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:UAE",
+    "entities": [
+      [
+        8,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-630-964-9501",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: jane.11@example.org",
+    "entities": [
+      [
+        9,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Address:Singapore",
+    "entities": [
+      [
+        8,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:736-560-7511",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I am Alice Anderson.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "call me(996-740-7849)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 725-120-8992.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 881-370-4660...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 822-491-6038",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My email is carl.99@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Contact: david.51@gmail.com",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Mumbai.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "reach me at john.93@example.orgthanks",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "from:Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:UK",
+    "entities": [
+      [
+        8,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(jane.24@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 558-777-9489",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Jane Harris",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 246-194-3536",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Tokyo.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-795-924-1171",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "meet Oliver Taylor!",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:mike.67@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:USA",
+    "entities": [
+      [
+        8,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-683-982-4125",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Isabella Doe here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Contact: david.46@example.org",
+    "entities": [
+      [
+        9,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Cell:186-827-4135",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "bob.28@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is jane.29@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Email:jane.96@work.net",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Sophia Doe here",
+    "entities": [
+      [
+        3,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 167-975-2612.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "I am Emma Smith.",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Location: Mumbai",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "My email is alice.12@gmail.com please contact me.",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "User: John Harris active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to London.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Grace Thomas",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 263-297-5164",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "I am Emma Thomas.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "john.85@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "living in UAE.",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: alice.56@gmail.com",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:bob.19@gmail.com",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 273-770-4099...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "shipping to Germany.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Singapore.",
+    "entities": [
+      [
+        12,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Hi,John Wilson here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:466-515-2707",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Data:jane.41@work.netEnd",
+    "entities": [
+      [
+        5,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "call me(633-482-2228)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: John Anderson active",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Japan",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Japan",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Grace Brown here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:john.63@yahoo.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-554-990-9019",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 741-594-8306...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Email:carl.25@yahoo.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 213-694-2883",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "reach: 501-280-3315",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Sophia Thomas",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:William Johnson",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 821-940-7133...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Address:Sydney",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Sophia Thompson active",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: Emma Thompson active",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 533-964-5449",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:Japan",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Sophia Thompson",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: alice.44@yahoo.com",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is mike.72@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Jack Smith",
+    "entities": [
+      [
+        14,
+        24,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Send details to sarah.57@work.net asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "reach: 340-696-2853",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-748-522-9473",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Jane Martin",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at mike.30@example.orgthanks",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 668-641-6540.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Email:carl.48@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "City-London",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Hi,Sophia Smith here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Chicago",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:France",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "My email is emma.30@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Location: Sydney",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "I am Bob Smith.",
+    "entities": [
+      [
+        5,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at sarah.29@example.orgthanks",
+    "entities": [
+      [
+        12,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 917-606-7329",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Toronto",
+    "entities": [
+      [
+        8,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Location: Sydney",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "My email is david.33@yahoo.com please contact me.",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 261-120-5770.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Toronto",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "mail: jane.72@yahoo.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "User: Grace Harris active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Sophia Thompson",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 324-967-2704",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My email is mike.25@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "meet Isabella Smith!",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "My email is emma.67@yahoo.com please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Name:John Doe",
+    "entities": [
+      [
+        5,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "mike.24@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Call 590-108-2981.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Johnson",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Hi,Oliver Johnson here",
+    "entities": [
+      [
+        3,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(sarah.13@example.org)",
+    "entities": [
+      [
+        1,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "My email is david.20@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Jane Taylor",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:USA",
+    "entities": [
+      [
+        5,
+        8,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to France.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "dial 607-363-5117...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Mob-331-155-2087",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "I am Lucas Thomas.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I am Sophia Thompson.",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 859-255-2000",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "dial 595-882-3988...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:343-845-5293",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in Boston.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Frank Wilson active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "jane.69@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I am Frank Smith.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: David Brown",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Name:Henry Wilson",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:john.71@work.net",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Data:alice.84@yahoo.comEnd",
+    "entities": [
+      [
+        5,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 678-579-1106.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "call me(202-552-9624)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 665-451-8341",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Bob Brown",
+    "entities": [
+      [
+        14,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 462-716-8704",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mike.75@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "david.79@example.org is my address.",
+    "entities": [
+      [
+        0,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "sarah.5@example.org is my address.",
+    "entities": [
+      [
+        0,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "reach: 724-722-3613",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "(bob.94@work.net)",
+    "entities": [
+      [
+        1,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Contact: mike.99@gmail.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 336-523-4666",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "call me(675-752-2789)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: john.95@gmail.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "I am Isabella White.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "call me(671-452-6066)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Employee-David Harris",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Location: Chicago",
+    "entities": [
+      [
+        10,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "shipping to Mumbai.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(david.96@example.org)",
+    "entities": [
+      [
+        1,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Cell:289-916-7498",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Frank Harris here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Cell:702-437-6448",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "sarah.85@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Location: New York",
+    "entities": [
+      [
+        10,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I am Bob Harris.",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(191-832-1915)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "mail: mike.80@work.net.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: mike.69@gmail.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:david.61@gmail.com",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at alice.14@work.netthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "mail: jane.54@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to bob.50@example.org asap.",
+    "entities": [
+      [
+        16,
+        34,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: India",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "I am Frank Wilson.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "dial 618-626-4927...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Address:Canada",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 819-638-9041",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "User: Sophia Anderson active",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Name: Jane Taylor",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:mike.35@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "meet Alice Brown!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Chicago.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Dubai",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 558-157-4667...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 391-435-2524.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Cell:511-660-9101",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Send details to david.31@work.net asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Toronto.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Call 702-396-6803.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Call 298-865-4645.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 537-189-8079.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Data:jane.15@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Data:john.86@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Sophia Thompson",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "from:Australia",
+    "entities": [
+      [
+        5,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 848-441-9989...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "call me(549-242-6031)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:San Francisco",
+    "entities": [
+      [
+        8,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Australia.",
+    "entities": [
+      [
+        12,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "living in Germany.",
+    "entities": [
+      [
+        10,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Charlie White",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Mob-135-151-1702",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Jack Smith",
+    "entities": [
+      [
+        9,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "reach me at jane.50@example.orgthanks",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "mail: mike.71@work.net.",
+    "entities": [
+      [
+        6,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "(bob.46@gmail.com)",
+    "entities": [
+      [
+        1,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "(bob.96@example.org)",
+    "entities": [
+      [
+        1,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-682-584-2536",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:UAE",
+    "entities": [
+      [
+        8,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Frank Brown active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "shipping to Tokyo.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(384-972-4288)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Boston",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Australia",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Jack Thompson here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "meet Isabella Harris!",
+    "entities": [
+      [
+        5,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Charlie Smith",
+    "entities": [
+      [
+        9,
+        22,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "mail: mike.13@gmail.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "call me(885-645-3078)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "from:New York",
+    "entities": [
+      [
+        5,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 207-715-1831",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Jane White active",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(274-179-6468)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "City-Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Mob-727-842-1791",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "User: Jack Brown active",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Name:Grace Brown",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Email:carl.30@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 902-495-5233...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "john.41@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Send details to david.82@example.org asap.",
+    "entities": [
+      [
+        16,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Email:john.16@yahoo.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Grace Anderson",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "City-Toronto",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Oliver Doe",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "meet Emma White!",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:jane.17@example.org",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "dial 434-550-2663...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Emma Wilson",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(263-673-3268)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Cell:144-212-3969",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Data:mike.78@gmail.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "reach me at carl.88@work.netthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at jane.14@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: jane.33@work.net",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "call me(494-959-4928)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to London.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Mumbai.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Cell:915-295-3786",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Name: Bob Anderson",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 740-217-2826",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Bob Brown",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 691-387-1718...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,David Thomas here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: alice.55@example.org",
+    "entities": [
+      [
+        9,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Jane White here",
+    "entities": [
+      [
+        3,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Call 724-918-9708.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "meet Alice Martin!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Canada.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Oliver Thomas",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Frank Smith here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I am Grace Thomas.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Call 109-312-8653.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 754-795-9154",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Sophia Doe",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-593-246-4799",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to sarah.63@gmail.com asap.",
+    "entities": [
+      [
+        16,
+        34,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Henry Anderson",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Cell:894-177-1628",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Dubai.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(100-381-1239)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "mail: sarah.8@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Charlie Brown here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Japan",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:emma.40@gmail.com",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-573-319-4135",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I am Frank Anderson.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Alice Thomas",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "Data:jane.47@gmail.comEnd",
+    "entities": [
+      [
+        5,
+        22,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is sarah.65@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "User: Bob Johnson active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: bob.74@example.org",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:John Johnson",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "call me(650-855-9364)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Bob Smith active",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "living in Singapore.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "reach me at david.62@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Send details to emma.91@work.net asap.",
+    "entities": [
+      [
+        16,
+        32,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-460-738-3451",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "reach: 985-378-9730",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Jack Wilson",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "My email is carl.62@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Boston.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Ph: 626-191-7033",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "jane.44@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Charlie Brown",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Send details to alice.36@example.org asap.",
+    "entities": [
+      [
+        16,
+        36,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "call me(716-350-3650)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Bob Anderson",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Email:sarah.36@example.org",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in London.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 699-609-7640",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "meet Emma Taylor!",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 183-189-6529...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:792-813-5149",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: david.16@work.net",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Mob-801-220-8945",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in Chicago.",
+    "entities": [
+      [
+        10,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:alice.32@example.org",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Address:San Francisco",
+    "entities": [
+      [
+        8,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "User: Grace Martin active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Send details to sarah.54@work.net asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "City-Dubai",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "meet Jack Doe!",
+    "entities": [
+      [
+        5,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "(jane.82@yahoo.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "living in Australia.",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Canada",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:India",
+    "entities": [
+      [
+        8,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(777-634-1481)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "living in Sydney.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "shipping to Japan.",
+    "entities": [
+      [
+        12,
+        17,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 591-690-5006",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Data:jane.4@gmail.comEnd",
+    "entities": [
+      [
+        5,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "call me(937-116-8848)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "meet William Smith!",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Location: Australia",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Data:jane.71@example.orgEnd",
+    "entities": [
+      [
+        5,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Henry Doe",
+    "entities": [
+      [
+        14,
+        23,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Call 928-962-5346.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Oliver White",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Email:bob.45@work.net",
+    "entities": [
+      [
+        6,
+        21,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "david.61@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "living in UAE.",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "City-Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "mail: carl.41@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Address:USA",
+    "entities": [
+      [
+        8,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Send details to emma.24@gmail.com asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Berlin",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Name: Frank Anderson",
+    "entities": [
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(mike.11@example.org)",
+    "entities": [
+      [
+        1,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 849-569-1837",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:Boston",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "reach: 689-926-7794",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "from:San Francisco",
+    "entities": [
+      [
+        5,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:257-881-2327",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 592-463-2125.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "call me(767-351-1929)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at david.21@gmail.comthanks",
+    "entities": [
+      [
+        12,
+        30,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: India",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Toronto.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in Dubai.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach me at bob.27@yahoo.comthanks",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Address:Sydney",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "mail: carl.37@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "dial 166-830-4332...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 677-221-6804",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Isabella Martin active",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: William Doe active",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "City-New York",
+    "entities": [
+      [
+        5,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(carl.86@gmail.com)",
+    "entities": [
+      [
+        1,
+        18,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Cell:350-288-8715",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: alice.58@example.org.",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "john.33@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Charlie Smith",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Send details to alice.39@work.net asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "reach: 156-667-1031",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "mail: carl.33@gmail.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 737-778-2189.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "alice.46@work.net is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "meet Jack Johnson!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:621-134-4176",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "from:Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Frank Doe",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:bob.7@yahoo.comEnd",
+    "entities": [
+      [
+        5,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Name: William Taylor",
+    "entities": [
+      [
+        6,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in Mumbai.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Lucas Harris",
+    "entities": [
+      [
+        14,
+        26,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: Bob Smith active",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "living in France.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "from:Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "User: Frank Harris active",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Mumbai.",
+    "entities": [
+      [
+        12,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 518-488-1643...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: sarah.53@gmail.com",
+    "entities": [
+      [
+        9,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Contact: mike.8@yahoo.com",
+    "entities": [
+      [
+        9,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "shipping to Singapore.",
+    "entities": [
+      [
+        12,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "(bob.95@yahoo.com)",
+    "entities": [
+      [
+        1,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "City-France",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Hi,John Smith here",
+    "entities": [
+      [
+        3,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "dial 283-184-5672...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Singapore",
+    "entities": [
+      [
+        10,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "City-Canada",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "call me(635-348-6362)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "meet Frank Martin!",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "(sarah.31@yahoo.com)",
+    "entities": [
+      [
+        1,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Call 232-335-6170.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "(sarah.56@yahoo.com)",
+    "entities": [
+      [
+        1,
+        19,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "meet Charlie Thomas!",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "shipping to San Francisco.",
+    "entities": [
+      [
+        12,
+        25,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "profile.Name: Sophia Wilson",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Alice Harris",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "My email is mike.27@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Send details to mike.95@yahoo.com asap.",
+    "entities": [
+      [
+        16,
+        33,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Germany.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "living in Berlin.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Berlin",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:mike.1@example.org",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "My email is bob.92@yahoo.com please contact me.",
+    "entities": [
+      [
+        12,
+        28,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "My email is emma.70@yahoo.com please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "(emma.53@example.org)",
+    "entities": [
+      [
+        1,
+        20,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Cell:472-962-5618",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I am Lucas Thomas.",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Germany",
+    "entities": [
+      [
+        5,
+        12,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "I am Frank Smith.",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "dial 228-220-9352...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:128-439-6615",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Bob Taylor",
+    "entities": [
+      [
+        5,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Frank Smith here",
+    "entities": [
+      [
+        3,
+        14,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Cell:134-844-3405",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Name:Oliver Brown",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "version: 1.0.0",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Employee-Jack Taylor",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Mob-692-877-1136",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Isabella Harris here",
+    "entities": [
+      [
+        3,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "living in Sydney.",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "mike.15@yahoo.com is my address.",
+    "entities": [
+      [
+        0,
+        17,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Address:San Francisco",
+    "entities": [
+      [
+        8,
+        21,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-240-879-7778",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Call 758-168-6738.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "living in San Francisco.",
+    "entities": [
+      [
+        10,
+        23,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "call me(224-444-7049)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "My email is bob.69@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        27,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "My email is emma.50@example.org please contact me.",
+    "entities": [
+      [
+        12,
+        31,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Hi,Jane Thompson here",
+    "entities": [
+      [
+        3,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Grace Martin",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Oliver Smith here",
+    "entities": [
+      [
+        3,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Hi,Bob Smith here",
+    "entities": [
+      [
+        3,
+        12,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:523-557-9991",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Emma Smith active",
+    "entities": [
+      [
+        6,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "emma.92@work.net is my address.",
+    "entities": [
+      [
+        0,
+        16,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Call 147-527-7019.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "Call 169-339-9508.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Refer to page 5.",
+    "entities": []
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "living in New York.",
+    "entities": [
+      [
+        10,
+        18,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Emma Thomas",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to Toronto.",
+    "entities": [
+      [
+        12,
+        19,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:633-621-2673",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Bob Anderson",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "profile.Name: Jane Anderson",
+    "entities": [
+      [
+        14,
+        27,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Call 592-998-2717.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Type f to pay respects.",
+    "entities": []
+  },
+  {
+    "text": "City-Sydney",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "dial 296-109-7284...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "User: Sophia Thompson active",
+    "entities": [
+      [
+        6,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I am Charlie Thomas.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Isabella Thomas",
+    "entities": [
+      [
+        9,
+        24,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-John Taylor",
+    "entities": [
+      [
+        9,
+        20,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I need to buy some apples.",
+    "entities": []
+  },
+  {
+    "text": "mail: mike.34@example.org.",
+    "entities": [
+      [
+        6,
+        25,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 126-634-3471",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Update the status.",
+    "entities": []
+  },
+  {
+    "text": "Call 660-668-4813.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Name:Jane Doe",
+    "entities": [
+      [
+        5,
+        13,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Process failed to start.",
+    "entities": []
+  },
+  {
+    "text": "living in Dubai.",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-290-772-6085",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Contact: jane.54@gmail.com",
+    "entities": [
+      [
+        9,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Name:Henry Harris",
+    "entities": [
+      [
+        5,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "shipping to San Francisco.",
+    "entities": [
+      [
+        12,
+        25,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "call me(570-159-6798)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Hi,William Martin here",
+    "entities": [
+      [
+        3,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "I am Charlie Taylor.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:794-260-7274",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 274-733-3856",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "I am Sophia Taylor.",
+    "entities": [
+      [
+        5,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "City-Tokyo",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Name: David Thomas",
+    "entities": [
+      [
+        6,
+        18,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Location: UAE",
+    "entities": [
+      [
+        10,
+        13,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:alice.53@example.org",
+    "entities": [
+      [
+        6,
+        26,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "from:Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "My email is sarah.76@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "My email is alice.23@work.net please contact me.",
+    "entities": [
+      [
+        12,
+        29,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-976-101-8903",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Just a quick update.",
+    "entities": []
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "call me(736-357-9825)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 104-221-6286",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "I am Charlie Wilson.",
+    "entities": [
+      [
+        5,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Name:John Thomas",
+    "entities": [
+      [
+        5,
+        16,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Hello world",
+    "entities": []
+  },
+  {
+    "text": "Review section f.",
+    "entities": []
+  },
+  {
+    "text": "Call 489-175-8137.",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Address:Sydney",
+    "entities": [
+      [
+        8,
+        14,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: David Doe",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "User: Charlie Smith active",
+    "entities": [
+      [
+        6,
+        19,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Data:sarah.34@gmail.comEnd",
+    "entities": [
+      [
+        5,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "from:Canada",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Email:alice.57@work.net",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Location: Japan",
+    "entities": [
+      [
+        10,
+        15,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Let's go for lunch.",
+    "entities": []
+  },
+  {
+    "text": "mail: jane.48@yahoo.com.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Mob-779-197-8374",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Cell:313-813-4095",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "City-Boston",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  },
+  {
+    "text": "dial 221-645-1840...",
+    "entities": [
+      [
+        5,
+        17,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: alice.19@work.net.",
+    "entities": [
+      [
+        6,
+        23,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "id: 12345",
+    "entities": []
+  },
+  {
+    "text": "Employee-Oliver Anderson",
+    "entities": [
+      [
+        9,
+        24,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Function undefined at line 40.",
+    "entities": []
+  },
+  {
+    "text": "Ph: 600-486-2880",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "The weather is nice today.",
+    "entities": []
+  },
+  {
+    "text": "from:Paris",
+    "entities": [
+      [
+        5,
+        10,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "from:UK",
+    "entities": [
+      [
+        5,
+        7,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "City-Mumbai",
+    "entities": [
+      [
+        5,
+        11,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "Name: John Taylor",
+    "entities": [
+      [
+        6,
+        17,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Employee-Frank Wilson",
+    "entities": [
+      [
+        9,
+        21,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "call me(306-917-7615)",
+    "entities": [
+      [
+        8,
+        20,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "mail: sarah.80@gmail.com.",
+    "entities": [
+      [
+        6,
+        24,
+        "EMAIL"
+      ]
+    ]
+  },
+  {
+    "text": "Is this safe?",
+    "entities": []
+  },
+  {
+    "text": "Location: Canada",
+    "entities": [
+      [
+        10,
+        16,
+        "LOC"
+      ]
+    ]
+  },
+  {
+    "text": "reach: 483-770-7912",
+    "entities": [
+      [
+        7,
+        19,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Ph: 678-926-9125",
+    "entities": [
+      [
+        4,
+        16,
+        "PHONE"
+      ]
+    ]
+  },
+  {
+    "text": "Name: Frank Doe",
+    "entities": [
+      [
+        6,
+        15,
+        "PER"
+      ]
+    ]
+  },
+  {
+    "text": "Can we meet at 5?",
+    "entities": []
+  }
+]
