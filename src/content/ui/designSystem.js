@@ -1,0 +1,44 @@
+/**
+ * Shared Design System for Shadow DOM Components
+ * Exports the CSS variables as a string to be injected into <style> tags.
+ */
+export const DESIGN_SYSTEM_CSS = `
+    :host {
+        /* Cyber Slate Palette */
+        --color-bg-primary: #0f172a;   /* Slate 950 */
+        --color-bg-surface: #1e293b;   /* Slate 800 */
+        --color-bg-hover: #334155;     /* Slate 700 */
+        
+        --color-text-primary: #f8fafc; /* Slate 50 */
+        --color-text-secondary: #94a3b8; /* Slate 400 */
+        --color-text-muted: #64748b;   /* Slate 500 */
+
+        /* Accents */
+        --color-primary: #10b981;      /* Emerald 500 */
+        --color-primary-hover: #059669; /* Emerald 600 */
+        --color-primary-alpha: rgba(16, 185, 129, 0.2);
+
+        --color-warning: #f59e0b;      /* Amber 500 */
+        --color-danger: #f43f5e;       /* Rose 500 */
+        --color-info: #3b82f6;         /* Blue 500 */
+
+        /* Borders */
+        --border-subtle: 1px solid #334155; /* Slate 700 */
+        --border-accent: 1px solid #10b981;
+
+        /* Spacing & Radius */
+        --radius-sm: 6px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-full: 9999px;
+
+        /* Typography */
+        --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.15);
+    }
+`;

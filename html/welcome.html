@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to PII Guardian</title>
+    <link rel="stylesheet" href="../styles/welcome.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="tour-sidebar">
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-num">1</div>
+                    <div class="step-label">Welcome</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-num">2</div>
+                    <div class="step-label">Scan</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-num">3</div>
+                    <div class="step-label">Mask</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-num">4</div>
+                    <div class="step-label">Ready</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="tour-content">
+
+            <!-- Slide 1: Welcome -->
+            <div class="slide active" id="slide-1">
+                <div class="slide-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <h1>Privacy, Simplified.</h1>
+                <p>PII Guardian automatically detects and redacts sensitive data before it leaves your browser. Protect
+                    your secrets from AI training models.</p>
+                <div class="nav-buttons">
+                    <button class="btn btn-next">Start Tour</button>
+                </div>
+            </div>
+
+            <!-- Slide 2: Scan -->
+            <div class="slide" id="slide-2">
+                <div class="slide-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <h1>Automatic Detection</h1>
+                <p>We scan your inputs in real-time for sensitive data like Credit Cards, API Keys, and PII. You'll see
+                    a warning before you submit.</p>
+                <div class="nav-buttons">
+                    <button class="btn btn-next">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 3: Mask -->
+            <div class="slide" id="slide-3">
+                <div class="slide-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2.5 2v20H5v-2h14v2h2.5V2H19v2H5V2H2.5zm2.5 4h14v12H5V6z"></path>
+                    </svg>
+                </div>
+                <h1>Image Redaction</h1>
+                <p>Paste any image into an AI chat, and we'll offer to redact sensitive text instantly. You can also use
+                    our Manual Masking tool.</p>
+                <div class="nav-buttons">
+                    <button class="btn btn-next">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 4: Ready -->
+            <div class="slide" id="slide-4">
+                <div class="slide-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h1>You're All Set!</h1>
+                <p>PII Guardian is now active in the background. Pin the extension to access your dashboard anytime.</p>
+                <div class="nav-buttons">
+                    <button class="btn btn-finish" id="finishTour">Open Dashboard</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../ui/welcome.js"></script>
+</body>
+
+</html>
