@@ -17,3 +17,9 @@ model-prep/**/distilbert-ner-uint4/
 model-prep/**/*.onnx
 *.pyc
 __pycache__/
+results_v2/
+
+# Large model files (download/generate locally)
+models/**/*.onnx.data
+models/**/model_quantized.onnx
+results_v2/
