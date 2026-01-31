@@ -6,45 +6,49 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Get tier from environment variable (free or pro)
+const tier = process.env.EXTENSION_TIER || 'pro';
+const isPro = tier === 'pro';
+
+console.log(`\n🎯 Building ${tier.toUpperCase()} tier\n`);
+
 /**
- * esbuild Configuration for PII Guardian Extension
+ * esbuild Configuration for Guardian Angle Extension
  *
- * This bundler converts ES6 modules into browser-compatible IIFE bundles
- * for Chrome extension compatibility (Manifest V3).
+ * Supports tier-based builds:
+ * - FREE: Regex-only detection, no ML models (~5-10 MB)
+ * - PRO: Full NER + OCR with ML models (~70-80 MB)
  *
- * Entry Points:
- * - Content Scripts: monitorInputs.js (bundles all dependencies)
- * - UI Scripts: popup.js, settings.js, dashboard.js, license.js
- * - Background: serviceWorker.js
+ * Usage:
+ * - npm run build:free  (Free tier)
+ * - npm run build:pro   (Pro tier)
  *
  * Output: dist/ folder (load this in Chrome, not the root folder)
  */
 
 const buildOptions = {
   entryPoints: {
-    // Content scripts - monitorInputs imports the other two
+    // Content scripts
     'content/monitorInputs': 'src/content/monitorInputs.js',
     'content/detectText': 'src/content/detectText.js',
 
     // UI scripts
     'ui/popup': 'src/ui/popup.js',
-    'ui/settings': 'src/ui/settings.js',
-    'ui/dashboard': 'src/ui/dashboard.js',
-    'ui/license': 'src/ui/license.js',
-    'ui/history': 'src/ui/history.js',
-    'ui/debugOcr': 'src/ui/debugOcr.js',
+    'ui/welcome': 'src/ui/welcome.js',
 
     // Background script
     'background/serviceWorker': 'src/background/serviceWorker.js',
 
-    // ML inference worker (offscreen document)
-    'ml/offscreen': 'src/ml/offscreen.js',
-
-    // ML test page
-    'ml-test/test': 'src/ml-test/test.js',
-
     // Detection modules
-    'detection/hybridDetector': 'src/detection/hybridDetector.js'
+    'detection/hybridDetector': 'src/detection/hybridDetector.js',
+
+    // PRO-only entry points
+    ...(isPro ? {
+      'ui/history': 'src/ui/history.js',
+      'ui/debugOcr': 'src/ui/debugOcr.js',
+      'ml/offscreen': 'src/ml/offscreen.js',
+      'ml-test/test': 'src/ml-test/test.js'
+    } : {})
   },
   bundle: true,
   outdir: 'dist',
@@ -54,7 +58,8 @@ const buildOptions = {
   sourcemap: true, // Enable for debugging
   minify: false, // Set to true for production
   define: {
-    'process.env.NODE_ENV': '"production"'
+    'process.env.NODE_ENV': '"production"',
+    'process.env.EXTENSION_TIER': `"${tier}"`
   }
 };
 
@@ -125,44 +130,53 @@ async function build() {
     console.log('  → assets/');
     copyDirectory('assets', 'dist/assets');
 
-    // 5. Copy ML models
-    console.log('  → models/');
-    copyDirectory('models', 'dist/models');
+    // 5. Copy ML models (PRO ONLY)
+    if (isPro) {
+      console.log('  → models/ (PRO)');
+      copyDirectory('models', 'dist/models');
 
-    // 6. Copy ONNX Runtime WASM and module files from node_modules
-    console.log('  → onnxruntime-web WASM and module files');
-    const ortWasmDir = 'node_modules/onnxruntime-web/dist';
-    if (existsSync(ortWasmDir)) {
-      mkdirSync('dist/onnxruntime-web', { recursive: true });
-      // Copy .wasm, .mjs, and .js files needed by ORT
-      const ortFiles = readdirSync(ortWasmDir).filter(f =>
-        f.endsWith('.wasm') || f.endsWith('.mjs') ||
-        (f.endsWith('.js') && !f.includes('.map'))
-      );
-      for (const file of ortFiles) {
-        copyFileSync(join(ortWasmDir, file), join('dist/onnxruntime-web', file));
+      // 6. Copy ONNX Runtime WASM and module files from node_modules
+      console.log('  → onnxruntime-web WASM and module files (PRO)');
+      const ortWasmDir = 'node_modules/onnxruntime-web/dist';
+      if (existsSync(ortWasmDir)) {
+        mkdirSync('dist/onnxruntime-web', { recursive: true });
+        // Copy .wasm, .mjs, and .js files needed by ORT
+        const ortFiles = readdirSync(ortWasmDir).filter(f =>
+          f.endsWith('.wasm') || f.endsWith('.mjs') ||
+          (f.endsWith('.js') && !f.includes('.map'))
+        );
+        for (const file of ortFiles) {
+          copyFileSync(join(ortWasmDir, file), join('dist/onnxruntime-web', file));
+        }
+        console.log(`     Copied ${ortFiles.length} ORT files (.wasm, .mjs, .js)`);
       }
-      console.log(`     Copied ${ortFiles.length} ORT files (.wasm, .mjs, .js)`);
+
+      // 7. Copy Tesseract.js files (PRO ONLY)
+      console.log('  → tesseract.js files (PRO)');
+      mkdirSync('dist/ocr', { recursive: true });
+
+      // Copy worker
+      copyFileSync('node_modules/tesseract.js/dist/worker.min.js', 'dist/ocr/worker.min.js');
+
+      // Copy core JS
+      copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm.js', 'dist/ocr/tesseract-core.wasm.js');
+
+      // Copy core WASM (CRITICAL missing file)
+      copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm', 'dist/ocr/tesseract-core.wasm');
+
+      console.log('     Copied Tesseract worker and core files');
+    } else {
+      console.log('  ⏭️  Skipping models/ (FREE tier)');
+      console.log('  ⏭️  Skipping onnxruntime-web (FREE tier)');
+      console.log('  ⏭️  Skipping tesseract.js (FREE tier)');
     }
 
-    // 7. Copy Tesseract.js files
-    console.log('  → tesseract.js files');
-    mkdirSync('dist/ocr', { recursive: true });
-
-    // Copy worker
-    copyFileSync('node_modules/tesseract.js/dist/worker.min.js', 'dist/ocr/worker.min.js');
-
-    // Copy core JS
-    copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm.js', 'dist/ocr/tesseract-core.wasm.js');
-
-    // Copy core WASM (CRITICAL missing file)
-    copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm', 'dist/ocr/tesseract-core.wasm');
-
-    console.log('     Copied Tesseract worker and core files');
-
-    console.log('\n✅ Build complete!\n');
+    console.log(`\n✅ ${tier.toUpperCase()} tier build complete!\n`);
     console.log('📂 Output directory: dist/');
-    console.log('🔧 To load in Chrome:');
+    console.log(`🎯 Tier: ${tier.toUpperCase()}`);
+    console.log(`📦 Expected size: ${isPro ? '~70-80 MB' : '~5-10 MB'}`);
+    console.log(`✨ Features: ${isPro ? 'Full NER + OCR' : 'Regex-only detection'}`);
+    console.log('\n🔧 To load in Chrome:');
     console.log('   1. Go to chrome://extensions');
     console.log('   2. Enable "Developer mode"');
     console.log('   3. Click "Load unpacked"');

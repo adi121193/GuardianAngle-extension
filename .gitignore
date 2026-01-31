@@ -21,5 +21,7 @@ results_v2/
 
 # Large model files (download/generate locally)
 models/**/*.onnx.data
-models/**/model_quantized.onnx
 results_v2/
+
+# Production builds - exclude full model, keep quantized only
+dist/models/**/model.onnx.data
