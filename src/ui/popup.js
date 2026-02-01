@@ -17,10 +17,39 @@ let state = {
  * Initialize
  */
 async function init() {
-  console.log('[Popup] Starting initialization...');
+  // Visual Logger Setup (Debug Mode)
+  const debugLog = document.createElement('div');
+  debugLog.id = 'debugLog';
+  debugLog.style.cssText = `
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: rgba(0,0,0,0.9);
+    color: #0f0;
+    font-family: monospace;
+    font-size: 10px;
+    overflow-y: auto;
+    padding: 10px;
+    z-index: 9999;
+    pointer-events: none;
+    border-top: 1px solid #333;
+  `;
+  document.body.appendChild(debugLog);
+
+  function log(msg) {
+    console.log('[Popup]', msg);
+    const entry = document.createElement('div');
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    debugLog.appendChild(entry);
+    debugLog.scrollTop = debugLog.scrollHeight;
+  }
+
+  log('Starting initialization...');
   try {
     // Initialize DOM Elements
-    console.log('[Popup] Initializing DOM elements...');
+    log('Initializing DOM elements...');
     elements = {
       // Navigation
       navItems: document.querySelectorAll('.nav-item'),
@@ -66,42 +95,43 @@ async function init() {
       licenseSuccess: document.getElementById('licenseSuccess')
     };
 
-    console.log('[Popup] DOM elements initialized:', elements);
+    log('DOM elements initialized');
 
     // Load settings
-    console.log('[Popup] Loading settings...');
+    log('Loading settings...');
     try {
       const { getSettings } = await import('../utils/storage.js');
       state.settings = await getSettings();
-      console.log('[Popup] Settings loaded:', state.settings);
+      log('Settings loaded');
     } catch (error) {
-      console.error('[Popup] Failed to load settings:', error);
+      log('Failed to load settings: ' + error.message);
       state.settings = {};
     }
 
     // Load tier info
-    console.log('[Popup] Loading tier info...');
+    log('Loading tier info...');
     await loadTierInfo();
 
     // Load stats
-    console.log('[Popup] Loading stats...');
+    log('Loading stats...');
     await loadStats();
 
     // Render views
-    console.log('[Popup] Rendering views...');
+    log('Rendering views...');
     renderDashboard();
     renderSettings();
     renderLicense();
 
     // Attach listeners
-    console.log('[Popup] Attaching listeners...');
+    log('Attaching listeners...');
     attachListeners();
 
     // Set initial NER status
     updateNERStatus(state.settings.nerEnabled || false);
 
-    console.log('[Popup] Initialized successfully');
+    log('Initialized successfully');
   } catch (error) {
+    log('Init error: ' + error.message);
     console.error('[Popup] Init error:', error);
     console.error('[Popup] Error stack:', error.stack);
     renderError(error.message);
