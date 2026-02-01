@@ -1,6 +1,9 @@
 /**
  * License Validation Module
- * Handles offline license key validation using RSA signatures
+ * Handles license validation with LemonSqueezy API + offline RSA fallback
+ *
+ * Primary: LemonSqueezy API validation (online)
+ * Fallback: RSA signature validation (offline)
  *
  * License Format: PIIGUARD::PRO::<expiryISO>::<base64-signature>
  * Example: PIIGUARD::PRO::2026-01-01T00:00:00Z::aGVsbG93b3JsZA==
@@ -8,6 +11,13 @@
 
 import { verifySignature } from './crypto.js';
 import { setProStatus, getSettings } from './storage.js';
+import {
+  validateLemonSqueezyLicense,
+  activateLemonSqueezyLicense,
+  deactivateLemonSqueezyLicense,
+  getStoredLicense,
+  needsRevalidation
+} from './lemonSqueezyAPI.js';
 
 /**
  * License key prefix
@@ -73,21 +83,57 @@ export function isLicenseExpired(expiryDate) {
 }
 
 /**
- * Validate license key
+ * Validate license key (Hybrid: LemonSqueezy + RSA fallback)
  * @param {string} licenseKey - License key to validate
+ * @param {boolean} forceOffline - Force offline validation
  * @returns {Promise<Object>} Validation result
  */
-export async function validateLicense(licenseKey) {
+export async function validateLicense(licenseKey, forceOffline = false) {
   const result = {
     valid: false,
     error: null,
     product: null,
     expiry: null,
-    daysRemaining: null
+    daysRemaining: null,
+    source: null // 'lemonsqueezy' or 'offline'
   };
 
   try {
-    // Parse license key
+    // Try LemonSqueezy validation first (if online)
+    if (!forceOffline) {
+      const lsValidation = await validateLemonSqueezyLicense(licenseKey);
+
+      if (lsValidation.valid) {
+        // LemonSqueezy validation successful
+        result.valid = true;
+        result.product = lsValidation.product.name;
+        result.expiry = lsValidation.expiresAt;
+        result.source = 'lemonsqueezy';
+        result.customerEmail = lsValidation.customer.email;
+        result.customerName = lsValidation.customer.name;
+
+        // Calculate days remaining
+        if (lsValidation.expiresAt) {
+          const expiryDate = new Date(lsValidation.expiresAt);
+          const now = new Date();
+          const msRemaining = expiryDate.getTime() - now.getTime();
+          result.daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+        }
+
+        return result;
+      }
+
+      // If LemonSqueezy validation failed but not due to network, return error
+      if (!lsValidation.offline) {
+        result.error = lsValidation.error;
+        return result;
+      }
+
+      // Network error - fall through to offline validation
+      console.log('[License] LemonSqueezy offline, using RSA fallback');
+    }
+
+    // Fallback to offline RSA validation
     const parsed = parseLicenseKey(licenseKey);
 
     if (!parsed) {
@@ -115,11 +161,12 @@ export async function validateLicense(licenseKey) {
     const msRemaining = parsed.expiryDate.getTime() - now.getTime();
     const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
 
-    // License is valid
+    // License is valid (offline)
     result.valid = true;
     result.product = parsed.product;
     result.expiry = parsed.expiry;
     result.daysRemaining = daysRemaining;
+    result.source = 'offline';
 
     return result;
   } catch (error) {
@@ -130,28 +177,41 @@ export async function validateLicense(licenseKey) {
 }
 
 /**
- * Activate Pro license
+ * Activate Pro license (LemonSqueezy)
  * @param {string} licenseKey - License key to activate
  * @returns {Promise<Object>} Activation result
  */
 export async function activateLicense(licenseKey) {
-  const validation = await validateLicense(licenseKey);
+  // Try LemonSqueezy activation first
+  const lsActivation = await activateLemonSqueezyLicense(licenseKey);
+
+  if (lsActivation.activated) {
+    return {
+      success: true,
+      customer: lsActivation.customer,
+      source: 'lemonsqueezy'
+    };
+  }
+
+  // Fallback to offline validation
+  const validation = await validateLicense(licenseKey, true);
 
   if (!validation.valid) {
     return {
       success: false,
-      error: validation.error
+      error: validation.error || lsActivation.error
     };
   }
 
-  // Save to storage
+  // Save to storage (offline mode)
   await setProStatus(true, licenseKey, validation.expiry);
 
   return {
     success: true,
     product: validation.product,
     expiry: validation.expiry,
-    daysRemaining: validation.daysRemaining
+    daysRemaining: validation.daysRemaining,
+    source: 'offline'
   };
 }
 
@@ -160,14 +220,55 @@ export async function activateLicense(licenseKey) {
  * @returns {Promise<void>}
  */
 export async function deactivateLicense() {
+  // Try LemonSqueezy deactivation
+  const stored = await getStoredLicense();
+  if (stored && stored.instanceId) {
+    await deactivateLemonSqueezyLicense(stored.licenseKey, stored.instanceId);
+  }
+
+  // Clear local storage
   await setProStatus(false, null, null);
 }
 
 /**
- * Check current license status
+ * Check current license status (with periodic revalidation)
  * @returns {Promise<Object>} License status
  */
 export async function checkLicenseStatus() {
+  // Check LemonSqueezy stored license first
+  const storedLicense = await getStoredLicense();
+
+  if (storedLicense) {
+    // Check if needs revalidation (every 24 hours)
+    if (needsRevalidation(storedLicense)) {
+      console.log('[License] Revalidating with LemonSqueezy...');
+      const validation = await validateLicense(storedLicense.licenseKey);
+
+      if (!validation.valid) {
+        // License no longer valid, deactivate
+        await deactivateLicense();
+        return {
+          active: false,
+          product: null,
+          expiry: null,
+          daysRemaining: null,
+          error: validation.error
+        };
+      }
+    }
+
+    // License is valid
+    return {
+      active: true,
+      product: storedLicense.productName,
+      expiry: storedLicense.expiresAt,
+      daysRemaining: calculateDaysRemaining(storedLicense.expiresAt),
+      customerEmail: storedLicense.customerEmail,
+      source: 'lemonsqueezy'
+    };
+  }
+
+  // Fallback to old storage format
   const settings = await getSettings();
 
   if (!settings.proEnabled || !settings.licenseKey) {
@@ -198,8 +299,24 @@ export async function checkLicenseStatus() {
     active: true,
     product: validation.product,
     expiry: validation.expiry,
-    daysRemaining: validation.daysRemaining
+    daysRemaining: validation.daysRemaining,
+    source: validation.source
   };
+}
+
+/**
+ * Calculate days remaining until expiry
+ * @param {string} expiryISO - Expiry date in ISO format
+ * @returns {number|null} Days remaining or null
+ */
+function calculateDaysRemaining(expiryISO) {
+  if (!expiryISO) return null;
+
+  const expiryDate = new Date(expiryISO);
+  const now = new Date();
+  const msRemaining = expiryDate.getTime() - now.getTime();
+
+  return Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
 }
 
 /**
