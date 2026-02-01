@@ -347,6 +347,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return true;
 
+    case 'GET_TIER_INFO':
+      // Get tier info from license validation
+      chrome.storage.local.get(['proEnabled', 'proLicense', 'licenseStatus'], (result) => {
+        const isPro = result.proEnabled === true && result.licenseStatus === 'active';
+        sendResponse({
+          tier: isPro ? 'pro' : 'free',
+          isPro: isPro,
+          isFree: !isPro
+        });
+      });
+      return true;
+
     case 'GET_STATS':
       chrome.storage.local.get(['settings'], (result) => {
         sendResponse({ stats: result.settings?.stats || {} });
