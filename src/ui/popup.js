@@ -174,118 +174,132 @@ function renderSettings() {
 /**
  * Attach Listeners
  */
+/**
+ * Attach Listeners (using Event Delegation)
+ */
 function attachListeners() {
-  // Navigation
-  elements.navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const view = item.dataset.view;
-      switchView(view);
-    });
+  console.log('[Popup] Attaching global event listeners...');
+
+  document.body.addEventListener('click', (e) => {
+    // Helper to find closest button/element
+    const target = e.target;
+    const btn = target.closest('button') || target.closest('a') || target;
+
+    console.log('[Popup] Click detected on:', btn);
+
+    // Navigation Items & Sidebar Toggle
+    if (btn.classList.contains('nav-item')) {
+      const view = btn.dataset.view;
+      if (view) switchView(view);
+      return;
+    }
+
+    // Mobile Nav Toggle
+    if (btn.id === 'mobileNavToggle') {
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) sidebar.classList.toggle('active');
+      return;
+    }
+
+    // Dashboard View Button (bottom nav)
+    if (btn.id === 'dashboardBtn' || (btn.onclick && btn.onclick.toString().includes('dashboard'))) {
+      switchView('dashboard');
+      return;
+    }
+
+    // Settings View Button (bottom nav)
+    if (btn.id === 'settingsBtn' || (btn.onclick && btn.onclick.toString().includes('settings'))) {
+      switchView('settings');
+      return;
+    }
+
+    // Export Button
+    if (btn.id === 'exportDataBtn') {
+      exportData();
+      return;
+    }
+
+    // License Activation
+    if (btn.id === 'activateLicenseBtn') {
+      handleActivation();
+      return;
+    }
+
+    // License Deactivation
+    if (btn.id === 'deactivateLicenseBtn') {
+      handleDeactivation();
+      return;
+    }
+
+    // Upgrade Button
+    if (btn.id === 'upgradeBtn') {
+      switchView('license');
+      return;
+    }
+
+    // NER Unlock Button
+    if (btn.id === 'nerUnlockBtn') {
+      switchView('license');
+      return;
+    }
+
+    // Buy License Link
+    if (btn.id === 'buyLicenseLink') {
+      e.preventDefault();
+      const checkoutURL = 'https://lemonsqueezy.com/checkout/guardian-angle-pro';
+      chrome.tabs.create({ url: checkoutURL });
+      return;
+    }
   });
 
-  // Mobile Nav Toggle
-  if (elements.mobileNavToggle) {
-    elements.mobileNavToggle.addEventListener('click', () => {
-      elements.sidebar.classList.toggle('active');
-    });
-  }
+  // Toggle Switches (Change events)
+  document.body.addEventListener('change', (e) => {
+    const target = e.target;
+    console.log('[Popup] Change detected on:', target);
 
-  // Dashboard Toggle
-  if (elements.enableToggle) {
-    elements.enableToggle.addEventListener('change', (e) => {
-      saveSetting('enabled', e.target.checked);
-    });
-  }
+    // Enable Toggle
+    if (target.id === 'enableToggle') {
+      saveSetting('enabled', target.checked);
+      return;
+    }
 
-  // NER Toggle
-  if (elements.nerToggle) {
-    elements.nerToggle.addEventListener('change', async (e) => {
-      const enabled = e.target.checked;
-      saveSetting('nerEnabled', enabled);
-      updateNERStatus(enabled);
-    });
-  }
+    // NER Toggle
+    if (target.id === 'nerToggle') {
+      saveSetting('nerEnabled', target.checked);
+      updateNERStatus(target.checked);
+      return;
+    }
 
-  // Settings
-  if (elements.settings.autoMask) {
-    elements.settings.autoMask.addEventListener('change', (e) => {
-      saveSetting('autoMask', e.target.checked);
-    });
-  }
+    // Settings Inputs
+    if (target.id === 'autoMask') {
+      saveSetting('autoMask', target.checked);
+      return;
+    }
 
-  if (elements.settings.blockOnDetection) {
-    elements.settings.blockOnDetection.addEventListener('change', (e) => {
-      saveSetting('blockOnDetection', e.target.checked);
-    });
-  }
+    if (target.id === 'blockOnDetection') {
+      saveSetting('blockOnDetection', target.checked);
+      return;
+    }
 
-  // PII Type Checkboxes
-  elements.settings.piiChecks.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      const enabledTypes = Array.from(elements.settings.piiChecks)
+    // PII Checkboxes
+    if (target.closest('.pii-check')) {
+      // Re-query all checkboxes state
+      const checkboxes = document.querySelectorAll('.pii-check input');
+      const enabledTypes = Array.from(checkboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value);
       saveSetting('enabledPIITypes', enabledTypes);
-    });
+    }
   });
 
-  // Export Button
-  if (elements.exportBtn) {
-    elements.exportBtn.addEventListener('click', exportData);
-  }
-
-  // Dashboard Button (bottom of page)
-  if (elements.dashboardBtn) {
-    elements.dashboardBtn.addEventListener('click', () => {
-      switchView('dashboard');
-    });
-  }
-
-  // Settings Button (bottom of page)
-  if (elements.settingsBtn) {
-    elements.settingsBtn.addEventListener('click', () => {
-      switchView('settings');
-    });
-  }
-
-  // License Activation
-  if (elements.activateLicenseBtn) {
-    elements.activateLicenseBtn.addEventListener('click', handleActivation);
-  }
-
-  // License Deactivation
-  if (elements.deactivateLicenseBtn) {
-    elements.deactivateLicenseBtn.addEventListener('click', handleDeactivation);
-  }
-
-  // Upgrade Button
-  if (elements.upgradeBtn) {
-    elements.upgradeBtn.addEventListener('click', () => {
-      switchView('license');
-    });
-  }
-
-  // Buy License Link
-  if (elements.buyLicenseLink) {
-    elements.buyLicenseLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      // TODO: Replace with actual LemonSqueezy checkout URL
-      const checkoutURL = 'https://lemonsqueezy.com/checkout/guardian-angle-pro';
-      chrome.tabs.create({ url: checkoutURL });
-    });
-  }
-
-  // Real-time Updates
+  // Real-time Storage Updates
   chrome.storage.onChanged.addListener(async (changes, areaName) => {
     if (areaName === 'local' && changes.settings) {
       const newSettings = changes.settings.newValue;
       if (newSettings) {
-        // Update State
         state.settings = newSettings;
         state.stats = newSettings.stats || {};
         state.isPro = newSettings.proEnabled || false;
-
-        // Re-render
         renderDashboard();
         renderSettings();
         renderLicense();
