@@ -233,10 +233,18 @@ function attachListeners() {
     elements.exportBtn.addEventListener('click', exportData);
   }
 
-  // Dashboard Button
+  // Dashboard Button (bottom of page)
   if (elements.dashboardBtn) {
     elements.dashboardBtn.addEventListener('click', () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL('html/popup.html') });
+      switchView('dashboard');
+    });
+  }
+
+  // Settings Button (bottom of page)
+  const settingsBtn = document.getElementById('settingsBtn');
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', () => {
+      switchView('settings');
     });
   }
 
