@@ -43,6 +43,7 @@ async function init() {
 
       // Actions
       dashboardBtn: document.getElementById('dashboardBtn'),
+      settingsBtn: document.getElementById('settingsBtn'), // Added settingsBtn
       exportBtn: document.getElementById('exportDataBtn'),
 
       // Settings Inputs
@@ -241,9 +242,8 @@ function attachListeners() {
   }
 
   // Settings Button (bottom of page)
-  const settingsBtn = document.getElementById('settingsBtn');
-  if (settingsBtn) {
-    settingsBtn.addEventListener('click', () => {
+  if (elements.settingsBtn) {
+    elements.settingsBtn.addEventListener('click', () => {
       switchView('settings');
     });
   }
