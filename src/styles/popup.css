@@ -212,6 +212,63 @@ body {
 }
 
 /* ============================
+   TIER BADGE & UPGRADE BUTTON
+   ============================ */
+
+.tier-badge-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.tier-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.tier-badge.free {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.tier-badge.pro {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  border: none;
+}
+
+.upgrade-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.upgrade-btn:active {
+  transform: translateY(0);
+}
+
+/* ============================
    VIEWS & COMPONENTS
    ============================ */
 
@@ -549,4 +606,208 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* ============================
+   LICENSE VIEW ENHANCEMENTS
+   ============================ */
+
+.license-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.license-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.license-icon-wrapper.bg-success-subtle {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.feature-list {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  border: var(--border-subtle);
+}
+
+.feature-item {
+  padding: 8px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.input-group-license {
+  margin: 16px 0;
+}
+
+.input-lg {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: monospace;
+  letter-spacing: 1px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.input-lg:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.input-lg::placeholder {
+  color: var(--text-tertiary);
+  letter-spacing: normal;
+}
+
+.license-details {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  border: var(--border-subtle);
+  margin: 20px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.detail-row strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.btn-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================
+   PRO BADGES & FEATURE LOCKS
+   ============================ */
+
+.pro-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+.feature-lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.lock-content {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 20px;
+}
+
+.lock-content svg {
+  margin-bottom: 8px;
+  color: #64748b;
+}
+
+.lock-content p {
+  font-size: 13px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.unlock-btn {
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.unlock-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Relative positioning for cards with locks */
+.card.ner-card {
+  position: relative;
+}
+
+/* ============================
+   RESPONSIVE ADJUSTMENTS
+   ============================ */
+
+@media (max-width: 400px) {
+  .tier-badge-wrapper {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .upgrade-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
 }

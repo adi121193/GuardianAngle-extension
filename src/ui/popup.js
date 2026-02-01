@@ -50,41 +50,74 @@ async function init() {
         piiChecks: document.querySelectorAll('.pii-check input')
       },
 
-      // License UI
-      license: {
-        input: document.getElementById('licenseKeyInput'),
-        btn: document.getElementById('activateLicenseBtn'),
-        error: document.getElementById('licenseError'),
-        startForm: document.getElementById('activationStart'),
-        successDiv: document.getElementById('activationSuccess')
-      }
+      // License Elements
+      tierBadge: document.getElementById('tierBadge'),
+      upgradeBtn: document.getElementById('upgradeBtn'),
+      licenseActivationForm: document.getElementById('licenseActivationForm'),
+      licenseInfoView: document.getElementById('licenseInfoView'),
+      licenseKeyInput: document.getElementById('licenseKeyInput'),
+      activateLicenseBtn: document.getElementById('activateLicenseBtn'),
+      deactivateLicenseBtn: document.getElementById('deactivateLicenseBtn'),
+      buyLicenseLink: document.getElementById('buyLicenseLink'),
+      licenseError: document.getElementById('licenseError'),
+      licenseSuccess: document.getElementById('licenseSuccess')
     };
 
-    console.log('DOM Initialized', elements);
+    // Load settings
+    const { getSettings } = await import('../utils/storage.js');
+    state.settings = await getSettings();
 
-    // Load Data
-    const [settingsRes, statsRes] = await Promise.all([
-      chrome.storage.local.get(['settings']),
-      chrome.runtime.sendMessage({ type: 'GET_STATS' })
-    ]);
+    // Load tier info
+    await loadTierInfo();
 
-    state.settings = settingsRes.settings || {};
-    state.stats = statsRes.stats || {};
-    state.isPro = state.settings.proEnabled || false;
+    // Load stats
+    await loadStats();
 
+    // Render views
     renderDashboard();
     renderSettings();
     renderLicense();
+
+    // Attach listeners
     attachListeners();
 
-    // Check query param to open specific view
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialView = urlParams.get('view');
-    if (initialView) {
-      switchView(initialView);
-    }
-  } catch (e) {
-    console.error('Init failed', e);
+    // Set initial NER status
+    updateNERStatus(state.settings.nerEnabled || false);
+
+    console.log('[Popup] Initialized successfully');
+  } catch (error) {
+    console.error('[Popup] Init error:', error);
+    renderError(error.message);
+  }
+}
+
+/**
+ * Load Tier Info from background script
+ */
+async function loadTierInfo() {
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'GET_TIER_INFO' });
+    state.tier = response.tier;
+    state.isPro = response.tier === 'pro';
+    console.log('Tier Info Loaded:', state.tier);
+  } catch (error) {
+    console.error('Failed to load tier info:', error);
+    state.tier = 'free';
+    state.isPro = false;
+  }
+}
+
+/**
+ * Load Stats from background script
+ */
+async function loadStats() {
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'GET_STATS' });
+    state.stats = response.stats || {};
+    console.log('Stats Loaded:', state.stats);
+  } catch (error) {
+    console.error('Failed to load stats:', error);
+    state.stats = {};
   }
 }
 
@@ -126,53 +159,100 @@ function renderSettings() {
  */
 function attachListeners() {
   // Navigation
-  elements.navItems.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const viewId = btn.dataset.view;
-      switchView(viewId);
+  elements.navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      switchView(view);
     });
   });
 
-  // Open Dashboard (New Tab)
-  if (elements.dashboardBtn) {
-    elements.dashboardBtn.addEventListener('click', () => {
-      chrome.tabs.create({ url: 'html/popup.html' });
+  // Mobile Nav Toggle
+  if (elements.mobileNavToggle) {
+    elements.mobileNavToggle.addEventListener('click', () => {
+      elements.sidebar.classList.toggle('active');
     });
   }
 
-  // Toggles
-  elements.enableToggle.addEventListener('change', (e) => saveSetting('enabled', e.target.checked));
-  elements.nerToggle.addEventListener('change', (e) => {
-    saveSetting('nerEnabled', e.target.checked);
-    updateNERStatus(e.target.checked);
-    // Simple IPC to background
-    chrome.runtime.sendMessage({ type: e.target.checked ? 'INIT_NER' : 'DISPOSE_NER' });
-  });
+  // Dashboard Toggle
+  if (elements.enableToggle) {
+    elements.enableToggle.addEventListener('change', (e) => {
+      saveSetting('enabled', e.target.checked);
+    });
+  }
 
-  // Settings Inputs
-  elements.settings.autoMask.addEventListener('change', (e) => saveSetting('autoMask', e.target.checked));
-  elements.settings.blockOnDetection.addEventListener('change', (e) => saveSetting('blockOnDetection', e.target.checked));
+  // NER Toggle
+  if (elements.nerToggle) {
+    elements.nerToggle.addEventListener('change', async (e) => {
+      const enabled = e.target.checked;
+      saveSetting('nerEnabled', enabled);
+      updateNERStatus(enabled);
+    });
+  }
 
-  elements.settings.piiChecks.forEach(cb => {
-    cb.addEventListener('change', () => {
-      // Aggregate all checked values
-      const newTypes = Array.from(elements.settings.piiChecks)
-        .filter(c => c.checked)
-        .map(c => c.value);
-      saveSetting('enabledTypes', newTypes);
+  // Settings
+  if (elements.settings.autoMask) {
+    elements.settings.autoMask.addEventListener('change', (e) => {
+      saveSetting('autoMask', e.target.checked);
+    });
+  }
+
+  if (elements.settings.blockOnDetection) {
+    elements.settings.blockOnDetection.addEventListener('change', (e) => {
+      saveSetting('blockOnDetection', e.target.checked);
+    });
+  }
+
+  // PII Type Checkboxes
+  elements.settings.piiChecks.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const enabledTypes = Array.from(elements.settings.piiChecks)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      saveSetting('enabledPIITypes', enabledTypes);
     });
   });
 
-  // Export
-  if (elements.exportBtn) elements.exportBtn.addEventListener('click', exportData);
+  // Export Button
+  if (elements.exportBtn) {
+    elements.exportBtn.addEventListener('click', exportData);
+  }
 
-  // License
-  if (elements.license.btn) {
-    elements.license.btn.addEventListener('click', handleActivation);
+  // Dashboard Button
+  if (elements.dashboardBtn) {
+    elements.dashboardBtn.addEventListener('click', () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('html/popup.html') });
+    });
+  }
+
+  // License Activation
+  if (elements.activateLicenseBtn) {
+    elements.activateLicenseBtn.addEventListener('click', handleActivation);
+  }
+
+  // License Deactivation
+  if (elements.deactivateLicenseBtn) {
+    elements.deactivateLicenseBtn.addEventListener('click', handleDeactivation);
+  }
+
+  // Upgrade Button
+  if (elements.upgradeBtn) {
+    elements.upgradeBtn.addEventListener('click', () => {
+      switchView('license');
+    });
+  }
+
+  // Buy License Link
+  if (elements.buyLicenseLink) {
+    elements.buyLicenseLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      // TODO: Replace with actual LemonSqueezy checkout URL
+      const checkoutURL = 'https://lemonsqueezy.com/checkout/guardian-angle-pro';
+      chrome.tabs.create({ url: checkoutURL });
+    });
   }
 
   // Real-time Updates
-  chrome.storage.onChanged.addListener((changes, areaName) => {
+  chrome.storage.onChanged.addListener(async (changes, areaName) => {
     if (areaName === 'local' && changes.settings) {
       const newSettings = changes.settings.newValue;
       if (newSettings) {
@@ -227,76 +307,196 @@ function updateNERStatus(enabled) {
  * Render License View
  */
 function renderLicense() {
-  if (!elements.license.successDiv) return;
+  if (!elements.licenseActivationForm || !elements.licenseInfoView) return;
 
   if (state.isPro) {
-    // Show Success State
-    elements.license.startForm.style.display = 'none';
-    elements.license.successDiv.style.display = 'block';
+    // Show Pro License Info
+    elements.licenseActivationForm.style.display = 'none';
+    elements.licenseInfoView.style.display = 'block';
+
+    // Update license details
+    const customerName = document.getElementById('licenseCustomerName');
+    const customerEmail = document.getElementById('licenseCustomerEmail');
+
+    if (customerName) customerName.textContent = state.settings.licenseCustomerName || '-';
+    if (customerEmail) customerEmail.textContent = state.settings.licenseCustomerEmail || '-';
   } else {
-    // Show Form
-    elements.license.startForm.style.display = 'block';
-    elements.license.successDiv.style.display = 'none';
-    elements.license.input.value = '';
-    elements.license.error.style.display = 'none';
+    // Show Activation Form
+    elements.licenseActivationForm.style.display = 'block';
+    elements.licenseInfoView.style.display = 'none';
+
+    // Reset form
+    if (elements.licenseKeyInput) elements.licenseKeyInput.value = '';
+    if (elements.licenseError) elements.licenseError.style.display = 'none';
+    if (elements.licenseSuccess) elements.licenseSuccess.style.display = 'none';
+  }
+
+  // Update tier badge
+  if (elements.tierBadge) {
+    elements.tierBadge.textContent = state.isPro ? 'Pro' : 'Free';
+    elements.tierBadge.className = `tier-badge ${state.isPro ? 'pro' : 'free'}`;
+  }
+
+  // Show/hide upgrade button
+  if (elements.upgradeBtn) {
+    elements.upgradeBtn.style.display = state.isPro ? 'none' : 'block';
+  }
+
+  // Update feature locks
+  updateFeatureLocks();
+}
+
+/**
+ * Update Feature Locks based on tier
+ */
+function updateFeatureLocks() {
+  const nerLock = document.getElementById('nerLockOverlay');
+  const nerBadge = document.getElementById('nerProBadge');
+  const nerToggle = document.getElementById('nerToggle');
+
+  if (nerLock) {
+    nerLock.style.display = state.isPro ? 'none' : 'flex';
+  }
+
+  if (nerBadge) {
+    nerBadge.style.display = state.isPro ? 'none' : 'inline-block';
+  }
+
+  if (nerToggle) {
+    nerToggle.disabled = !state.isPro;
+  }
+
+  // Add click handler to unlock button
+  const unlockBtn = document.getElementById('nerUnlockBtn');
+  if (unlockBtn) {
+    unlockBtn.onclick = () => {
+      switchView('license');
+    };
   }
 }
 
 /**
- * Handle Activation
+ * Handle License Activation
  */
 async function handleActivation() {
-  const key = elements.license.input.value.trim();
+  const licenseKey = elements.licenseKeyInput.value.trim();
 
-  // Basic Validation
-  if (!key || key.length < 5) {
-    showLicenseError('Please enter a valid license key');
+  if (!licenseKey) {
+    showLicenseError('Please enter a license key');
     return;
   }
 
-  elements.license.btn.innerText = 'Verifying...';
-  elements.license.btn.disabled = true;
+  // Show loading state
+  const btn = elements.activateLicenseBtn;
+  const btnText = btn.querySelector('.btn-text');
+  const btnSpinner = btn.querySelector('.btn-spinner');
 
-  // Simulate Network Request (Mock for now, replacing with API later)
-  setTimeout(async () => {
-    // Mock Success Pattern: "PRO-"
-    if (key.toUpperCase().startsWith('PRO-')) {
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  btnSpinner.style.display = 'inline-flex';
+  elements.licenseError.style.display = 'none';
+  elements.licenseSuccess.style.display = 'none';
+
+  try {
+    // Import license validation
+    const { activateLicense } = await import('../utils/licenseValidation.js');
+    const result = await activateLicense(licenseKey);
+
+    if (result.success) {
+      // Show success
+      elements.licenseSuccess.textContent = 'License activated successfully!';
+      elements.licenseSuccess.style.display = 'block';
+
+      // Update state
       state.isPro = true;
       state.settings.proEnabled = true;
-      state.settings.licenseKey = key;
-      state.settings.licenseExpiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(); // 1 Year
+      state.settings.licenseKey = licenseKey;
 
-      await chrome.storage.local.set({ settings: state.settings });
+      if (result.customer) {
+        state.settings.licenseCustomerName = result.customer.name;
+        state.settings.licenseCustomerEmail = result.customer.email;
+      }
+
+      // Reload tier info
+      await loadTierInfo();
 
       // Re-render
-      renderLicense();
-
-      // Feedback
-      elements.license.btn.innerText = 'Activated';
+      setTimeout(() => {
+        renderLicense();
+      }, 1500);
     } else {
-      showLicenseError('Invalid license key. Try "PRO-DEMO"');
-      elements.license.btn.disabled = false;
-      elements.license.btn.innerText = 'Activate Now';
+      showLicenseError(result.error || 'Activation failed');
     }
-  }, 1500);
+  } catch (error) {
+    console.error('[License] Activation error:', error);
+    showLicenseError(error.message || 'Activation failed');
+  } finally {
+    btn.disabled = false;
+    btnText.style.display = 'inline';
+    btnSpinner.style.display = 'none';
+  }
 }
 
+/**
+ * Handle License Deactivation
+ */
+async function handleDeactivation() {
+  if (!confirm('Are you sure you want to deactivate your Pro license?')) {
+    return;
+  }
+
+  try {
+    const { deactivateLicense } = await import('../utils/licenseValidation.js');
+    await deactivateLicense();
+
+    // Update state
+    state.isPro = false;
+    state.settings.proEnabled = false;
+    state.settings.licenseKey = null;
+    state.settings.licenseCustomerName = null;
+    state.settings.licenseCustomerEmail = null;
+
+    // Reload tier info
+    await loadTierInfo();
+
+    // Re-render
+    renderLicense();
+
+    alert('License deactivated successfully');
+  } catch (error) {
+    console.error('[License] Deactivation error:', error);
+    alert('Failed to deactivate license: ' + error.message);
+  }
+}
+
+/**
+ * Show License Error
+ */
 function showLicenseError(msg) {
-  elements.license.error.textContent = msg;
-  elements.license.error.style.display = 'block';
+  if (elements.licenseError) {
+    elements.licenseError.textContent = msg;
+    elements.licenseError.style.display = 'block';
+  }
+  if (elements.licenseSuccess) {
+    elements.licenseSuccess.style.display = 'none';
+  }
 }
 
-
-
+/**
+ * Format Number
+ */
 function formatNumber(num) {
   return num >= 1000 ? (num / 1000).toFixed(1) + 'k' : num;
 }
 
+/**
+ * Export Data
+ */
 function exportData() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.stats));
   const downloadAnchorNode = document.createElement('a');
   downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "pii_guardian_logs.json");
+  downloadAnchorNode.setAttribute("download", "pii-guardian-logs.json");
   document.body.appendChild(downloadAnchorNode);
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
@@ -308,36 +508,35 @@ function exportData() {
 function renderError(message) {
   document.body.innerHTML = `
     <div style="
-      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       text-align: center;
-      padding: 40px;
-      background: #0f172a;
-      color: #f8fafc;
-      font-family: system-ui, sans-serif;
     ">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" style="margin-bottom: 24px;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="margin-bottom: 20px;">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <h2 style="font-size: 24px; margin-bottom: 16px;">Guardian Down</h2>
-      <p style="color: #94a3b8; max-width: 300px; margin-bottom: 32px; line-height: 1.6;">
-        Something went wrong initializing the dashboard.<br>
-        <code style="background: rgba(255,255,255,0.1); padding: 4px; border-radius: 4px; font-size: 12px; display: block; margin-top: 12px;">${message}</code>
-      </p>
-      <button onclick="window.location.reload()" style="
-        background: #10b981;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-      ">
+      <h2 style="font-size: 20px; margin-bottom: 10px;">Extension Error</h2>
+      <p style="color: var(--text-secondary); max-width: 400px;">${message}</p>
+      <button 
+        onclick="chrome.runtime.reload()" 
+        style="
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+        "
+      >
         Reload Extension
       </button>
     </div>

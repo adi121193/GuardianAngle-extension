@@ -69,6 +69,15 @@
           </div>
           <h1>PII Guardian</h1>
         </div>
+
+        <!-- Tier Badge & Upgrade Button -->
+        <div class="tier-badge-wrapper">
+          <span class="tier-badge free" id="tierBadge">Free</span>
+          <button class="upgrade-btn" id="upgradeBtn" style="display: none;">
+            Upgrade to Pro
+          </button>
+        </div>
+
         <button class="nav-toggle-btn" id="mobileNavToggle">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -102,7 +111,7 @@
         </div>
 
         <!-- NER Card -->
-        <div class="card ner-card">
+        <div class="card ner-card" id="nerCard">
           <div class="card-header-row">
             <div class="card-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -112,7 +121,10 @@
               </svg>
             </div>
             <div class="card-text">
-              <h3>Enhanced AI Detection</h3>
+              <h3>
+                Enhanced AI Detection
+                <span class="pro-badge" id="nerProBadge" style="display:none;">PRO</span>
+              </h3>
               <p>On-device NER model (~50MB)</p>
             </div>
             <div class="toggle-wrapper">
@@ -124,6 +136,20 @@
           </div>
           <div class="ner-status-row">
             <div class="status-chip" id="nerStatusChip">NER: Disabled</div>
+          </div>
+
+          <!-- Lock overlay for free users -->
+          <div class="feature-lock-overlay" id="nerLockOverlay" style="display:none;">
+            <div class="lock-content">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <p>Pro Feature</p>
+              <button class="unlock-btn" id="nerUnlockBtn">
+                Upgrade to Unlock
+              </button>
+            </div>
           </div>
         </div>
 
@@ -221,15 +247,15 @@
         </div>
       </div>
 
-      <!-- VIEW: LICENSE (Added below) -->
+      <!-- VIEW: LICENSE -->
       <div id="view-license" class="view">
         <div class="view-header">
           <h2>Pro License</h2>
         </div>
 
-        <!-- Activation Form -->
-        <div id="activationStart" class="license-wrapper">
-          <div class="card p-5 text-center">
+        <!-- Free User - Activation Form -->
+        <div id="licenseActivationForm" class="license-wrapper">
+          <div class="card p-5">
             <div class="license-icon-wrapper">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
                 <polygon
@@ -237,46 +263,83 @@
                 </polygon>
               </svg>
             </div>
-            <h3 class="mb-2">Activate Pro Features</h3>
-            <p class="text-secondary mb-4">Enter your license key to unlock Image OCR and unlimited detections.</p>
 
-            <div class="input-group-license">
-              <input type="text" id="licenseKeyInput" placeholder="PRO-XXXX-XXXX-XXXX" class="input-lg text-center"
-                style="font-family: monospace; letter-spacing: 1px;">
-              <div id="licenseError" class="text-danger mt-2" style="display:none; font-size: 13px;">Invalid license key
-              </div>
+            <h3 class="mb-2">Activate Guardian Angle Pro</h3>
+            <p class="text-secondary mb-4">Enter your LemonSqueezy license key to unlock pro features</p>
+
+            <div class="feature-list mb-4">
+              <div class="feature-item">✓ AI-Powered NER Detection</div>
+              <div class="feature-item">✓ Image OCR</div>
+              <div class="feature-item">✓ Unlimited Scans</div>
+              <div class="feature-item">✓ Unlimited History</div>
+              <div class="feature-item">✓ Export Reports</div>
             </div>
 
-            <button id="activateLicenseBtn" class="btn btn-primary btn-lg mt-4 w-100">Activate Now</button>
+            <div class="input-group-license">
+              <input type="text" id="licenseKeyInput" placeholder="Enter license key" class="input-lg">
+              <div id="licenseError" class="text-danger mt-2" style="display:none;"></div>
+              <div id="licenseSuccess" class="text-success mt-2" style="display:none;"></div>
+            </div>
 
-            <div class="mt-4 text-xs text-secondary">
-              Don't have a key? <a href="#" class="text-primary">Get one here</a>
+            <button id="activateLicenseBtn" class="btn btn-primary btn-lg mt-4 w-100">
+              <span class="btn-text">Activate License</span>
+              <span class="btn-spinner" style="display:none;">
+                <svg class="spinner" width="16" height="16" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25" />
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none" />
+                </svg>
+                Activating...
+              </span>
+            </button>
+
+            <div class="mt-4 text-center">
+              <p class="text-xs text-secondary mb-2">Don't have a license?</p>
+              <a href="#" id="buyLicenseLink" class="btn btn-secondary">
+                Purchase License ($9.99/mo)
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Success State (Hidden by default) -->
-        <div id="activationSuccess" class="license-wrapper" style="display: none;">
-          <div class="card p-5 text-center">
+        <!-- Pro User - License Info -->
+        <div id="licenseInfoView" class="license-wrapper" style="display: none;">
+          <div class="card p-5">
             <div class="license-icon-wrapper bg-success-subtle">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
             </div>
-            <h3 class="mb-2 text-success">Activation Successful!</h3>
-            <p class="text-secondary mb-4">Your Pro features are now active.</p>
+
+            <h3 class="mb-2 text-success">Pro License Active</h3>
+            <p class="text-secondary mb-4">All pro features are unlocked</p>
 
             <div class="license-details">
               <div class="detail-row">
-                <span>Plan</span>
-                <strong class="text-white">Pro Lifetime</strong>
+                <span>Customer</span>
+                <strong id="licenseCustomerName">-</strong>
+              </div>
+              <div class="detail-row">
+                <span>Email</span>
+                <strong id="licenseCustomerEmail">-</strong>
+              </div>
+              <div class="detail-row">
+                <span>Product</span>
+                <strong id="licenseProductName">Guardian Angle Pro</strong>
               </div>
               <div class="detail-row">
                 <span>Status</span>
-                <strong class="text-success">Active</strong>
+                <strong class="text-success" id="licenseStatus">Active</strong>
+              </div>
+              <div class="detail-row" id="licenseExpiryRow" style="display:none;">
+                <span>Expires</span>
+                <strong id="licenseExpiry">-</strong>
               </div>
             </div>
+
+            <button id="deactivateLicenseBtn" class="btn btn-secondary mt-4 w-100">
+              Deactivate License
+            </button>
           </div>
         </div>
       </div>
