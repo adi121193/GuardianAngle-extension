@@ -17,8 +17,10 @@ let state = {
  * Initialize
  */
 async function init() {
+  console.log('[Popup] Starting initialization...');
   try {
     // Initialize DOM Elements
+    console.log('[Popup] Initializing DOM elements...');
     elements = {
       // Navigation
       navItems: document.querySelectorAll('.nav-item'),
@@ -63,22 +65,35 @@ async function init() {
       licenseSuccess: document.getElementById('licenseSuccess')
     };
 
+    console.log('[Popup] DOM elements initialized:', elements);
+
     // Load settings
-    const { getSettings } = await import('../utils/storage.js');
-    state.settings = await getSettings();
+    console.log('[Popup] Loading settings...');
+    try {
+      const { getSettings } = await import('../utils/storage.js');
+      state.settings = await getSettings();
+      console.log('[Popup] Settings loaded:', state.settings);
+    } catch (error) {
+      console.error('[Popup] Failed to load settings:', error);
+      state.settings = {};
+    }
 
     // Load tier info
+    console.log('[Popup] Loading tier info...');
     await loadTierInfo();
 
     // Load stats
+    console.log('[Popup] Loading stats...');
     await loadStats();
 
     // Render views
+    console.log('[Popup] Rendering views...');
     renderDashboard();
     renderSettings();
     renderLicense();
 
     // Attach listeners
+    console.log('[Popup] Attaching listeners...');
     attachListeners();
 
     // Set initial NER status
@@ -87,6 +102,7 @@ async function init() {
     console.log('[Popup] Initialized successfully');
   } catch (error) {
     console.error('[Popup] Init error:', error);
+    console.error('[Popup] Error stack:', error.stack);
     renderError(error.message);
   }
 }
