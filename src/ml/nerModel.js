@@ -1,73 +1,51 @@
 /**
- * NER Model - BERT-base NER with ONNX Runtime
- * Handles model loading, tokenization, and inference
+ * NER Model - BERT-base NER with Transformers.js
+ * Uses local ONNX model files already bundled with extension
  */
 
-import * as ort from 'onnxruntime-web';
+import { env, AutoTokenizer, AutoModelForTokenClassification } from '@xenova/transformers';
 
-// CRITICAL: Configure ORT BEFORE any initialization
-// Must disable proxy mode to avoid JSEP module loading issues in Chrome extensions
-ort.env.wasm.proxy = false;
-ort.env.wasm.numThreads = 4;
-ort.env.wasm.simd = true;
-ort.env.logLevel = 'warning';
-ort.env.wasm.wasmPaths = chrome.runtime.getURL('onnxruntime-web/');
-
-// Label mapping for BERT-base NER
-// CRITICAL: Must match model's config.json id2label mapping exactly!
-const LABEL_MAP = {
-  0: 'O',      // Outside entity
-  1: 'B-MISC', // Begin Miscellaneous
-  2: 'I-MISC', // Inside Miscellaneous
-  3: 'B-PER',  // Begin Person
-  4: 'I-PER',  // Inside Person
-  5: 'B-ORG',  // Begin Organization
-  6: 'I-ORG',  // Inside Organization
-  7: 'B-LOC',  // Begin Location
-  8: 'I-LOC'   // Inside Location
-};
+// Configure Transformers.js for Chrome extension environment
+env.allowLocalModels = true;
+env.allowRemoteModels = false; // Force local-only
+env.backends.onnx.wasm.numThreads = 1; // Single-threaded for stability
+env.backends.onnx.wasm.simd = false;
 
 // Entity types we care about for PII
-const PII_ENTITY_TYPES = new Set(['PER', 'ORG', 'LOC']);
+const PII_ENTITY_TYPES = new Set(['PER', 'PERSON', 'ORG', 'ORGANIZATION', 'LOC', 'LOCATION']);
 
 /**
- * NER Model class
+ * NER Model class using Transformers.js
  */
 export class NERModel {
   constructor() {
-    this.session = null;
     this.tokenizer = null;
-    this.vocab = null;
+    this.model = null;
     this.isReady = false;
-    this.modelPath = null;
   }
 
   /**
-   * Initialize ONNX Runtime with execution providers
-   */
-  async initializeRuntime() {
-    // Use WASM only - WebGPU requires JSEP proxy which is problematic in extensions
-    const executionProviders = ['wasm'];
-    return executionProviders;
-  }
-
-  /**
-   * Load the ONNX model
+   * Load the NER model from local ONNX files
    */
   async loadModel(modelPath) {
     try {
-      // Initialize runtime
-      const executionProviders = await this.initializeRuntime();
+      console.log('[NERModel] Loading model with Transformers.js from:', modelPath);
 
-      // Load ONNX session
-      this.session = await ort.InferenceSession.create(modelPath, {
-        executionProviders,
-        graphOptimizationLevel: 'all',
-        enableCpuMemArena: true,
-        enableMemPattern: true,
+      // Get base URL for extension resources
+      const modelDir = chrome.runtime.getURL('models/distilbert-ner/');
+
+      console.log('[NERModel] Model directory:', modelDir);
+
+      // Load tokenizer and model from local files
+      this.tokenizer = await AutoTokenizer.from_pretrained(modelDir, {
+        local_files_only: true
       });
 
-      this.modelPath = modelPath;
+      this.model = await AutoModelForTokenClassification.from_pretrained(modelDir, {
+        local_files_only: true
+      });
+
+      console.log('[NERModel] Model and tokenizer loaded successfully');
       return true;
     } catch (error) {
       console.error('[NERModel] Failed to load model:', error);
@@ -76,201 +54,105 @@ export class NERModel {
   }
 
   /**
-   * Load vocabulary for tokenization
-   */
-  async loadVocab(vocabPath) {
-    try {
-      const response = await fetch(vocabPath);
-      const text = await response.text();
-
-      // Parse vocab.txt - each line is a token
-      const tokens = text.split('\n').filter(line => line.trim());
-
-      // Create token to ID mapping
-      this.vocab = new Map();
-      tokens.forEach((token, idx) => {
-        this.vocab.set(token, idx);
-      });
-
-      return true;
-    } catch (error) {
-      console.error('[NERModel] Failed to load vocabulary:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * BERT-style tokenizer (improved word-piece tokenization)
-   * Handles punctuation and special characters better
-   * IMPORTANT: Preserves case for CASED models - capitalization is crucial for NER
-   */
-  tokenize(text) {
-    const tokens = ['[CLS]'];
-
-    // Normalize whitespace only (DO NOT lowercase - this is a CASED model!)
-    const normalized = text.trim().replace(/\s+/g, ' ');
-
-    // Split on whitespace and punctuation while preserving punctuation
-    const rawWords = normalized.split(/(\s+|[.,!?;:()\[\]{}'"<>\/\\@#$%^&*+=|~`-])/g)
-      .filter(w => w.trim().length > 0);
-
-    for (const originalWord of rawWords) {
-      // Skip pure whitespace
-      if (/^\s+$/.test(originalWord)) continue;
-
-      // CASED model: Try original case first, then lowercase fallback
-      // This preserves important case signals for NER (e.g., "Amazon" vs "amazon")
-      let word = originalWord;
-
-      // Try full word as-is first (preserving case)
-      if (this.vocab.has(word)) {
-        tokens.push(word);
-        continue;
-      }
-
-      // REMOVED: Aggressive lowercase fallback (Broken for Cased models)
-      // const lowerWord = word.toLowerCase();
-      // if (this.vocab.has(lowerWord)) ...
-
-      const lowerWord = word.toLowerCase();
-
-      // Word-piece tokenization - try cased first, then uncased
-      let start = 0;
-      while (start < word.length) {
-        let end = word.length;
-        let found = false;
-
-        while (start < end) {
-          // Try original case
-          const substrCased = start === 0 ? word.substring(start, end) : '##' + word.substring(start, end);
-          if (this.vocab.has(substrCased)) {
-            tokens.push(substrCased);
-            start = end;
-            found = true;
-            break;
-          }
-
-          // REMOVED: Aggressive subword lowercase fallback
-          /*
-          const substrLower = start === 0 ? lowerWord.substring(start, end) : '##' + lowerWord.substring(start, end);
-          if (this.vocab.has(substrLower)) {
-            tokens.push(substrLower);
-            start = end;
-            found = true;
-            break;
-          }
-          */
-
-          end--;
-        }
-
-        if (!found) {
-          // Unknown token
-          tokens.push('[UNK]');
-          start++; // Move forward to avoid infinite loop
-        }
-      }
-    }
-
-    tokens.push('[SEP]');
-
-    // Truncate to max sequence length (512 for BERT)
-    if (tokens.length > 512) {
-      return tokens.slice(0, 511).concat(['[SEP]']);
-    }
-
-    return tokens;
-  }
-
-  /**
-   * Convert tokens to input IDs
-   */
-  tokensToIds(tokens) {
-    return tokens.map(token => this.vocab.get(token) || this.vocab.get('[UNK]'));
-  }
-
-  /**
-   * Prepare input tensors for ONNX model
-   * Uses int32 for better browser compatibility (BigInt64Array not supported in all browsers)
-   */
-  prepareInputs(inputIds) {
-    const seqLength = inputIds.length;
-
-    // Try to use int64 with BigInt if supported, otherwise fall back to int32
-    let dtype = 'int32';
-    let createTensor;
-
-    try {
-      // Check if BigInt64Array is supported
-      if (typeof BigInt64Array !== 'undefined') {
-        dtype = 'int64';
-        createTensor = (data) => BigInt64Array.from(data.map(v => BigInt(v)));
-      } else {
-        createTensor = (data) => Int32Array.from(data);
-      }
-    } catch (e) {
-      // Fallback to int32
-      console.warn('[NERModel] BigInt not supported, using int32');
-      createTensor = (data) => Int32Array.from(data);
-    }
-
-    // Input IDs
-    const inputIdsTensor = new ort.Tensor(dtype, createTensor(inputIds), [1, seqLength]);
-
-    // Attention mask (1 for real tokens, 0 for padding)
-    const attentionMask = new Array(seqLength).fill(1);
-    const attentionMaskTensor = new ort.Tensor(dtype, createTensor(attentionMask), [1, seqLength]);
-
-    // Token type IDs (0 for first sequence)
-    const tokenTypeIds = new Array(seqLength).fill(0);
-    const tokenTypeIdsTensor = new ort.Tensor(dtype, createTensor(tokenTypeIds), [1, seqLength]);
-
-    return {
-      input_ids: inputIdsTensor,
-      attention_mask: attentionMaskTensor,
-      // token_type_ids: tokenTypeIdsTensor // Not used by DistilBERT
-    };
-  }
-
-  /**
    * Run inference on text
    */
   async runInference(text) {
-    if (!this.session || !this.vocab) {
-      throw new Error('Model not loaded. Call loadModel() and loadVocab() first.');
+    if (!this.model || !this.tokenizer) {
+      throw new Error('Model not loaded. Call loadModel() first.');
     }
 
     const startTime = performance.now();
 
     try {
-      // Tokenize
-      const tokens = this.tokenize(text);
-      const inputIds = this.tokensToIds(tokens);
-
-      // Prepare inputs
-      const feeds = this.prepareInputs(inputIds);
+      // Tokenize input
+      const inputs = await this.tokenizer(text);
 
       // Run inference
       const inferenceStart = performance.now();
-      const results = await this.session.run(feeds);
+      const outputs = await this.model(inputs);
       const inferenceTime = performance.now() - inferenceStart;
 
-      // Get logits (output is typically named 'logits')
-      const logitsKey = Object.keys(results)[0];
-      const logits = results[logitsKey];
+      // Get predictions (logits -> labels)
+      const logits = outputs.logits.data;
+      const numTokens = inputs.input_ids.data.length;
+      const numLabels = 9; // BERT NER has 9 labels (O, B-PER, I-PER, etc.)
 
-      // Convert logits to predictions
-      const predictions = this.logitsToPredictions(logits.data, tokens.length);
+      // Find best label for each token
+      const predictions = [];
+      for (let i = 0; i < numTokens; i++) {
+        let maxScore = -Infinity;
+        let maxLabel = 0;
 
-      // Aggregate entities
-      const entities = this.aggregateEntities(tokens, predictions, text);
+        for (let j = 0; j < numLabels; j++) {
+          const score = logits[i * numLabels + j];
+          if (score > maxScore) {
+            maxScore = score;
+            maxLabel = j;
+          }
+        }
+
+        predictions.push({ labelId: maxLabel, score: maxScore });
+      }
+
+      // Map label IDs to names
+      const LABEL_MAP = {
+        0: 'O', 1: 'B-MISC', 2: 'I-MISC',
+        3: 'B-PER', 4: 'I-PER',
+        5: 'B-ORG', 6: 'I-ORG',
+        7: 'B-LOC', 8: 'I-LOC'
+      };
+
+      // Extract entities
+      const entities = [];
+      let currentEntity = null;
+
+      const tokens = this.tokenizer.tokenize(text);
+
+      for (let i = 1; i < tokens.length - 1; i++) { // Skip [CLS] and [SEP]
+        const token = tokens[i];
+        const pred = predictions[i];
+        const label = LABEL_MAP[pred.labelId];
+        const [position, entityType] = label.split('-');
+
+        if (position === 'B' && PII_ENTITY_TYPES.has(entityType)) {
+          if (currentEntity) {
+            entities.push(currentEntity);
+          }
+          currentEntity = {
+            type: entityType,
+            tokens: [token],
+            score: pred.score,
+            start: i - 1,
+            end: i
+          };
+        } else if (position === 'I' && currentEntity && entityType === currentEntity.type) {
+          currentEntity.tokens.push(token);
+          currentEntity.end = i;
+          currentEntity.score = Math.min(currentEntity.score, pred.score);
+        } else {
+          if (currentEntity) {
+            entities.push(currentEntity);
+            currentEntity = null;
+          }
+        }
+      }
+
+      if (currentEntity) {
+        entities.push(currentEntity);
+      }
+
+      // Reconstruct entity text
+      entities.forEach(entity => {
+        entity.text = entity.tokens
+          .map(t => t.replace('##', ''))
+          .join('')
+          .trim();
+      });
 
       const totalTime = performance.now() - startTime;
 
       return {
         entities,
-        tokens,
-        predictions,
         performanceMs: {
           total: totalTime,
           inference: inferenceTime
@@ -283,89 +165,11 @@ export class NERModel {
   }
 
   /**
-   * Convert logits to predicted labels
+   * Load vocabulary (API compatibility - handled by tokenizer)
    */
-  logitsToPredictions(logitsData, seqLength) {
-    const predictions = [];
-    const numLabels = 9; // 0-8 for BERT-base NER
-
-    for (let i = 0; i < seqLength; i++) {
-      const startIdx = i * numLabels;
-      let maxScore = -Infinity;
-      let maxLabel = 0;
-
-      for (let j = 0; j < numLabels; j++) {
-        const score = logitsData[startIdx + j];
-        if (score > maxScore) {
-          maxScore = score;
-          maxLabel = j;
-        }
-      }
-
-      predictions.push({
-        label: LABEL_MAP[maxLabel],
-        labelId: maxLabel,
-        score: maxScore
-      });
-    }
-
-    return predictions;
-  }
-
-  /**
-   * Aggregate consecutive tokens into entities
-   */
-  aggregateEntities(tokens, predictions, originalText) {
-    const entities = [];
-    let currentEntity = null;
-
-    for (let i = 1; i < tokens.length - 1; i++) { // Skip [CLS] and [SEP]
-      const token = tokens[i];
-      const pred = predictions[i];
-      const [position, entityType] = pred.label.split('-');
-
-      if (position === 'B' && PII_ENTITY_TYPES.has(entityType)) {
-        // Start new entity
-        if (currentEntity) {
-          entities.push(currentEntity);
-        }
-
-        currentEntity = {
-          type: entityType,
-          tokens: [token],
-          score: pred.score,
-          start: i - 1,
-          end: i
-        };
-      } else if (position === 'I' && currentEntity && entityType === currentEntity.type) {
-        // Continue entity
-        currentEntity.tokens.push(token);
-        currentEntity.end = i;
-        currentEntity.score = Math.min(currentEntity.score, pred.score);
-      } else {
-        // End entity
-        if (currentEntity) {
-          entities.push(currentEntity);
-          currentEntity = null;
-        }
-      }
-    }
-
-    // Add last entity
-    if (currentEntity) {
-      entities.push(currentEntity);
-    }
-
-    // Reconstruct entity text
-    entities.forEach(entity => {
-      entity.text = entity.tokens
-        .map(t => t.replace('##', ''))
-        .join('')
-        .replace(/\s+/g, ' ')
-        .trim();
-    });
-
-    return entities;
+  async loadVocab(vocabPath) {
+    console.log('[NERModel] Vocabulary loading handled by Transformers.js tokenizer');
+    return true;
   }
 
   /**
@@ -379,11 +183,13 @@ export class NERModel {
    * Dispose of model resources
    */
   async dispose() {
-    if (this.session) {
-      await this.session.release();
-      this.session = null;
+    if (this.model) {
+      await this.model.dispose();
+      this.model = null;
     }
-    this.vocab = null;
+    if (this.tokenizer) {
+      this.tokenizer = null;
+    }
     this.isReady = false;
   }
 }

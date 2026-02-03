@@ -188,11 +188,11 @@ function mergeResults(regexResults, nerResults) {
  */
 export class HybridDetector {
   constructor(options = {}) {
-    this.mode = options.mode || DetectionMode.HYBRID;
-    this.nerEnabled = options.nerEnabled !== false;
+    this.mode = DetectionMode.REGEX_ONLY; // FORCE REGEX mode - NER removed
+    this.nerEnabled = false; // NER permanently disabled
     this.offscreenManager = null;
     this.nerInitialized = false;
-    this.nerCache = new Map(); // Cache NER results
+    this.nerCache = new Map(); // Keep for compatibility
     this.maxCacheSize = 100;
   }
 

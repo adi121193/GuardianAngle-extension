@@ -110,48 +110,7 @@
           </div>
         </div>
 
-        <!-- NER Card -->
-        <div class="card ner-card" id="nerCard">
-          <div class="card-header-row">
-            <div class="card-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                </path>
-              </svg>
-            </div>
-            <div class="card-text">
-              <h3>
-                Enhanced AI Detection
-                <span class="pro-badge" id="nerProBadge" style="display:none;">PRO</span>
-              </h3>
-              <p>On-device NER model (~50MB)</p>
-            </div>
-            <div class="toggle-wrapper">
-              <label class="toggle-switch">
-                <input type="checkbox" id="nerToggle">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="ner-status-row">
-            <div class="status-chip" id="nerStatusChip">NER: Disabled</div>
-          </div>
-
-          <!-- Lock overlay for free users -->
-          <div class="feature-lock-overlay" id="nerLockOverlay" style="display:none;">
-            <div class="lock-content">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-              <p>Pro Feature</p>
-              <button class="unlock-btn" id="nerUnlockBtn">
-                Upgrade to Unlock
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- NER Card Removed - Using Enhanced Regex Detection -->
 
         <!-- Stats Grid -->
         <h4 class="section-label">Statistics</h4>
@@ -268,8 +227,8 @@
             <p class="text-secondary mb-4">Enter your LemonSqueezy license key to unlock pro features</p>
 
             <div class="feature-list mb-4">
-              <div class="feature-item">✓ AI-Powered NER Detection</div>
-              <div class="feature-item">✓ Image OCR</div>
+              <div class="feature-item">✓ Image OCR Detection</div>
+              <div class="feature-item">✓ Enhanced Regex Patterns (25+ types)</div>
               <div class="feature-item">✓ Unlimited Scans</div>
               <div class="feature-item">✓ Unlimited History</div>
               <div class="feature-item">✓ Export Reports</div>

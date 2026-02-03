@@ -10,7 +10,7 @@
  */
 
 import { verifySignature } from './crypto.js';
-import { setProStatus, getSettings } from './storage.js';
+import { setProStatus, getSettings, updateSettings } from './storage.js';
 import {
   validateLemonSqueezyLicense,
   activateLemonSqueezyLicense,
@@ -98,8 +98,24 @@ export async function validateLicense(licenseKey, forceOffline = false) {
     source: null // 'lemonsqueezy' or 'offline'
   };
 
+  // ---------------------------------------------------------
+  // 🧪 TEST KEY BYPASS
+  // ---------------------------------------------------------
+  if (licenseKey === 'TEST-PRO-LICENSE-2026') {
+    const now = new Date();
+    const expiry = new Date();
+    expiry.setDate(now.getDate() + 30); // Valid for 30 days
+
+    result.valid = true;
+    result.product = 'PRO';
+    result.expiry = expiry.toISOString();
+    result.daysRemaining = 30;
+    result.source = 'test-bypass';
+    return result;
+  }
+
   try {
-    // Try LemonSqueezy validation first (if online)
+    // 1. Online Validation (LemonSqueezy)
     if (!forceOffline) {
       const lsValidation = await validateLemonSqueezyLicense(licenseKey);
 
@@ -182,6 +198,36 @@ export async function validateLicense(licenseKey, forceOffline = false) {
  * @returns {Promise<Object>} Activation result
  */
 export async function activateLicense(licenseKey) {
+  // ---------------------------------------------------------
+  // 🧪 TEST KEY BYPASS
+  if (licenseKey === 'TEST-PRO-LICENSE-2026') {
+    console.log('[License] Activating TEST KEY bypass...');
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1);
+
+    // Explicitly set verified status
+    await updateSettings({
+      licenseStatus: 'active',
+      proEnabled: true, // Force this flag too
+      licenseKey: licenseKey,
+      licenseExpiry: expiry.toISOString(),
+      tier: 'pro'
+    });
+
+    // Double check it saved
+    console.log('[License] Test key activated. Settings updated.');
+
+    return {
+      success: true,
+      license: {
+        key: licenseKey,
+        status: 'active',
+        plan: 'pro',
+        expires_at: expiry.toISOString()
+      }
+    };
+  }
+
   // Try LemonSqueezy activation first
   const lsActivation = await activateLemonSqueezyLicense(licenseKey);
 
@@ -235,6 +281,20 @@ export async function deactivateLicense() {
  * @returns {Promise<Object>} License status
  */
 export async function checkLicenseStatus() {
+  // ---------------------------------------------------------
+  // 🧪 TEST KEY BYPASS (Double Check)
+  // ---------------------------------------------------------
+  const currentSettings = await getSettings();
+  if (currentSettings.licenseKey === 'TEST-PRO-LICENSE-2026') {
+    return {
+      active: true,
+      product: 'PRO',
+      expiry: currentSettings.licenseExpiry,
+      daysRemaining: 30, // Approximate
+      source: 'test-bypass'
+    };
+  }
+
   // Check LemonSqueezy stored license first
   const storedLicense = await getStoredLicense();
 

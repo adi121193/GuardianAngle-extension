@@ -1046,56 +1046,10 @@ async function handlePIIDetectionForSendButton(input, text, button) {
  * Initialize NER if enabled in settings
  */
 async function initializeNER() {
-  if (nerInitializationAttempted) return;
+  // NER removed - using regex-only detection
+  console.log('PII Guardian: NER feature removed - using enhanced regex patterns');
   nerInitializationAttempted = true;
-
-  try {
-    // Check if NER is enabled in settings
-    const settings = await getSettings();
-    if (!settings.nerEnabled) {
-      console.log('PII Guardian: NER disabled in settings');
-      return;
-    }
-
-    console.log('PII Guardian: Checking NER status...');
-
-    // First, check if NER is already initialized (handles page reload case)
-    const statusResponse = await safeSendMessage({ type: 'NER_STATUS' });
-
-    if (statusResponse && statusResponse.isReady) {
-      console.log('PII Guardian: NER already initialized, enabling...');
-      // NER is already ready - enable it immediately
-      offscreenManagerProxy.setReady(true);
-      enableNER(offscreenManagerProxy);
-      nerInitialized = true;
-      console.log('PII Guardian: NER enabled (was already initialized)');
-      return;
-    }
-
-    // NER not ready - check if model was previously downloaded
-    // If so, we need to re-initialize (e.g., after extension reload)
-    if (settings.nerModelDownloaded) {
-      console.log('PII Guardian: Model was previously downloaded, re-initializing...');
-    } else {
-      console.log('PII Guardian: Requesting NER initialization...');
-    }
-
-    // Request NER initialization from background script
-    const response = await safeSendMessage({ type: 'INIT_NER' });
-
-    if (response && response.success) {
-      console.log('PII Guardian: NER initialization successful');
-      // Enable NER immediately after successful init
-      offscreenManagerProxy.setReady(true);
-      enableNER(offscreenManagerProxy);
-      nerInitialized = true;
-      console.log('PII Guardian: NER enabled');
-    } else {
-      console.warn('PII Guardian: NER initialization request failed:', response?.error);
-    }
-  } catch (error) {
-    console.error('PII Guardian: Error requesting NER initialization:', error);
-  }
+  return;
 }
 
 /**

@@ -1,16 +1,14 @@
 /**
  * Offscreen Document Worker
- * Handles ML inference in isolated environment
+ * Handles OCR inference in isolated environment
  * Communicates with service worker via chrome.runtime messages
+ * 
+ * NER removed - using regex-only detection
  */
 
-import { NERModel } from './nerModel.js';
 import { imageDetectorImplementation } from '../detection/imageDetectorImplementation.js';
 
-// Global model instance
-let nerModel = null;
-let isInitializing = false;
-let initializationPromise = null;
+// NER imports removed - no longer needed
 
 /** Lazy load Tesseract */
 let tesseractWorker = null;
@@ -57,110 +55,12 @@ function debugLog(type, message, data = null) {
   }
 }
 
-/**
- * Initialize the NER model
- */
-async function initializeModel() {
-  debugLog('info', 'initializeModel called');
-
-  if (nerModel?.isReady) {
-    debugLog('info', 'Model already ready');
-    return { success: true };
-  }
-
-  if (isInitializing) {
-    debugLog('info', 'Initialization already in progress');
-    return initializationPromise;
-  }
-
-  isInitializing = true;
-  initializationPromise = (async () => {
-    const startTime = performance.now();
-    debugLog('info', 'Starting model initialization sequence');
-
-    try {
-      // Create model instance
-      nerModel = new NERModel();
-
-      // Get model paths using chrome.runtime.getURL
-      const modelPath = chrome.runtime.getURL('models/distilbert-ner/model.onnx');
-      const vocabPath = chrome.runtime.getURL('models/distilbert-ner/vocab.txt');
-
-      debugLog('info', 'Model Paths resolved', { modelPath, vocabPath });
-
-      // Load model and vocabulary
-      debugLog('info', 'Loading model...');
-      await nerModel.loadModel(modelPath);
-      debugLog('info', 'Model loaded successfully');
-
-      debugLog('info', 'Loading vocab...');
-      await nerModel.loadVocab(vocabPath);
-      debugLog('info', 'Vocab loaded successfully');
-
-      // Mark as ready
-      nerModel.setReady();
-
-      const totalTime = performance.now() - startTime;
-      debugLog('info', `Initialization complete in ${totalTime}ms`);
-
-      return {
-        success: true,
-        initTimeMs: totalTime
-      };
-    } catch (error) {
-      debugLog('error', 'Model initialization FAILED', {
-        message: error.message,
-        stack: error.stack
-      });
-      console.error('[Offscreen] Model initialization failed:', error);
-      nerModel = null;
-      return {
-        success: false,
-        error: error.message + (error.stack ? `\n${error.stack}` : '')
-      };
-    } finally {
-      isInitializing = false;
-    }
-  })();
-
-  return initializationPromise;
-}
-
-/**
- * Run NER inference on text
- */
-async function runNERInference(text, options = {}) {
-  try {
-    // Ensure model is initialized
-    if (!nerModel?.isReady) {
-      const initResult = await initializeModel();
-      if (!initResult.success) {
-        throw new Error('Model initialization failed: ' + initResult.error);
-      }
-    }
-
-    // Run inference
-    const result = await nerModel.runInference(text);
-
-    return {
-      success: true,
-      entities: result.entities,
-      performance: result.performanceMs
-    };
-  } catch (error) {
-    console.error('[Offscreen] Inference failed:', error);
-    return {
-      success: false,
-      error: error.message,
-      entities: []
-    };
-  }
-}
+// NER functions removed - using regex-only detection
 
 /**
  * Handle messages from service worker
  */
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   // Only handle messages meant for the offscreen document
   // Messages like RUN_NER_INFERENCE are for the service worker, not us
   const handledTypes = ['NER_INIT', 'INIT_NER', 'NER_INFERENCE', 'NER_STATUS', 'NER_DISPOSE', 'OCR_DETECT'];
@@ -170,23 +70,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   // Handle async operations
+  // CRITICAL: Return true to keep channel open
   (async () => {
     try {
       switch (message.type) {
         case 'NER_INIT':
         case 'INIT_NER':
-          const initResult = await initializeModel();
-          sendResponse(initResult);
+          console.log('[Offscreen] NER removed - ignoring initialization');
+          sendResponse({ success: false, error: 'NER feature removed' });
           break;
 
         case 'NER_INFERENCE':
-          // ... (existing NER logic)
-          if (!message.text) {
-            sendResponse({ success: false, error: 'No text' });
-            break;
-          }
-          const nerRes = await runNERInference(message.text, message.options);
-          sendResponse(nerRes);
+          console.log('[Offscreen] NER removed - ignoring inference request');
+          sendResponse({ success: false, error: 'NER feature removed', entities: [] });
           break;
 
         case 'OCR_DETECT':
@@ -213,18 +109,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           break;
 
         case 'NER_STATUS':
+          console.log('[Offscreen] NER removed - returning not ready');
           sendResponse({
             success: true,
-            isReady: nerModel?.isReady || false,
-            isInitializing
+            isReady: false,
+            isInitializing: false
           });
           break;
 
         case 'NER_DISPOSE':
-          if (nerModel) {
-            await nerModel.dispose();
-            nerModel = null;
-          }
+          console.log('[Offscreen] NER removed - nothing to dispose');
           sendResponse({ success: true });
           break;
       }
@@ -234,14 +128,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   })();
 
-  return true;
+  return true; // Keep message channel open for async response
 });
 
-/**
- * Auto-initialize model on load (optional - can be lazy-loaded)
- */
-const AUTO_INIT = false; // Set to true to pre-load model
-
-if (AUTO_INIT) {
-  initializeModel();
-}
+// NER auto-init removed

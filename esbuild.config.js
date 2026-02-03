@@ -130,52 +130,49 @@ async function build() {
     console.log('  → assets/');
     copyDirectory('assets', 'dist/assets');
 
-    // 5. Copy ML models (PRO ONLY)
+    // 5. Copy OCR files ONLY (PRO) - NER removed
     if (isPro) {
-      console.log('  → models/ (PRO)');
-      copyDirectory('models', 'dist/models');
+      console.log('  → OCR files (PRO)');
 
-      // 6. Copy ONNX Runtime WASM and module files from node_modules
-      console.log('  → onnxruntime-web WASM and module files (PRO)');
-      const ortWasmDir = 'node_modules/onnxruntime-web/dist';
-      if (existsSync(ortWasmDir)) {
-        mkdirSync('dist/onnxruntime-web', { recursive: true });
-        // Copy .wasm, .mjs, and .js files needed by ORT
-        const ortFiles = readdirSync(ortWasmDir).filter(f =>
-          f.endsWith('.wasm') || f.endsWith('.mjs') ||
-          (f.endsWith('.js') && !f.includes('.map'))
-        );
-        for (const file of ortFiles) {
-          copyFileSync(join(ortWasmDir, file), join('dist/onnxruntime-web', file));
-        }
-        console.log(`     Copied ${ortFiles.length} ORT files (.wasm, .mjs, .js)`);
-      }
-
-      // 7. Copy Tesseract.js files (PRO ONLY)
-      console.log('  → tesseract.js files (PRO)');
+      // Copy Tesseract.js files for OCR
       mkdirSync('dist/ocr', { recursive: true });
 
       // Copy worker
       copyFileSync('node_modules/tesseract.js/dist/worker.min.js', 'dist/ocr/worker.min.js');
 
+      // Copy main library (for script tag loading)
+      copyFileSync('node_modules/tesseract.js/dist/tesseract.min.js', 'dist/ocr/tesseract.min.js');
+
       // Copy core JS
       copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm.js', 'dist/ocr/tesseract-core.wasm.js');
 
-      // Copy core WASM (CRITICAL missing file)
-      copyFileSync('node_modules/tesseract.js-core/tesseract-core.wasm', 'dist/ocr/tesseract-core.wasm');
+      // Copy ALL core variants (SIMD, LSTM, etc.) to prevent capability-check 404s
+      const coreDir = 'node_modules/tesseract.js-core/';
+      const coreFiles = readdirSync(coreDir).filter(f => f.startsWith('tesseract-core'));
 
-      console.log('     Copied Tesseract worker and core files');
+      coreFiles.forEach(file => {
+        copyFileSync(join(coreDir, file), join('dist/ocr', file));
+        console.log(`     ✓ Copied ${file}`);
+      });
+
+      // Copy local OCR models (if present) for self-hosted mode
+      if (existsSync('src/models/ocr')) {
+        console.log('  → Copying local OCR models...');
+        mkdirSync('dist/models/ocr', { recursive: true });
+        copyDirectory('src/models/ocr', 'dist/models/ocr');
+        console.log('     ✓ Local language files copied');
+      }
+
+      console.log('     ✓ Tesseract files copied for OCR');
     } else {
-      console.log('  ⏭️  Skipping models/ (FREE tier)');
-      console.log('  ⏭️  Skipping onnxruntime-web (FREE tier)');
-      console.log('  ⏭️  Skipping tesseract.js (FREE tier)');
+      console.log('  ⏭️  Skipping OCR (FREE tier)');
     }
 
     console.log(`\n✅ ${tier.toUpperCase()} tier build complete!\n`);
     console.log('📂 Output directory: dist/');
     console.log(`🎯 Tier: ${tier.toUpperCase()}`);
-    console.log(`📦 Expected size: ${isPro ? '~70-80 MB' : '~5-10 MB'}`);
-    console.log(`✨ Features: ${isPro ? 'Full NER + OCR' : 'Regex-only detection'}`);
+    console.log(`📦 Expected size: ${isPro ? '~15-20 MB' : '~5-10 MB'}`);
+    console.log(`✨ Features: ${isPro ? 'OCR + Enhanced Regex (25+ patterns)' : 'Regex-only detection'}`);
     console.log('\n🔧 To load in Chrome:');
     console.log('   1. Go to chrome://extensions');
     console.log('   2. Enable "Developer mode"');

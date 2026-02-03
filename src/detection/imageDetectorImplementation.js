@@ -4,7 +4,7 @@
  * Intended to run ONLY in the Offscreen Document to avoid CSP issues.
  */
 
-import { createWorker } from 'tesseract.js';
+// Tesseract loaded globally via script tag in offscreen.html
 import { detectPIIWithRegex } from '../utils/regexPatterns.js';
 
 class ImageDetectorImplementation {
@@ -29,16 +29,24 @@ class ImageDetectorImplementation {
             // Paths relative to the extension root (dist folder)
             const workerPath = chrome.runtime.getURL('ocr/worker.min.js');
             const corePath = chrome.runtime.getURL('ocr/tesseract-core.wasm.js');
+
+            // Use local language data (Self-hosted) - Robust & Offline-capable
             const langPath = chrome.runtime.getURL('models/ocr/');
 
             console.log('[ImageDetectorImpl] Configuration:', { workerPath, corePath, langPath });
 
-            this.worker = await createWorker('eng', 1, {
+            const createWorkerFn = (window.Tesseract && window.Tesseract.createWorker)
+                ? window.Tesseract.createWorker
+                : (typeof createWorker !== 'undefined' ? createWorker : undefined);
+
+            if (!createWorkerFn) throw new Error("Tesseract createWorker not found");
+
+            this.worker = await createWorkerFn('eng', 1, {
                 workerPath: workerPath,
                 corePath: corePath,
                 langPath: langPath,
                 gzip: true,
-                workerBlobURL: false, // Forces loading from URL, avoids CSP blocked blob: worker
+                workerBlobURL: false, // Use file-based worker (CSP compliant)
                 logger: m => console.debug('[Tesseract]', m),
                 errorHandler: err => console.error('[Tesseract] Worker error:', err)
             });

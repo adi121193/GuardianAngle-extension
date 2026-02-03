@@ -1,6 +1,6 @@
 /**
- * Regex patterns for detecting PII in text
- * All patterns are optimized for Indian context + global patterns
+ * Enhanced Regex patterns for detecting PII in text
+ * Optimized for Indian context + global patterns with improved accuracy
  */
 
 import {
@@ -15,15 +15,16 @@ import {
 } from './validators.js';
 
 export const PII_PATTERNS = {
+  // ============= IDENTITY DOCUMENTS =============
+
   // Indian Aadhaar Number (12 digits, optional spaces/dashes)
-  // NOW WITH STRICT VERHOEFF CHECKSUM VALIDATION
+  // WITH STRICT VERHOEFF CHECKSUM VALIDATION
   aadhaar: {
     pattern: /\b\d{4}\s?\d{4}\s?\d{4}\b/g,
     name: 'Aadhaar Number',
     confidence: 0.85,
-    priority: 2, // Lower priority than phone
+    priority: 2,
     validator: (match, fullText, index) => {
-      // CRITICAL: Must pass Verhoeff checksum
       return validateAadhaarChecksum(match);
     },
     contextAware: true
@@ -40,65 +41,27 @@ export const PII_PATTERNS = {
     }
   },
 
-  // Phone Numbers (Indian + International)
-  // HIGHEST PRIORITY - checks first with normalization
-  // Supports: Indian (+91), US (+1), UK (+44), and other international formats
-  phone: {
-    pattern: /(?:\+\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}(?:[\s.-]?\d{1,4})?|\b\d{10,11}\b|\b\d{5}[\s.-]?\d{5}\b/g,
-    name: 'Phone Number',
-    confidence: 0.75,
-    priority: 1, // HIGHEST PRIORITY
-    validator: (match, fullText, index) => {
-      // Reject if it looks like a date (yyyy-mm-dd, dd-mm-yyyy, etc.)
-      if (/^\d{4}[-\/\.]\d{1,2}[-\/\.]\d{1,2}$/.test(match) ||
-        /^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{2,4}$/.test(match)) {
-        return false; // Let DOB pattern handle this
-      }
-
-      // Try Indian phone first
-      const indianResult = validateIndianPhone(match);
-      if (indianResult.valid) {
-        return true;
-      }
-
-      // Try international phone
-      const intlResult = validateInternationalPhone(match);
-      return intlResult.valid;
-    },
-    contextAware: true
-  },
-
-  // Email Addresses
-  email: {
-    pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
-    name: 'Email Address',
-    confidence: 0.9,
-    priority: 6,
-    validator: (match, fullText, index) => {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(match);
-    }
-  },
-
-  // Date of Birth (multiple formats)
-  dob: {
-    pattern: /\b(?:0?[1-9]|[12][0-9]|3[01])[\/\-\.](0?[1-9]|1[012])[\/\-\.](?:19|20)?\d{2}\b|\b(?:19|20)\d{2}[\/\-\.](0?[1-9]|1[012])[\/\-\.](0?[1-9]|[12][0-9]|3[01])\b/g,
-    name: 'Date of Birth',
-    confidence: 0.6,
-    priority: 7,
-    validator: (match, fullText, index) => {
-      // Additional validation could check if date is realistic for DOB
-      return true;
-    }
-  },
-
-  // Indian Passport Number
+  // Indian Passport Number (multiple formats)
   passport: {
-    pattern: /\b[A-Z]\d{7}\b/g,
+    pattern: /\b[A-PRZ][1-9]\d{6}\b|\b[A-Z]\d{7}\b/g,
     name: 'Passport Number',
-    confidence: 0.7,
+    confidence: 0.8,
     priority: 9,
     validator: (match, fullText, index) => {
-      return /^[A-Z]\d{7}$/.test(match);
+      // New format: A-P,R,Z + digit 1-9 + 6 more digits
+      // Old format: Letter + 7 digits
+      return /^[A-PRZ][1-9]\d{6}$/.test(match) || /^[A-Z]\d{7}$/.test(match);
+    }
+  },
+
+  // Indian Voter ID
+  voterId: {
+    pattern: /\b[A-Z]{3}\d{7}\b/g,
+    name: 'Voter ID',
+    confidence: 0.8,
+    priority: 16,
+    validator: (match, fullText, index) => {
+      return /^[A-Z]{3}\d{7}$/.test(match);
     }
   },
 
@@ -114,31 +77,56 @@ export const PII_PATTERNS = {
     }
   },
 
-  // Indian Vehicle Registration Number
-  vehicleReg: {
-    pattern: /\b[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,2}\s?\d{4}\b/g,
-    name: 'Vehicle Registration',
-    confidence: 0.7,
-    priority: 11,
+  // ============= CONTACT INFORMATION =============
+
+  // Phone Numbers (Indian + International)
+  // HIGHEST PRIORITY - checks first with normalization
+  phone: {
+    pattern: /(?:\+\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}(?:[\s.-]?\d{1,4})?|\b\d{10,11}\b|\b\d{5}[\s.-]?\d{5}\b/g,
+    name: 'Phone Number',
+    confidence: 0.75,
+    priority: 1,
     validator: (match, fullText, index) => {
-      return true;
+      // Reject dates
+      if (/^\d{4}[-\/\.]\d{1,2}[-\/\.]\d{1,2}$/.test(match) ||
+        /^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{2,4}$/.test(match)) {
+        return false;
+      }
+
+      const indianResult = validateIndianPhone(match);
+      if (indianResult.valid) return true;
+
+      const intlResult = validateInternationalPhone(match);
+      return intlResult.valid;
+    },
+    contextAware: true
+  },
+
+  // Email Addresses (improved pattern)
+  email: {
+    pattern: /\b[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/g,
+    name: 'Email Address',
+    confidence: 0.9,
+    priority: 6,
+    validator: (match, fullText, index) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(match);
     }
   },
 
-  // Bank Account Number (requires context keywords to reduce false positives)
-  // CRITICAL FIX BUG004: Added context requirement to prevent ANY 8-18 digit number from matching
+  // ============= FINANCIAL INFORMATION =============
+
+  // Bank Account Number (with context)
   bankAccount: {
     pattern: /\b(?:account|acc|a\/c|bank)\s*(?:no|number|#|num)?[\s:]*\d{8,18}\b/gi,
     name: 'Bank Account Number',
     confidence: 0.6,
-    priority: 3, // Lower than phone, higher than low-confidence
+    priority: 3,
     validator: (match, fullText, index) => {
-      // Must have context keyword and valid digit count
       const hasContext = /(?:account|acc|a\/c|bank)/i.test(match);
       const digits = match.replace(/\D/g, '');
       const valid = hasContext && validateBankAccount(digits);
 
-      // Don't match if it could be Aadhaar
+      // Don't match if it's Aadhaar
       if (digits.length === 12 && validateAadhaarChecksum(digits)) {
         return false;
       }
@@ -159,7 +147,7 @@ export const PII_PATTERNS = {
     }
   },
 
-  // Credit/Debit Card Number (with optional spaces/dashes)
+  // Credit/Debit Card Number
   creditCard: {
     pattern: /\b(?:\d{4}[\s\-]?){3}\d{4}\b/g,
     name: 'Credit/Debit Card',
@@ -170,9 +158,39 @@ export const PII_PATTERNS = {
     }
   },
 
-  // CRITICAL FIX BUG004: CVV pattern REMOVED - too many false positives
-  // Pattern /\b\d{3,4}\b/ matches ANY 3-4 digit number (dates, counts, IDs, etc.)
-  // CVV is rarely typed in AI chats, and pattern had >50% false positive rate
+  // UPI ID
+  upi: {
+    pattern: /\b[a-zA-Z0-9.\-_]+@[a-zA-Z0-9]+\b/g,
+    name: 'UPI ID',
+    confidence: 0.7,
+    priority: 17,
+    validator: (match, fullText, index) => {
+      // Must have @ and end with known UPI handles
+      const upiHandles = ['paytm', 'phonepe', 'gpay', 'googlepay', 'ybl', 'okaxis', 'okhdfcbank', 'okicici', 'oksbi', 'ibl', 'axl'];
+      const parts = match.split('@');
+      if (parts.length !== 2) return false;
+
+      const handle = parts[1].toLowerCase();
+      return upiHandles.some(h => handle.includes(h));
+    }
+  },
+
+  // Cryptocurrency Addresses (Bitcoin, Ethereum)
+  cryptoAddress: {
+    pattern: /\b(?:bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}\b|\b0x[a-fA-F0-9]{40}\b/g,
+    name: 'Crypto Address',
+    confidence: 0.85,
+    priority: 18,
+    validator: (match, fullText, index) => {
+      // Bitcoin (P2PKH, P2SH, Bech32)
+      if (/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$/.test(match)) return true;
+      // Ethereum
+      if (/^0x[a-fA-F0-9]{40}$/.test(match)) return true;
+      return false;
+    }
+  },
+
+  // ============= TAX & GOVERNMENT =============
 
   // GST Number (India)
   gst: {
@@ -185,6 +203,22 @@ export const PII_PATTERNS = {
     }
   },
 
+  // Tax Identification Number (TIN - India)
+  tin: {
+    pattern: /\b\d{11}\b/g,
+    name: 'TIN',
+    confidence: 0.5,
+    priority: 20,
+    validator: (match, fullText, index) => {
+      // Must have "TIN" keyword nearby
+      const context = fullText.substring(Math.max(0, index - 50), Math.min(fullText.length, index + 50));
+      return /\bTIN\b/i.test(context);
+    },
+    contextAware: true
+  },
+
+  // ============= US/INTERNATIONAL =============
+
   // Social Security Number (US)
   ssn: {
     pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
@@ -192,11 +226,65 @@ export const PII_PATTERNS = {
     confidence: 0.9,
     priority: 13,
     validator: (match, fullText, index) => {
-      return /^\d{3}-\d{2}-\d{4}$/.test(match);
+      const parts = match.split('-');
+      // SSN validation: first part can't be 000, 666, or 900-999
+      const first = parseInt(parts[0]);
+      if (first === 0 || first === 666 || first >= 900) return false;
+      // Second part can't be 00
+      if (parseInt(parts[1]) === 0) return false;
+      // Third part can't be 0000
+      if (parseInt(parts[2]) === 0) return false;
+      return true;
     }
   },
 
-  // IP Address
+  // National Insurance Number (UK)
+  nino: {
+    pattern: /\b[A-Z]{2}\d{6}[A-D]\b/g,
+    name: 'National Insurance Number',
+    confidence: 0.85,
+    priority: 19,
+    validator: (match, fullText, index) => {
+      // First two letters can't be BG, GB, KN, NK, NT, TN, ZZ
+      const invalidPrefixes = ['BG', 'GB', 'KN', 'NK', 'NT', 'TN', 'ZZ'];
+      const prefix = match.substring(0, 2);
+      return !invalidPrefixes.includes(prefix);
+    }
+  },
+
+  // ============= DATES & PERSONAL =============
+
+  // Date of Birth (multiple formats)
+  dob: {
+    pattern: /\b(?:0?[1-9]|[12][0-9]|3[01])[\/\-\.](0?[1-9]|1[012])[\/\-\.](?:19|20)?\d{2}\b|\b(?:19|20)\d{2}[\/\-\.](0?[1-9]|1[012])[\/\-\.](0?[1-9]|[12][0-9]|3[01])\b/g,
+    name: 'Date of Birth',
+    confidence: 0.6,
+    priority: 7,
+    validator: (match, fullText, index) => {
+      // Must have DOB/birth/born keyword nearby
+      const context = fullText.substring(Math.max(0, index - 30), Math.min(fullText.length, index + 30));
+      return /\b(dob|birth|born)\b/i.test(context);
+    },
+    contextAware: true
+  },
+
+  // ============= VEHICLE & PROPERTY =============
+
+  // Indian Vehicle Registration Number
+  vehicleReg: {
+    pattern: /\b[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,2}\s?\d{4}\b/g,
+    name: 'Vehicle Registration',
+    confidence: 0.7,
+    priority: 11,
+    validator: (match, fullText, index) => {
+      const normalized = match.replace(/\s/g, '');
+      return /^[A-Z]{2}\d{1,2}[A-Z]{1,2}\d{4}$/.test(normalized);
+    }
+  },
+
+  // ============= TECHNICAL =============
+
+  // IP Address (IPv4)
   ipAddress: {
     pattern: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g,
     name: 'IP Address',
@@ -204,14 +292,51 @@ export const PII_PATTERNS = {
     priority: 8,
     validator: (match, fullText, index) => {
       const parts = match.split('.');
-      return parts.every(part => parseInt(part, 10) <= 255);
+      return parts.every(part => {
+        const num = parseInt(part, 10);
+        return num >= 0 && num <= 255;
+      });
     }
   },
 
-  // CRITICAL FIX BUG004: PIN Code pattern REMOVED - too many false positives
-  // Pattern /\b\d{6}\b/ matches ANY 6-digit number (dates, OTPs, counts, IDs, etc.)
-  // Indian postal codes (PIN codes) are rarely sensitive PII in AI chats
-  // Pattern had >50% false positive rate on normal conversations
+  // API Keys (generic patterns)
+  apiKey: {
+    pattern: /\b(?:api[_-]?key|apikey|access[_-]?token|secret[_-]?key)[\s:=]+['"]?([a-zA-Z0-9_\-]{20,})['"]?/gi,
+    name: 'API Key',
+    confidence: 0.9,
+    priority: 21,
+    validator: (match, fullText, index) => {
+      // Extract the actual key part
+      const keyMatch = match.match(/['"]?([a-zA-Z0-9_\-]{20,})['"]?$/);
+      return keyMatch && keyMatch[1].length >= 20;
+    }
+  },
+
+  // AWS Access Keys
+  awsKey: {
+    pattern: /\b(?:AKIA|A3T|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}\b/g,
+    name: 'AWS Access Key',
+    confidence: 0.95,
+    priority: 22,
+    validator: (match, fullText, index) => {
+      return /^(?:AKIA|A3T|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}$/.test(match);
+    }
+  },
+
+  // JWT Tokens
+  jwtToken: {
+    pattern: /\beyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g,
+    name: 'JWT Token',
+    confidence: 0.9,
+    priority: 23,
+    validator: (match, fullText, index) => {
+      // JWT has 3 parts separated by dots
+      const parts = match.split('.');
+      return parts.length === 3 && parts.every(p => p.length > 0);
+    }
+  },
+
+  // ============= MEDICAL =============
 
   // Medical Record Numbers (generic pattern)
   medicalRecord: {
@@ -232,40 +357,31 @@ export const PII_PATTERNS = {
  * @returns {Object} Detection results
  */
 export function detectPIIWithRegex(text, minConfidence = 0.6) {
-  /*
-  console.log('[regexPatterns] detectPIIWithRegex called:', {
-    textLength: text?.length,
-    minConfidence,
-    textPreview: text?.substring(0, 100)
-  });
-  */
-
   const results = {
     piiDetected: false,
     types: [],
     matches: [],
-    ambiguousMatches: [], // NEW: low-confidence matches
+    ambiguousMatches: [],
     score: 0
   };
 
   if (!text || typeof text !== 'string') {
-    console.log('[regexPatterns] Invalid text input, returning empty results');
     return results;
   }
 
   const detectedTypes = new Set();
-  const processedPositions = new Set(); // Track positions to avoid duplicates
+  const processedPositions = new Set();
   let totalConfidence = 0;
   let matchCount = 0;
 
-  // Sort patterns by priority (lower number = higher priority)
+  // Sort patterns by priority
   const sortedPatterns = Object.entries(PII_PATTERNS).sort((a, b) => {
     const priorityA = a[1].priority || 999;
     const priorityB = b[1].priority || 999;
     return priorityA - priorityB;
   });
 
-  // First pass: collect all potential matches with positions
+  // Collect all matches
   const allMatches = [];
 
   for (const [type, config] of sortedPatterns) {
@@ -285,11 +401,11 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
     }
   }
 
-  // Second pass: process matches with priority and context
+  // Process matches with priority and context
   for (const matchInfo of allMatches) {
     const { type, config, matchedText, position, endPosition } = matchInfo;
 
-    // Skip if this position was already matched by higher-priority pattern
+    // Check for overlaps
     let overlaps = false;
     for (const processedPos of processedPositions) {
       const [start, end] = processedPos.split('-').map(Number);
@@ -299,27 +415,23 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
       }
     }
 
-    if (overlaps) {
-      continue;
-    }
+    if (overlaps) continue;
 
-    // Context-aware validation
+    // Validate
     let finalConfidence = config.confidence;
     let validationResult = true;
 
     if (config.validator) {
       validationResult = config.validator(matchedText, text, position);
 
-      // If validation failed, add to ambiguous matches for user awareness (for PAN/Aadhaar)
       if (!validationResult) {
-        // For PAN and Aadhaar, add as ambiguous match even if validation fails
-        // This helps users who type invalid but PII-like patterns
-        if (type === 'pan' || type === 'aadhaar') {
+        // Add to ambiguous for certain types
+        if (['pan', 'aadhaar'].includes(type)) {
           results.ambiguousMatches.push({
             type,
             value: matchedText,
             name: config.name,
-            confidence: 0.4, // Low confidence since validation failed
+            confidence: 0.4,
             position,
             start: position,
             end: endPosition,
@@ -331,11 +443,10 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
       }
     }
 
-    // Apply context scoring for context-aware patterns
+    // Context scoring
     if (config.contextAware) {
       const context = analyzeContext(text, position);
 
-      // Adjust confidence based on context
       if (type === 'phone' && (context.hasPhoneContext || context.hasTimestamp)) {
         finalConfidence += 0.15;
       } else if (type === 'aadhaar' && context.hasAadhaarContext) {
@@ -345,18 +456,15 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
       }
     }
 
-    // Use smart classification for numeric patterns
-    if (type === 'aadhaar' || type === 'phone' || type === 'bankAccount') {
+    // Smart classification for numeric patterns
+    if (['aadhaar', 'phone', 'bankAccount'].includes(type)) {
       const classification = classifyNumericPII(matchedText, text, position);
 
       if (classification.type && classification.type !== type) {
-        // Smart classifier says it's a different type
-        continue; // Skip, let the correct pattern handle it
+        continue;
       }
 
       if (classification.ambiguous) {
-        // Low confidence / ambiguous match
-        // Guard: ensure type is never undefined
         const ambiguousType = classification.type || type || 'unknown';
         results.ambiguousMatches.push({
           type: ambiguousType,
@@ -372,15 +480,13 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
         continue;
       }
 
-      // Update confidence from classifier if available
       if (classification.confidence > 0) {
         finalConfidence = Math.min(0.98, classification.confidence);
       }
     }
 
-    // Only include if confidence meets threshold
+    // Add if meets threshold
     if (finalConfidence >= minConfidence) {
-      // Guard: ensure type is never undefined
       if (!type) {
         console.warn('[regexPatterns] Skipping match with undefined type:', matchedText);
         continue;
@@ -396,19 +502,13 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
         name: config.name,
         confidence: finalConfidence,
         position,
-        start: position,  // Alias for compatibility
-        end: endPosition   // End position for precise masking/removal
+        start: position,
+        end: endPosition
       });
 
-      // Mark this position as processed
       processedPositions.add(`${position}-${endPosition}`);
     } else if (finalConfidence >= 0.3) {
-      // Low confidence but not completely invalid
-      // Guard: ensure type is never undefined
-      if (!type) {
-        console.warn('[regexPatterns] Skipping ambiguous match with undefined type:', matchedText);
-        continue;
-      }
+      if (!type) continue;
 
       results.ambiguousMatches.push({
         type,
@@ -427,25 +527,11 @@ export function detectPIIWithRegex(text, minConfidence = 0.6) {
   results.types = Array.from(detectedTypes);
   results.score = matchCount > 0 ? totalConfidence / matchCount : 0;
 
-  results.score = matchCount > 0 ? totalConfidence / matchCount : 0;
-
-  /*
-  console.log('[regexPatterns] Detection complete:', {
-    piiDetected: results.piiDetected,
-    matchCount: results.matches.length,
-    ambiguousCount: results.ambiguousMatches.length,
-    types: results.types,
-    matches: results.matches.map(m => ({ type: m.type, value: m.value?.substring(0, 20) }))
-  });
-  */
-
   return results;
 }
 
 /**
  * Get pattern by type
- * @param {string} type - PII type
- * @returns {Object|null} Pattern configuration
  */
 export function getPattern(type) {
   return PII_PATTERNS[type] || null;
@@ -453,9 +539,6 @@ export function getPattern(type) {
 
 /**
  * Check if text contains specific PII type
- * @param {string} text - Text to check
- * @param {string} type - PII type to check for
- * @returns {boolean}
  */
 export function hasPIIType(text, type) {
   const pattern = PII_PATTERNS[type];
@@ -472,7 +555,6 @@ export function hasPIIType(text, type) {
 
 /**
  * Get all available PII types
- * @returns {Array<string>}
  */
 export function getAvailablePIITypes() {
   return Object.keys(PII_PATTERNS);

@@ -161,6 +161,17 @@ export async function updateSetting(key, value) {
 }
 
 /**
+ * Update multiple settings at once
+ * @param {Object} updates - Object containing settings to update
+ * @returns {Promise<void>}
+ */
+export async function updateSettings(updates) {
+  const settings = await getSettings();
+  const newSettings = { ...settings, ...updates };
+  await saveSettings(newSettings);
+}
+
+/**
  * Reset settings to defaults
  * @returns {Promise<void>}
  */

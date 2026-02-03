@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PII Guardian - ML Inference Worker</title>
 </head>
+
 <body>
   <!--
     Offscreen document for ML inference
     Runs ONNX Runtime Web in isolated environment
     No UI needed - this is a background worker
   -->
+  <!-- Load Tesseract.js globally to avoid bundling issues -->
+  <script src="../ocr/tesseract.min.js"></script>
   <script type="module" src="../ml/offscreen.js"></script>
 </body>
+
 </html>

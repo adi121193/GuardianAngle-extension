@@ -13,43 +13,20 @@ let state = {
   isPro: false
 };
 
+// Visual Logger Removed for Production
+window.log = function (msg) {
+  console.log('[Popup]', msg);
+};
+
 /**
  * Initialize
  */
 async function init() {
-  // Visual Logger Setup (Debug Mode)
-  const debugLog = document.createElement('div');
-  debugLog.id = 'debugLog';
-  debugLog.style.cssText = `
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 150px;
-    background: rgba(0,0,0,0.9);
-    color: #0f0;
-    font-family: monospace;
-    font-size: 10px;
-    overflow-y: auto;
-    padding: 10px;
-    z-index: 9999;
-    pointer-events: none;
-    border-top: 1px solid #333;
-  `;
-  document.body.appendChild(debugLog);
+  console.log('[Popup] Starting initialization...');
 
-  function log(msg) {
-    console.log('[Popup]', msg);
-    const entry = document.createElement('div');
-    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    debugLog.appendChild(entry);
-    debugLog.scrollTop = debugLog.scrollHeight;
-  }
-
-  log('Starting initialization...');
   try {
     // Initialize DOM Elements
-    log('Initializing DOM elements...');
+    console.log('[Popup] Initializing DOM elements...');
     elements = {
       // Navigation
       navItems: document.querySelectorAll('.nav-item'),
@@ -126,8 +103,7 @@ async function init() {
     log('Attaching listeners...');
     attachListeners();
 
-    // Set initial NER status
-    updateNERStatus(state.settings.nerEnabled || false);
+    // NER removed - regex-only detection
 
     log('Initialized successfully');
   } catch (error) {
@@ -174,10 +150,7 @@ async function loadStats() {
 function renderDashboard() {
   // Toggles
   if (state.settings.enabled !== undefined) elements.enableToggle.checked = state.settings.enabled;
-  if (state.settings.nerEnabled !== undefined) elements.nerToggle.checked = state.settings.nerEnabled;
-
-  // NER Status
-  updateNERStatus(state.settings.nerEnabled);
+  // NER removed
 
   // Stats
   if (state.stats) {
@@ -208,19 +181,25 @@ function renderSettings() {
  * Attach Listeners (using Event Delegation)
  */
 function attachListeners() {
-  console.log('[Popup] Attaching global event listeners...');
+  log('Attaching global event listeners...');
 
   document.body.addEventListener('click', (e) => {
     // Helper to find closest button/element
     const target = e.target;
-    const btn = target.closest('button') || target.closest('a') || target;
+    // Walk up the tree to find button or anchor
+    const btn = target.closest('button') || target.closest('a') || (target.classList.contains('nav-item') ? target : null);
 
-    console.log('[Popup] Click detected on:', btn);
+    if (!btn) return; // Ignore clicks on non-interactive elements
+
+    console.log(`[Popup] Click detected on: ${btn.tagName}#${btn.id}.${btn.className}`);
 
     // Navigation Items & Sidebar Toggle
     if (btn.classList.contains('nav-item')) {
       const view = btn.dataset.view;
-      if (view) switchView(view);
+      if (view) {
+        log(`Switching to view: ${view}`);
+        switchView(view);
+      }
       return;
     }
 
@@ -232,13 +211,15 @@ function attachListeners() {
     }
 
     // Dashboard View Button (bottom nav)
-    if (btn.id === 'dashboardBtn' || (btn.onclick && btn.onclick.toString().includes('dashboard'))) {
+    if (btn.id === 'dashboardBtn') {
+      log('Dashboard button clicked');
       switchView('dashboard');
       return;
     }
 
     // Settings View Button (bottom nav)
-    if (btn.id === 'settingsBtn' || (btn.onclick && btn.onclick.toString().includes('settings'))) {
+    if (btn.id === 'settingsBtn') {
+      log('Settings button clicked');
       switchView('settings');
       return;
     }
@@ -293,12 +274,7 @@ function attachListeners() {
       return;
     }
 
-    // NER Toggle
-    if (target.id === 'nerToggle') {
-      saveSetting('nerEnabled', target.checked);
-      updateNERStatus(target.checked);
-      return;
-    }
+    // NER toggle removed
 
     // Settings Inputs
     if (target.id === 'autoMask') {
@@ -342,17 +318,27 @@ function attachListeners() {
  * Switch Active View
  */
 function switchView(viewName) {
+  log(`Executing switchView('${viewName}')`);
+
   // Update Nav
-  elements.navItems.forEach(btn => {
-    if (btn.dataset.view === viewName) btn.classList.add('active');
-    else btn.classList.remove('active');
-  });
+  if (elements.navItems) {
+    elements.navItems.forEach(btn => {
+      if (btn.dataset.view === viewName) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
 
   // Update Views
-  elements.views.forEach(view => {
-    if (view.id === `view-${viewName}`) view.classList.add('active');
-    else view.classList.remove('active');
-  });
+  if (elements.views) {
+    elements.views.forEach(view => {
+      if (view.id === `view-${viewName}`) {
+        view.classList.add('active');
+        log(`Activated view: ${view.id}`);
+      } else {
+        view.classList.remove('active');
+      }
+    });
+  }
 }
 
 /**
@@ -418,21 +404,7 @@ function renderLicense() {
  * Update Feature Locks based on tier
  */
 function updateFeatureLocks() {
-  const nerLock = document.getElementById('nerLockOverlay');
-  const nerBadge = document.getElementById('nerProBadge');
-  const nerToggle = document.getElementById('nerToggle');
-
-  if (nerLock) {
-    nerLock.style.display = state.isPro ? 'none' : 'flex';
-  }
-
-  if (nerBadge) {
-    nerBadge.style.display = state.isPro ? 'none' : 'inline-block';
-  }
-
-  if (nerToggle) {
-    nerToggle.disabled = !state.isPro;
-  }
+  // NER locks removed - feature deprecated
 
   // Add click handler to unlock button
   const unlockBtn = document.getElementById('nerUnlockBtn');
@@ -574,41 +546,64 @@ function exportData() {
  * Render Critical Error UI
  */
 function renderError(message) {
-  document.body.innerHTML = `
-    <div style="
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      text-align: center;
-    ">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="margin-bottom: 20px;">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <h2 style="font-size: 20px; margin-bottom: 10px;">Extension Error</h2>
-      <p style="color: var(--text-secondary); max-width: 400px;">${message}</p>
-      <button 
-        onclick="chrome.runtime.reload()" 
-        style="
-          margin-top: 20px;
-          padding: 10px 20px;
-          background: var(--primary-color);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-        "
-      >
-        Reload Extension
-      </button>
-    </div>
+  document.body.innerHTML = ''; // Clear existing content
+
+  const container = document.createElement('div');
+  container.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    text-align: center;
   `;
+
+  const iconSvg = `
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="margin-bottom: 20px;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  `;
+
+  const title = document.createElement('h2');
+  title.style.cssText = 'font-size: 20px; margin-bottom: 10px;';
+  title.textContent = 'Extension Error';
+
+  const msg = document.createElement('p');
+  msg.style.cssText = 'color: var(--text-secondary); max-width: 400px;';
+  msg.textContent = message;
+
+  const reloadBtn = document.createElement('button');
+  reloadBtn.textContent = 'Reload Extension';
+  reloadBtn.style.cssText = `
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  `;
+
+  // CSP-safe event listener
+  reloadBtn.addEventListener('click', () => {
+    chrome.runtime.reload();
+  });
+
+  // Assemble
+  const iconWrapper = document.createElement('div');
+  iconWrapper.innerHTML = iconSvg;
+
+  container.appendChild(iconWrapper);
+  container.appendChild(title);
+  container.appendChild(msg);
+  container.appendChild(reloadBtn);
+
+  document.body.appendChild(container);
 }
 
 // Global Error Handler

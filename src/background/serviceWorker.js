@@ -349,8 +349,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     case 'GET_TIER_INFO':
       // Get tier info from license validation
-      chrome.storage.local.get(['proEnabled', 'proLicense', 'licenseStatus'], (result) => {
-        const isPro = result.proEnabled === true && result.licenseStatus === 'active';
+      chrome.storage.local.get(['proEnabled', 'proLicense', 'licenseStatus', 'settings'], (result) => {
+        // 1. Check LemonSqueezy storage (Top Level)
+        const isLSPro = result.proEnabled === true && result.licenseStatus === 'active';
+
+        // 2. Check Settings storage (Offline / Test Key)
+        const settings = result.settings || {};
+        const isSettingsPro = settings.proEnabled === true;
+
+        const isPro = isLSPro || isSettingsPro;
+
         sendResponse({
           tier: isPro ? 'pro' : 'free',
           isPro: isPro,
@@ -629,6 +637,7 @@ console.log('PII Guardian service worker initialized');
 async function initializeNER() {
   try {
     console.log('[ServiceWorker] Initializing NER model...');
+    console.log('[ServiceWorker] Sending init message to offscreen...');
     const result = await offscreenManager.initializeModel();
 
     if (result.success) {
@@ -702,15 +711,11 @@ async function initializeNER() {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // ONLY handle INIT_NER from popup - NER_INIT goes to offscreen document
   // This is critical: NER_INIT must NOT be handled here or the offscreen document won't receive it
+  // NER initialization removed - using regex-only detection
   if (message.type === 'INIT_NER') {
-    console.log('[ServiceWorker] NER initialization requested from UI');
-
-    initializeNER().then(() => {
-      sendResponse({ success: true });
-    }).catch(error => {
-      sendResponse({ success: false, error: error.message });
-    });
-    return true; // Async response
+    console.log('[ServiceWorker] NER removed - ignoring initialization request');
+    sendResponse({ success: false, error: 'NER feature removed' });
+    return true;
   }
 
   // Dispose NER model and reset flags (used by settings reset)

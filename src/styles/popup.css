@@ -541,6 +541,9 @@ input:checked+.toggle-slider:before {
   justify-content: center;
   gap: 8px;
   font-size: 13px;
+  position: relative;
+  z-index: 2147483647;
+  /* MAX Z-INDEX to punch through overlays */
 }
 
 .btn-primary {
