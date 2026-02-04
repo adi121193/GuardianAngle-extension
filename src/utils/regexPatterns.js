@@ -263,7 +263,7 @@ export const PII_PATTERNS = {
     validator: (match, fullText, index) => {
       // Must have DOB/birth/born keyword nearby
       const context = fullText.substring(Math.max(0, index - 30), Math.min(fullText.length, index + 30));
-      return /\b(dob|birth|born)\b/i.test(context);
+      return /\b(dob|birth|born|date)\b/i.test(context);
     },
     contextAware: true
   },
