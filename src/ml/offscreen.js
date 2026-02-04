@@ -17,7 +17,7 @@ let tesseractCore = null;
 async function getOCRWorker() {
   if (tesseractWorker) return tesseractWorker;
 
-  console.log('[Offscreen] Lazy-loading Tesseract...');
+  debugLog('info', 'Lazy-loading Tesseract...');
 
   // Import Tesseract dynamically (assuming it's available globally or via importScript in worker context)
   // Since we are in an offscreen document (DOM access), we can use script tags or dynamic imports
@@ -60,7 +60,7 @@ function debugLog(type, message, data = null) {
 /**
  * Handle messages from service worker
  */
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Only handle messages meant for the offscreen document
   // Messages like RUN_NER_INFERENCE are for the service worker, not us
   const handledTypes = ['NER_INIT', 'INIT_NER', 'NER_INFERENCE', 'NER_STATUS', 'NER_DISPOSE', 'OCR_DETECT'];
@@ -86,14 +86,25 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           break;
 
         case 'OCR_DETECT':
+          debugLog('info', 'OCR_DETECT received', { imageSize: message.image?.length });
           try {
             // Ensure initialized
             try {
               await imageDetectorImplementation.initialize();
-            } catch (e) { console.error('OCR Init fail', e); }
+            } catch (e) {
+              debugLog('error', 'OCR Init fail', e.message);
+              console.error('OCR Init fail', e);
+            }
 
             // Run detection
+            debugLog('info', 'Running detection...');
             const ocrRes = await imageDetectorImplementation.detect(message.image);
+
+            debugLog('info', 'Detection complete', {
+              success: !ocrRes.error,
+              matches: ocrRes.matches?.length || 0
+            });
+
             sendResponse({
               success: !ocrRes.error,
               piiDetected: ocrRes.piiDetected,
@@ -103,6 +114,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
               error: ocrRes.error
             });
           } catch (err) {
+            debugLog('error', 'OCR Detect Fatal', err.message);
             console.error('OCR Detect Fatal', err);
             sendResponse({ success: false, error: err.message });
           }

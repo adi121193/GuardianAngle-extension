@@ -191,8 +191,17 @@ class OffscreenManager {
   /**
    * Run OCR inference
    */
+  /**
+   * Run OCR inference
+   */
   async runOCR(imageData) {
     console.log('[OffscreenManager] Running OCR inference...');
+
+    // KEEPALIVE: Service workers die after ~30s of inactivity.
+    // We log periodically to keep the worker active during long OCR operations.
+    const keepAlive = setInterval(() => {
+      console.log('[OffscreenManager] OCR Keepalive...');
+    }, 5000);
 
     try {
       const response = await this.sendMessage({
@@ -213,11 +222,30 @@ class OffscreenManager {
       }
     } catch (error) {
       console.error('[OffscreenManager] Failed to run OCR inference:', error);
+
+      // Retry once for connection errors
+      if (error.message.includes('closed') || error.message.includes('connector')) {
+        console.log('[OffscreenManager] Retrying OCR inference once...');
+        try {
+          // Ensure doc exists
+          await this.createDocument();
+          const retryResponse = await this.sendMessage({
+            type: 'OCR_DETECT',
+            image: imageData
+          });
+          return retryResponse;
+        } catch (retryError) {
+          console.error('[OffscreenManager] Retry failed:', retryError);
+        }
+      }
+
       return {
         success: false,
         error: error.message,
         piiDetected: false
       };
+    } finally {
+      clearInterval(keepAlive);
     }
   }
 

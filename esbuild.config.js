@@ -39,14 +39,19 @@ const buildOptions = {
     // Background script
     'background/serviceWorker': 'src/background/serviceWorker.js',
 
+    // ML scripts (Offscreen)
+    'ml/offscreen': 'src/ml/offscreen.js',
+
+    // Debug
+    'ui/debugOcr': 'src/ui/debugOcr.js',
+
     // Detection modules
     'detection/hybridDetector': 'src/detection/hybridDetector.js',
 
     // PRO-only entry points
     ...(isPro ? {
       'ui/history': 'src/ui/history.js',
-      'ui/debugOcr': 'src/ui/debugOcr.js',
-      'ml/offscreen': 'src/ml/offscreen.js',
+      'ml/offscreen': 'src/ml/offscreen.js', // Keep here for reference/completeness if needed, but duplicate key is fine or handled by last write
       'ml-test/test': 'src/ml-test/test.js'
     } : {})
   },

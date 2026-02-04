@@ -39,6 +39,27 @@ export class OffscreenManagerProxy {
   }
 
   /**
+   * Run OCR detection on an image
+   * @param {string} imageData - Base64 image data
+   * @returns {Promise<Object>} Detection result
+   */
+  async detect(imageData) {
+    if (!imageData) return { piiDetected: false, error: 'No image data' };
+
+    try {
+      console.log('[OffscreenManagerProxy] Requesting OCR detection...');
+      const response = await chrome.runtime.sendMessage({
+        type: 'RUN_OCR_INFERENCE',
+        image: imageData
+      });
+      return response;
+    } catch (error) {
+      console.error('[OffscreenManagerProxy] OCR Request failed:', error);
+      return { piiDetected: false, error: error.message };
+    }
+  }
+
+  /**
    * Run NER inference via background script
    * @param {string} text - Text to analyze
    * @returns {Promise<Object>} Inference result

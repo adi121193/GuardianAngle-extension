@@ -1,15 +1,170 @@
-/**
- * Input Monitoring Content Script
- * Monitors text inputs and triggers PII detection
- */
-
 import { detectPII, quickPIICheck, enableNER } from './detectText.js';
-import { imageDetector } from '../detection/imageDetector.js';
+import { offscreenManagerProxy } from '../ml/offscreenManagerProxy.js'; // PROXY TO OFFSCREEN
+// import { imageDetector } from '../detection/imageDetector.js'; // REMOVED PROXY
+// import { imageDetectorImplementation } from '../detection/imageDetectorImplementation.js'; // FAILS DUE TO CSP
+// import { ocrSandbox } from './ocrSandbox.js'; // IFRAME SANDBOX FAILED CSP
 import { showWarningModal, isModalActive } from './injectWarningUI.js';
 import { getSettings, incrementDetection, incrementBlocked, isEnabled, getProStatus } from '../utils/storage.js';
-import { initializeInlineHighlighting, injectHighlightStyles } from './inlineHighlighter.js';
+// ... imports ...
+
+/**
+ * Process OCR result from sandbox and run PII detection
+ * @param {string} text - Extracted text
+ * @param {Array} words - Word bounding boxes  
+ * @returns {Promise<Object>} Detection result with matches
+ */
+async function processOCRResult(text, words) {
+  const settings = await getSettings();
+
+  // Run PII detection on extracted text
+  const detectionResult = await detectPII(text, {
+    minConfidence: settings.minConfidence,
+    enabledTypes: settings.enabledPIITypes,
+    useNER: false, // OCR text is usually noisy, stick to regex
+    detectionMode: 'regex'
+  });
+
+  // Map matches to bounding boxes
+  const matches = detectionResult.matches.map(match => {
+    // Find words that contain this PII value
+    const matchingWords = words.filter(word =>
+      match.value.includes(word.text) || word.text.includes(match.value)
+    );
+
+    return {
+      ...match,
+      bbox: matchingWords.length > 0 ? matchingWords[0].bbox : null,
+      source: 'ocr'
+    };
+  });
+
+  return {
+    piiDetected: detectionResult.piiDetected,
+    types: detectionResult.types,
+    matches,
+    ocrText: text
+  };
+}
+
+// ... existing code ...
+
+/**
+ * Handle paste events
+ * @param {ClipboardEvent} event
+ */
+async function handlePaste(event) {
+  // Guard: Check if extension context is still valid
+  if (!chrome?.runtime?.id) {
+    return; // Silently skip if context invalidated
+  }
+
+  try {
+    // Check if extension is enabled
+    const enabled = await isEnabled();
+    if (!enabled) return;
+
+    const element = event.target;
+    if (!isAIChatInput(element)) return;
+
+    // ... text paste logic ...
+    const pastedText = event.clipboardData.getData('text/plain');
+    if (pastedText && pastedText.length >= 5) {
+      // ... existing text paste logic ...
+      if (!quickPIICheck(pastedText)) {
+        // continue...
+      } else {
+        const settings = await getSettings();
+        const detectionResult = await detectPII(pastedText, {
+          minConfidence: settings.minConfidence,
+          enabledTypes: settings.enabledPIITypes,
+          useNER: settings.nerEnabled !== false,
+          detectionMode: settings.detectionMode || 'hybrid'
+        });
+
+        if (detectionResult.piiDetected) {
+          event.preventDefault();
+          for (const type of detectionResult.types) await incrementDetection(type);
+
+          const tempElement = document.createElement('textarea');
+          tempElement.value = pastedText;
+          const decision = await showWarningModal(detectionResult, tempElement);
+
+          if (decision.action === 'mask' && decision.maskedText) {
+            document.execCommand('insertText', false, decision.maskedText);
+          } else if (decision.action === 'send') {
+            document.execCommand('insertText', false, pastedText);
+          }
+        }
+      }
+    }
+
+    // Check for image paste
+    if (event.clipboardData.files && event.clipboardData.files.length > 0) {
+      const file = event.clipboardData.files[0];
+      if (file.type.startsWith('image/')) {
+        console.log('[PII Guardian] Image paste detected.');
+
+        // CHECK PRO LICENSE
+        const isPro = await getProStatus();
+        if (!isPro) {
+          console.log('[PII Guardian] Image OCR blocked - Upgrade required.');
+          const confirmUpgrade = confirm('📷 Image PII Detection is a Pro Feature.\n\nProtect your privacy in screenshots and images.\n\nUpgrade to Pro now?');
+          if (confirmUpgrade) {
+            window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
+          }
+          return;
+        }
+
+        // Handle image OCR via Offscreen Proxy
+        console.log('[PII Guardian] Pro Active - Running OCR via offscreen proxy...');
+
+        // Convert file to data URL for passing to background
+        const dataURL = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+
+        // Use proxy to send to background -> offscreen
+        const ocrResult = await offscreenManagerProxy.detect(dataURL);
+
+        if (ocrResult.piiDetected) {
+          event.preventDefault(); // Block paste
+
+          // Increment counters
+          ocrResult.matches.forEach(m => incrementDetection(m.type));
+
+          // Show modal
+          const tempElement = document.createElement('div'); // Dummy element
+          const decision = await showWarningModal({
+            ...ocrResult,
+            matches: ocrResult.matches.map(m => ({ ...m, source: 'ocr', bbox: m.bbox })), // Pass bbox
+            types: [...new Set(ocrResult.matches.map(m => m.type))]
+          }, tempElement);
+
+          if (decision.action === 'mask') {
+            console.log('[PII Guardian] Redacting pasted image...');
+            const redactedFile = await redactImage(file, ocrResult.matches);
+
+            alert('✅ PII Redacted! The safe image has been downloaded. Please paste the "redacted_' + file.name + '" file.');
+            const url = URL.createObjectURL(redactedFile);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'redacted_' + file.name; // Fixed name
+            a.click();
+            URL.revokeObjectURL(url);
+          } else if (decision.action === 'send') {
+            alert('Please paste again to confirm (PII Guardian limitation: cannot auto-paste image after blocking)');
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('PII Guardian: Error handling paste:', error);
+  }
+}
 import { initializeFloatingButton, injectFloatingButtonStyles } from './floatingButton.js';
-import { offscreenManagerProxy } from '../ml/offscreenManagerProxy.js';
+// offscreenManagerProxy imported at top
 import { ManualMaskUI } from './ui/manualMaskOverlay.js';
 import { redactImage } from '../utils/imageRedact.js';
 
@@ -436,161 +591,7 @@ async function handleInput(element) {
 }
 
 /**
- * Handle paste events
- * @param {ClipboardEvent} event
- */
-async function handlePaste(event) {
-  // Guard: Check if extension context is still valid
-  if (!chrome?.runtime?.id) {
-    return; // Silently skip if context invalidated
-  }
-
-  try {
-    // Check if extension is enabled
-    const enabled = await isEnabled();
-    if (!enabled) return;
-
-    const element = event.target;
-    if (!isAIChatInput(element)) return;
-
-    // Get pasted text
-    const pastedText = event.clipboardData.getData('text/plain');
-    if (!pastedText || pastedText.length < 5) return;
-
-    // Quick check first
-    if (!quickPIICheck(pastedText)) return;
-
-    // Get settings
-    const settings = await getSettings();
-
-    // Full PII detection on pasted content with NER settings
-    const detectionResult = await detectPII(pastedText, {
-      minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useNER: settings.nerEnabled !== false,
-      detectionMode: settings.detectionMode || 'hybrid'
-    });
-
-    if (detectionResult.piiDetected) {
-      // Prevent default paste
-      event.preventDefault();
-
-      // Increment detection counters
-      for (const type of detectionResult.types) {
-        await incrementDetection(type);
-      }
-
-      // Update hybrid stats if available
-      if (detectionResult.sources || detectionResult.performance) {
-        try {
-          await safeSendMessage({
-            type: 'UPDATE_HYBRID_STATS',
-            sources: detectionResult.sources,
-            performance: detectionResult.performance,
-            detectionMode: settings.detectionMode || 'hybrid'
-          });
-        } catch (error) {
-          console.error('PII Guardian: Failed to update hybrid stats:', error);
-        }
-      }
-
-      // Create temporary element to hold pasted text for modal
-      const tempElement = document.createElement('textarea');
-      tempElement.value = pastedText;
-
-      // Show warning modal
-      const decision = await showWarningModal(detectionResult, tempElement);
-
-      // Handle decision
-      switch (decision.action) {
-        case 'mask':
-          // Insert masked text
-          if (decision.maskedText) {
-            document.execCommand('insertText', false, decision.maskedText);
-          }
-          break;
-
-        case 'send':
-          // Insert original text
-          document.execCommand('insertText', false, pastedText);
-          break;
-
-        case 'cancel':
-          // Don't insert anything
-          break;
-      }
-    }
-    // Check for image paste
-    if (event.clipboardData.files && event.clipboardData.files.length > 0) {
-      const file = event.clipboardData.files[0];
-      if (file.type.startsWith('image/')) {
-        console.log('[PII Guardian] Image paste detected.');
-
-        // CHECK PRO LICENSE
-        const isPro = await getProStatus();
-        if (!isPro) {
-          console.log('[PII Guardian] Image OCR blocked - Upgrade required.');
-          // Show "Upgrade to Pro" modal/alert
-          // For MVP: Just a simple alert or redirect
-          // Ideally we show a nice modal, but for speed:
-          const confirmUpgrade = confirm('📷 Image PII Detection is a Pro Feature.\n\nProtect your privacy in screenshots and images.\n\nUpgrade to Pro now?');
-          if (confirmUpgrade) {
-            window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
-          }
-          return;
-        }
-
-        // Handle image OCR
-        console.log('[PII Guardian] Pro Active - Running OCR...');
-
-        // Notify user we are scanning (optional UI update could go here)
-
-        const ocrResult = await imageDetector.detect(file);
-
-        if (ocrResult.piiDetected) {
-          event.preventDefault(); // Block paste
-
-          // Increment counters
-          ocrResult.matches.forEach(m => incrementDetection(m.type));
-
-          // Show modal
-          const tempElement = document.createElement('div'); // Dummy element
-          const decision = await showWarningModal({
-            ...ocrResult,
-            matches: ocrResult.matches.map(m => ({ ...m, source: 'ocr', bbox: m.bbox })), // Pass bbox
-            types: [...new Set(ocrResult.matches.map(m => m.type))]
-          }, tempElement);
-
-          if (decision.action === 'mask') {
-            console.log('[PII Guardian] Redacting pasted image...');
-            const redactedFile = await redactImage(file, ocrResult.matches);
-
-            // For Paste, we CAN manipulate the Clipboard (sometimes) or fallback to download
-            // Try to write to clipboard? Requires permissions.
-            // Safer fallback: Download
-
-            alert('✅ PII Redacted! The safe image has been downloaded. Please paste the "redacted_' + file.name + '" file.');
-            const url = URL.createObjectURL(redactedFile);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = redactedFile.name;
-            a.click();
-            URL.revokeObjectURL(url);
-          } else if (decision.action === 'send') {
-            // Re-dispatch paste logic or info user
-            alert('Please paste again to confirm (PII Guardian limitation: cannot auto-paste image after blocking)');
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error('PII Guardian: Error handling paste:', error);
-  }
-}
-
-/**
  * Attach event listeners to an input element
- * @param {HTMLElement} element
  */
 function attachListeners(element) {
   if (monitoredElements.has(element)) {
@@ -1074,11 +1075,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log('PII Guardian: NER ready notification received');
 
     // Set proxy as ready
-    offscreenManagerProxy.setReady(true);
+    // offscreenManagerProxy.setReady(true);
 
     // Enable NER in detectText module and pass proxy
     // The proxy will forward inference requests to background via messaging
-    enableNER(offscreenManagerProxy);
+    // enableNER(offscreenManagerProxy);
     nerInitialized = true;
 
     console.log('PII Guardian: NER enabled with offscreen proxy');
@@ -1274,7 +1275,7 @@ const handleExternalImage = (file, event) => {
 
 // 1. Paste
 document.addEventListener('paste', (event) => {
-  if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type.startsWith('image/')) {
+  if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type === 'image/') {
     handlePaste(event);
   }
 }, true);
@@ -1320,8 +1321,16 @@ async function handleDirectFile(file, event) {
       return;
     }
 
-    console.log('[PII Guardian] Processing image upload...');
-    const ocrResult = await imageDetector.detect(file);
+    console.log('[PII Guardian] Processing image upload via offscreen proxy...');
+
+    // Convert file to data URL
+    const dataURL = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+
+    const ocrResult = await offscreenManagerProxy.detect(dataURL);
 
     if (ocrResult.piiDetected) {
       event.preventDefault();

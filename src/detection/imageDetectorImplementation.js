@@ -12,6 +12,7 @@ class ImageDetectorImplementation {
         this.worker = null;
         this.isInitializing = false;
         this.isReady = false;
+        this.initError = null;
     }
 
     /**
@@ -22,6 +23,7 @@ class ImageDetectorImplementation {
         if (this.isInitializing) return;
 
         this.isInitializing = true;
+        this.initError = null;
 
         try {
             console.log('[ImageDetectorImpl] Initializing Tesseract worker...');
@@ -55,6 +57,7 @@ class ImageDetectorImplementation {
             console.log('[ImageDetectorImpl] Worker initialized successfully');
         } catch (error) {
             console.error('[ImageDetectorImpl] Failed to initialize worker:', error);
+            this.initError = error.message;
             this.isReady = false;
         } finally {
             this.isInitializing = false;
@@ -72,7 +75,10 @@ class ImageDetectorImplementation {
         }
 
         if (!this.worker) {
-            return { piiDetected: false, error: 'Worker not initialized' };
+            return {
+                piiDetected: false,
+                error: `Worker not initialized. Reason: ${this.initError || 'Unknown'}`
+            };
         }
 
         try {
