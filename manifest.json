@@ -10,10 +10,6 @@
     "notifications",
     "alarms",
     "tabs",
-    "webRequest",
-    "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback",
     "offscreen"
   ],
   "host_permissions": [
@@ -23,11 +19,7 @@
     "https://gemini.google.com/*",
     "https://www.perplexity.ai/*",
     "https://x.com/*",
-    "https://twitter.com/*",
-    "https://tesseract.projectnaptha.com/*",
-    "https://cdn.jsdelivr.net/*",
-    "https://raw.githubusercontent.com/*",
-    "https://unpkg.com/*"
+    "https://twitter.com/*"
   ],
   "background": {
     "service_worker": "background/serviceWorker.js"
@@ -77,7 +69,13 @@
         "onnxruntime-web/*.js"
       ],
       "matches": [
-        "<all_urls>"
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://www.perplexity.ai/*",
+        "https://x.com/*",
+        "https://twitter.com/*"
       ]
     }
   ],
