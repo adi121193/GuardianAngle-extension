@@ -55,8 +55,7 @@ async function init() {
       // Settings Inputs
       settings: {
         autoMask: document.getElementById('autoMask'),
-        blockOnDetection: document.getElementById('blockOnDetection'),
-        piiChecks: document.querySelectorAll('.pii-check input')
+        blockOnDetection: document.getElementById('blockOnDetection')
       },
 
       // License Elements
@@ -166,12 +165,6 @@ function renderDashboard() {
 function renderSettings() {
   if (elements.settings.autoMask) elements.settings.autoMask.checked = state.settings.autoMask || false;
   if (elements.settings.blockOnDetection) elements.settings.blockOnDetection.checked = state.settings.blockOnDetection || false;
-
-  // PII Types
-  const enabledTypes = state.settings.enabledTypes || [];
-  elements.settings.piiChecks.forEach(checkbox => {
-    checkbox.checked = enabledTypes.includes(checkbox.value);
-  });
 }
 
 /**
@@ -285,16 +278,6 @@ function attachListeners() {
     if (target.id === 'blockOnDetection') {
       saveSetting('blockOnDetection', target.checked);
       return;
-    }
-
-    // PII Checkboxes
-    if (target.closest('.pii-check')) {
-      // Re-query all checkboxes state
-      const checkboxes = document.querySelectorAll('.pii-check input');
-      const enabledTypes = Array.from(checkboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value);
-      saveSetting('enabledPIITypes', enabledTypes);
     }
   });
 

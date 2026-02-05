@@ -102,19 +102,6 @@ export async function detectPII(text, options = {}) {
     results.methods = ['regex'];
   }
 
-  // Filter by enabled types if specified
-  if (enabledTypes && enabledTypes.length > 0) {
-    results.matches = results.matches.filter(
-      match => enabledTypes.includes(match.type)
-    );
-
-    results.types = results.types.filter(
-      type => enabledTypes.includes(type)
-    );
-
-    results.piiDetected = results.matches.length > 0;
-  }
-
   return results;
 }
 
