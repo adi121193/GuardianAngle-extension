@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "PII Guardian",
+  "name": "Guardian Angle",
   "version": "1.3.0",
   "description": "Local AI Privacy Browser Extension - Detect and protect sensitive PII before sending to AI tools",
   "permissions": [
