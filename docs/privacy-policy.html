@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Guardian Angle</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-alt: #f9fafb;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        .last-updated {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            color: var(--text);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-alt);
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h3 {
+            color: #065f46;
+            margin-top: 0;
+        }
+
+        .highlight-box ul {
+            margin-bottom: 0;
+        }
+
+        .contact-section {
+            background: var(--bg-alt);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .contact-section h2 {
+            margin-top: 0;
+            border: none;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-alt);
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem 3rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Guardian Angle</h1>
+        <p>Privacy Policy</p>
+    </header>
+
+    <main class="container">
+        <div class="last-updated">
+            <strong>Last Updated:</strong> February 5, 2026
+        </div>
+
+        <h2>Overview</h2>
+        <p>Guardian Angle is a browser extension designed to detect and protect Personally Identifiable Information (PII) before it is sent to AI platforms. We are committed to protecting your privacy and being transparent about our data practices.</p>
+
+        <h2>Data Collection and Processing</h2>
+
+        <h3>What We Process</h3>
+        <p>Guardian Angle processes text that you type into supported AI platforms (ChatGPT, Claude, Gemini, Perplexity, and X/Twitter) to detect potential PII such as:</p>
+        <ul>
+            <li>Aadhaar numbers</li>
+            <li>PAN card numbers</li>
+            <li>Phone numbers</li>
+            <li>Email addresses</li>
+            <li>Credit card numbers</li>
+            <li>Bank account numbers</li>
+            <li>Passport numbers</li>
+            <li>Social Security Numbers (SSN)</li>
+            <li>Date of birth</li>
+            <li>IP addresses</li>
+            <li>Driving license numbers</li>
+            <li>Vehicle registration numbers</li>
+            <li>Medical record numbers</li>
+        </ul>
+
+        <h3>How We Process Data</h3>
+        <div class="highlight-box">
+            <h3>100% Local Processing</h3>
+            <ul>
+                <li>All PII detection runs entirely on your local device</li>
+                <li>We do NOT send your text or detected PII to any external servers</li>
+                <li>We do NOT collect, store, or transmit your personal information</li>
+                <li>We do NOT use cloud-based AI services for detection</li>
+                <li>All processing uses local regex pattern matching and optional local OCR (Pro version)</li>
+            </ul>
+        </div>
+
+        <h3>Data Storage</h3>
+        <p>Guardian Angle stores the following data locally in your browser using Chrome's storage API:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data Type</th>
+                    <th>Purpose</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Extension settings</td>
+                    <td>User preferences (enabled PII types, notification settings)</td>
+                    <td>Local browser storage</td>
+                </tr>
+                <tr>
+                    <td>Detection statistics</td>
+                    <td>Aggregate counts only (total detections, masks, blocks)</td>
+                    <td>Local browser storage</td>
+                </tr>
+                <tr>
+                    <td>License information (Pro)</td>
+                    <td>License key validation status</td>
+                    <td>Local browser storage</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><strong>No PII content is ever stored.</strong> Only anonymous aggregate statistics are maintained.</p>
+
+        <h2>Third-Party Services</h2>
+        <h3>LemonSqueezy (Pro Version Only)</h3>
+        <p>For Pro license validation, Guardian Angle communicates with LemonSqueezy's API:</p>
+        <ul>
+            <li><strong>Data sent:</strong> License key, anonymous instance identifier</li>
+            <li><strong>Purpose:</strong> License validation and activation</li>
+            <li><strong>Privacy policy:</strong> <a href="https://www.lemonsqueezy.com/privacy" target="_blank">LemonSqueezy Privacy Policy</a></li>
+        </ul>
+        <p>No user content, browsing data, or detected PII is ever sent to LemonSqueezy.</p>
+
+        <h2>Permissions Explained</h2>
+        <p>Guardian Angle requests the following browser permissions:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>storage</code></td>
+                    <td>Save your settings and anonymous statistics locally</td>
+                </tr>
+                <tr>
+                    <td><code>activeTab</code></td>
+                    <td>Access the current tab to monitor text input on supported AI platforms</td>
+                </tr>
+                <tr>
+                    <td><code>scripting</code></td>
+                    <td>Inject content scripts to detect PII in real-time</td>
+                </tr>
+                <tr>
+                    <td><code>notifications</code></td>
+                    <td>Alert you when PII is detected</td>
+                </tr>
+                <tr>
+                    <td><code>alarms</code></td>
+                    <td>Schedule periodic license checks (Pro)</td>
+                </tr>
+                <tr>
+                    <td><code>tabs</code></td>
+                    <td>Identify when you're on a supported AI platform</td>
+                </tr>
+                <tr>
+                    <td><code>offscreen</code></td>
+                    <td>Run OCR processing in an isolated environment (Pro)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Host Permissions</h3>
+        <p>Guardian Angle only has access to the following websites:</p>
+        <ul>
+            <li>chat.openai.com / chatgpt.com (ChatGPT)</li>
+            <li>claude.ai (Claude)</li>
+            <li>gemini.google.com (Gemini)</li>
+            <li>www.perplexity.ai (Perplexity)</li>
+            <li>x.com / twitter.com (X/Twitter)</li>
+        </ul>
+        <p>The extension cannot access any other websites or your general browsing activity.</p>
+
+        <h2>Data Security</h2>
+        <ul>
+            <li>All processing occurs locally on your device</li>
+            <li>No data is transmitted to our servers</li>
+            <li>No analytics or tracking is implemented</li>
+            <li>No user behavior data is collected</li>
+            <li>Shadow DOM isolation prevents CSS/JS conflicts with host pages</li>
+        </ul>
+
+        <h2>Children's Privacy</h2>
+        <p>Guardian Angle does not knowingly collect information from children under 13. The extension processes data locally and does not collect personal information from any users.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this privacy policy from time to time. We will notify users of any material changes by updating the "Last Updated" date at the top of this policy.</p>
+
+        <h2>Your Rights</h2>
+        <p>Since Guardian Angle does not collect or store your personal data on external servers:</p>
+        <ul>
+            <li>There is no personal data to request, modify, or delete from our systems</li>
+            <li>All data is stored locally in your browser and can be cleared by uninstalling the extension or clearing browser data</li>
+        </ul>
+
+        <h2>Open Source</h2>
+        <p>Guardian Angle's source code is available for review, allowing you to verify our privacy practices.</p>
+
+        <div class="contact-section">
+            <h2>Contact</h2>
+            <p>If you have questions about this privacy policy or Guardian Angle's privacy practices, please contact us at:</p>
+            <ul>
+                <li>GitHub: <a href="https://github.com/adi121193/GuardianAngle-extension" target="_blank">Guardian Angle Repository</a></li>
+            </ul>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 2rem;">
+            <h3>Summary</h3>
+            <p><strong>Guardian Angle is designed with privacy as its core principle:</strong></p>
+            <ol>
+                <li>All PII detection runs 100% locally on your device</li>
+                <li>No user data is collected, stored, or transmitted</li>
+                <li>No cloud services are used for detection</li>
+                <li>Only anonymous aggregate statistics are stored locally</li>
+                <li>Pro license validation is the only external communication (license key only)</li>
+            </ol>
+            <p style="margin-bottom: 0; margin-top: 1rem;"><strong>Your privacy is protected by design, not just by policy.</strong></p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Guardian Angle. All rights reserved.</p>
+    </footer>
+</body>
+</html>
