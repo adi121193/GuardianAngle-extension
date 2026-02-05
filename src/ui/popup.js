@@ -49,8 +49,7 @@ async function init() {
 
       // Actions
       dashboardBtn: document.getElementById('dashboardBtn'),
-      settingsBtn: document.getElementById('settingsBtn'), // Added settingsBtn
-      exportBtn: document.getElementById('exportDataBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
 
       // Settings Inputs
       settings: {
@@ -203,10 +202,11 @@ function attachListeners() {
       return;
     }
 
-    // Dashboard View Button (bottom nav)
+    // Dashboard View Button (bottom nav) - Open full page dashboard
     if (btn.id === 'dashboardBtn') {
-      log('Dashboard button clicked');
-      switchView('dashboard');
+      log('Dashboard button clicked - opening full page');
+      chrome.tabs.create({ url: chrome.runtime.getURL('html/popup.html') });
+      window.close(); // Close the popup
       return;
     }
 
@@ -217,9 +217,17 @@ function attachListeners() {
       return;
     }
 
-    // Export Button
-    if (btn.id === 'exportDataBtn') {
-      exportData();
+    // Settings Back Button
+    if (btn.id === 'settingsBackBtn') {
+      log('Settings back button clicked');
+      switchView('dashboard');
+      return;
+    }
+
+    // License Back Button
+    if (btn.id === 'licenseBackBtn') {
+      log('License back button clicked');
+      switchView('dashboard');
       return;
     }
 
@@ -510,19 +518,6 @@ function showLicenseError(msg) {
  */
 function formatNumber(num) {
   return num >= 1000 ? (num / 1000).toFixed(1) + 'k' : num;
-}
-
-/**
- * Export Data
- */
-function exportData() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.stats));
-  const downloadAnchorNode = document.createElement('a');
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "pii-guardian-logs.json");
-  document.body.appendChild(downloadAnchorNode);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
 }
 
 /**

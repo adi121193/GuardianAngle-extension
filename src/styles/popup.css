@@ -297,11 +297,31 @@ body {
   margin-bottom: 24px;
   padding-bottom: 12px;
   border-bottom: var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .view-header h2 {
   font-size: 24px;
   font-weight: 600;
+}
+
+.back-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Cards */
