@@ -1276,7 +1276,9 @@ const handleExternalImage = (file, event) => {
 // 1. Paste
 document.addEventListener('paste', (event) => {
   if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type === 'image/') {
-    handlePaste(event);
+    if (isAIChatInput(event.target)) {
+      handlePaste(event);
+    }
   }
 }, true);
 
@@ -1285,7 +1287,9 @@ document.addEventListener('drop', (event) => {
   if (event.dataTransfer?.files?.length > 0) {
     const file = event.dataTransfer.files[0];
     if (file.type.startsWith('image/')) {
-      handleExternalImage(file, event);
+      if (isAIChatInput(event.target) || event.target.closest('form, [role="textbox"]')) {
+        handleExternalImage(file, event);
+      }
     }
   }
 }, true);
@@ -1296,7 +1300,11 @@ document.addEventListener('change', (event) => {
     if (event.target.files?.length > 0) {
       const file = event.target.files[0];
       if (file.type.startsWith('image/')) {
-        handleExternalImage(file, event);
+        // Try to identify if the file input is part of an AI chat context
+        const closestChatContainer = event.target.closest('[contenteditable="true"], textarea, input[type="text"], .ProseMirror, form');
+        if (closestChatContainer || isAIChatInput(event.target)) {
+          handleExternalImage(file, event);
+        }
       }
     }
   }
@@ -1313,12 +1321,10 @@ async function handleDirectFile(file, event) {
     // Check Pro Status
     const isPro = await getProStatus();
     if (!isPro) {
-      if (confirm('📷 Image PII Detection is a Pro Feature. Upgrade now?')) {
-        window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      return;
+      // For non-Pro users, we shouldn't block the upload aggressively without giving them a choice,
+      // otherwise it breaks core website functionality. We alert once, but let it through.
+      console.log('[PII Guardian] Image OCR ignored - Pro feature required.');
+      return; // Do NOT preventDefault, just return and let upload proceed
     }
 
     console.log('[PII Guardian] Processing image upload via offscreen proxy...');
