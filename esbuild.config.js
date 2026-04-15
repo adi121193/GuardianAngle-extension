@@ -45,14 +45,10 @@ const buildOptions = {
     // Debug
     'ui/debugOcr': 'src/ui/debugOcr.js',
 
-    // Detection modules
-    'detection/hybridDetector': 'src/detection/hybridDetector.js',
-
     // PRO-only entry points
     ...(isPro ? {
       'ui/history': 'src/ui/history.js',
-      'ml/offscreen': 'src/ml/offscreen.js', // Keep here for reference/completeness if needed, but duplicate key is fine or handled by last write
-      'ml-test/test': 'src/ml-test/test.js'
+      'ml/offscreen': 'src/ml/offscreen.js' // Keep here for reference/completeness if needed, but duplicate key is fine or handled by last write
     } : {})
   },
   bundle: true,

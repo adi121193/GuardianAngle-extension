@@ -14,7 +14,7 @@ import { getSettings, incrementDetection, incrementBlocked, isEnabled, getProSta
  * @returns {Promise<Object>} Detection result with matches
  */
 async function processOCRResult(text, words) {
-  const settings = await getSettings();
+  const settings = await getSettingsFast();
 
   // Run PII detection on extracted text
   const detectionResult = await detectPII(text, {
@@ -73,7 +73,7 @@ async function handlePaste(event) {
       if (!quickPIICheck(pastedText)) {
         // continue...
       } else {
-        const settings = await getSettings();
+        const settings = await getSettingsFast();
         const detectionResult = await detectPII(pastedText, {
           minConfidence: settings.minConfidence,
           enabledTypes: settings.enabledPIITypes,
@@ -172,6 +172,17 @@ import { redactImage } from '../utils/imageRedact.js';
 const debounceTimers = new WeakMap();
 const DEBOUNCE_DELAY = 300; // ms
 
+// List of allowed AI domains
+const ALLOWED_AI_DOMAINS = [
+  'chat.openai.com',
+  'chatgpt.com',
+  'claude.ai',
+  'gemini.google.com',
+  'www.perplexity.ai',
+  'x.com',
+  'twitter.com'
+];
+
 // Track monitored elements
 const monitoredElements = new WeakSet();
 const monitoredHistory = new WeakSet();
@@ -222,20 +233,33 @@ let nerInitialized = false;
 let nerInitializationAttempted = false;
 
 // Cached settings for synchronous access (updated on change)
-let cachedNEREnabled = false;
 let cachedDetectionMode = 'hybrid';
+let cachedSettings = {};
 
 // Listen for settings changes to update cache
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.settings) {
     const newSettings = changes.settings.newValue;
     if (newSettings) {
-      cachedNEREnabled = newSettings.nerEnabled !== false;
+      cachedSettings = newSettings;
       cachedDetectionMode = newSettings.detectionMode || 'hybrid';
-      console.log(`[monitorInputs] Settings updated - NER: ${cachedNEREnabled}, mode: ${cachedDetectionMode}`);
+      console.log(`[monitorInputs] Settings updated - mode: ${cachedDetectionMode}`);
     }
   }
 });
+
+/**
+ * Helper to get settings using cache when possible to avoid async latency
+ * @returns {Promise<Object>} Settings object
+ */
+async function getSettingsFast() {
+  if (Object.keys(cachedSettings).length > 0) {
+    return cachedSettings;
+  }
+  const settings = await getSettings();
+  cachedSettings = settings;
+  return settings;
+}
 
 // Feature flag: scan visible chat history (now controlled by settings - Priority 3)
 // Default: false (opt-in for performance, prevents costly scans on every mutation)
@@ -250,24 +274,33 @@ let SCAN_HISTORY_DEPTH = 50;
 async function safeSendMessage(message) {
   try {
     // Check if extension context is valid
-    if (!chrome.runtime?.id) {
+    if (!chrome?.runtime?.id) {
       console.log('[monitorInputs] Extension reloaded - skipping message (this is normal)');
       return null;
     }
 
-    return await chrome.runtime.sendMessage(message);
+    // Wrap sendMessage in a promise to properly catch channel errors
+    return await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(message, (response) => {
+        if (chrome.runtime.lastError) {
+          // Check for specific context invalidation errors within lastError
+          const errorMsg = chrome.runtime.lastError.message;
+          if (errorMsg?.includes('Extension context invalidated') ||
+              errorMsg?.includes('message channel closed') ||
+              errorMsg?.includes('Receiving end does not exist')) {
+            console.log('[monitorInputs] Extension reloaded:', errorMsg);
+            resolve(null);
+          } else {
+            reject(new Error(errorMsg));
+          }
+        } else {
+          resolve(response);
+        }
+      });
+    });
   } catch (error) {
-    // Check for specific context invalidation errors
-    if (error.message?.includes('Extension context invalidated') ||
-      error.message?.includes('message channel closed') ||
-      error.message?.includes('Receiving end does not exist')) {
-      console.log('[monitorInputs] Extension reloaded:', error.message);
-      // Could show user notification or reload content script
-      return null;
-    }
-
-    // Re-throw other errors
-    throw error;
+    console.warn('[monitorInputs] safeSendMessage error:', error);
+    return null;
   }
 }
 
@@ -277,9 +310,12 @@ async function safeSendMessage(message) {
  * @returns {boolean}
  */
 function isAIChatInput(element) {
-  if (!element) return false;
+  // Validate that the node is a proper element
+  if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+    return false;
+  }
 
-  const tagName = element.tagName.toLowerCase();
+  const tagName = element.tagName ? element.tagName.toLowerCase() : '';
 
   // Check for contenteditable divs (common in modern chat UIs)
   if (element.contentEditable === 'true') {
@@ -514,7 +550,7 @@ async function handleInput(element) {
     }
 
     // Get settings
-    const settings = await getSettings();
+    const settings = await getSettingsFast();
 
     // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
@@ -534,17 +570,17 @@ async function handleInput(element) {
         await incrementDetection(type);
       }
 
-      // Update hybrid stats if available
+      // Update stats if available
       if (detectionResult.sources || detectionResult.performance) {
         try {
           await safeSendMessage({
             type: 'UPDATE_HYBRID_STATS',
             sources: detectionResult.sources,
             performance: detectionResult.performance,
-            detectionMode: settings.detectionMode || 'hybrid'
+            detectionMode: settings.detectionMode || 'regex'
           });
         } catch (error) {
-          console.error('PII Guardian: Failed to update hybrid stats:', error);
+          console.error('PII Guardian: Failed to update stats:', error);
         }
       }
 
@@ -682,99 +718,7 @@ function attachListeners(element) {
  * @param {string} text - Text content
  */
 async function handlePIIDetectionForEnterKey(element, text) {
-  // Guard: Check if extension context is still valid
-  if (!chrome?.runtime?.id) {
-    simulateEnterKey(element); // Allow send if context invalidated
-    return;
-  }
-
-  try {
-    // Check if extension is enabled
-    const enabled = await isEnabled();
-    if (!enabled) {
-      // Extension disabled - allow the blocked action
-      simulateEnterKey(element);
-      return;
-    }
-
-    // Get settings
-    const settings = await getSettings();
-
-    // Full PII detection with NER settings
-    const detectionResult = await detectPII(text, {
-      minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useNER: settings.nerEnabled !== false,
-      detectionMode: settings.detectionMode || 'hybrid'
-    });
-
-    // No PII? quickPIICheck was false positive - allow send
-    if (!detectionResult.piiDetected) {
-      simulateEnterKey(element);
-      return;
-    }
-
-    // PII detected - increment stats
-    for (const type of detectionResult.types) {
-      await incrementDetection(type);
-    }
-
-    // Update hybrid stats if available
-    if (detectionResult.sources || detectionResult.performance) {
-      try {
-        await safeSendMessage({
-          type: 'UPDATE_HYBRID_STATS',
-          sources: detectionResult.sources,
-          performance: detectionResult.performance,
-          detectionMode: settings.detectionMode || 'hybrid'
-        });
-      } catch (error) {
-        console.error('PII Guardian: Failed to update hybrid stats:', error);
-      }
-    }
-
-    // Show modal and get decision
-    const decision = await showWarningModal(detectionResult, element);
-
-    // Handle user decision
-    switch (decision.action) {
-      case 'mask':
-        if (decision.maskedText) {
-          // Find the actual editable container
-          const editableContainer = findEditableContainer(element);
-
-          setTextContent(editableContainer, decision.maskedText);
-
-          // CRITICAL: Dispatch input event to update editor state (ProseMirror, etc.)
-          const event = new Event('input', { bubbles: true });
-          editableContainer.dispatchEvent(event);
-
-          // Also dispatch a change event for frameworks that listen to it
-          const changeEvent = new Event('change', { bubbles: true });
-          editableContainer.dispatchEvent(changeEvent);
-          // Note: User needs to press Enter again to send masked version
-        }
-        break;
-
-      case 'send':
-        // User chose to send anyway - mark text as bypassed and try to send
-        setTextBypassed(text);
-        simulateEnterKey(element);
-        break;
-
-      case 'cancel':
-        // User cancelled
-        if (settings.blockOnDetection) {
-          setTextContent(element, '');
-        }
-        await incrementBlocked();
-        break;
-    }
-  } catch (error) {
-    console.error('PII Guardian: Error in handlePIIDetectionForEnterKey:', error);
-    // On error, be permissive and allow send
-    simulateEnterKey(element);
-  }
+  return handlePIIDetectionAsync(element, text, () => simulateEnterKey(element));
 }
 
 /**
@@ -949,9 +893,19 @@ function blockSendButton() {
  * @param {HTMLElement} button - Send button that was clicked
  */
 async function handlePIIDetectionForSendButton(input, text, button) {
+  return handlePIIDetectionAsync(input, text, () => button.click());
+}
+
+/**
+ * Unified async PII detection handler for submission events
+ * @param {HTMLElement} input - Input element
+ * @param {string} text - Text content
+ * @param {Function} proceedCallback - Function to call to proceed with submission
+ */
+async function handlePIIDetectionAsync(input, text, proceedCallback) {
   // Guard: Check if extension context is still valid
   if (!chrome?.runtime?.id) {
-    button.click(); // Allow click if context invalidated
+    proceedCallback(); // Allow action if context invalidated
     return;
   }
 
@@ -959,25 +913,22 @@ async function handlePIIDetectionForSendButton(input, text, button) {
     // Check if extension is enabled
     const enabled = await isEnabled();
     if (!enabled) {
-      // Extension disabled - allow the click
-      button.click();
+      // Extension disabled - allow the action
+      proceedCallback();
       return;
     }
 
     // Get settings
-    const settings = await getSettings();
+    const settings = await getSettingsFast();
 
-    // Full PII detection with NER settings
     const detectionResult = await detectPII(text, {
       minConfidence: settings.minConfidence,
-      enabledTypes: settings.enabledPIITypes,
-      useNER: settings.nerEnabled !== false,
-      detectionMode: settings.detectionMode || 'hybrid'
+      enabledTypes: settings.enabledPIITypes
     });
 
-    // No PII? quickPIICheck was false positive - allow click
+    // No PII? quickPIICheck was false positive - allow action
     if (!detectionResult.piiDetected) {
-      button.click();
+      proceedCallback();
       return;
     }
 
@@ -986,17 +937,17 @@ async function handlePIIDetectionForSendButton(input, text, button) {
       await incrementDetection(type);
     }
 
-    // Update hybrid stats if available
+    // Update stats if available
     if (detectionResult.sources || detectionResult.performance) {
       try {
         await safeSendMessage({
           type: 'UPDATE_HYBRID_STATS',
           sources: detectionResult.sources,
           performance: detectionResult.performance,
-          detectionMode: settings.detectionMode || 'hybrid'
+          detectionMode: settings.detectionMode || 'regex'
         });
       } catch (error) {
-        console.error('PII Guardian: Failed to update hybrid stats:', error);
+        console.error('PII Guardian: Failed to update stats:', error);
       }
     }
 
@@ -1022,9 +973,9 @@ async function handlePIIDetectionForSendButton(input, text, button) {
         break;
 
       case 'send':
-        // User chose to send anyway - mark text as bypassed and try to click
+        // User chose to send anyway - mark text as bypassed and proceed
         setTextBypassed(text);
-        button.click();
+        proceedCallback();
         break;
 
       case 'cancel':
@@ -1037,9 +988,9 @@ async function handlePIIDetectionForSendButton(input, text, button) {
         break;
     }
   } catch (error) {
-    console.error('PII Guardian: Error in handlePIIDetectionForSendButton:', error);
-    // On error, be permissive and allow click
-    button.click();
+    console.error('PII Guardian: Error in handlePIIDetectionAsync:', error);
+    // On error, be permissive and allow action
+    proceedCallback();
   }
 }
 
@@ -1127,6 +1078,13 @@ function cleanupPreviousInstances() {
  * Initialize monitoring
  */
 async function initialize() {
+  // Domain Check: Early exit if not an allowed AI platform
+  const currentHostname = window.location.hostname;
+  if (!ALLOWED_AI_DOMAINS.includes(currentHostname)) {
+    console.log(`[PII Guardian] Extension inactive on non-target domain: ${currentHostname}`);
+    return;
+  }
+
   // Safety check: Ensure chrome APIs are available
   if (typeof chrome === 'undefined' || !chrome.storage) {
     console.error('PII Guardian: Chrome APIs not available, retrying in 100ms...');
@@ -1141,7 +1099,7 @@ async function initialize() {
 
   // Load settings including NER and history scanning
   try {
-    const settings = await getSettings();
+    const settings = await getSettingsFast();
     SCAN_HISTORY = settings.scanHistory ?? false;
     SCAN_HISTORY_DEPTH = settings.scanHistoryDepth ?? 50;
     // Cache NER settings for synchronous access in event handlers
@@ -1207,7 +1165,7 @@ async function initialize() {
                 const messages = findChatMessages();
                 if (!messages.length) return;
 
-                const settings = await getSettings();
+                const settings = await getSettingsFast();
                 if (!settings.enabled) return;
 
                 // Limit scan depth to prevent performance issues (Priority 3)
@@ -1273,30 +1231,46 @@ const handleExternalImage = (file, event) => {
   handleDirectFile(file, event);
 };
 
+// Helper to guard global events
+function isAllowedDomain() {
+  return ALLOWED_AI_DOMAINS.includes(window.location.hostname);
+}
+
 // 1. Paste
 document.addEventListener('paste', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type === 'image/') {
-    handlePaste(event);
+    if (isAIChatInput(event.target)) {
+      handlePaste(event);
+    }
   }
 }, true);
 
 // 2. Drag & Drop
 document.addEventListener('drop', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.dataTransfer?.files?.length > 0) {
     const file = event.dataTransfer.files[0];
     if (file.type.startsWith('image/')) {
-      handleExternalImage(file, event);
+      if (isAIChatInput(event.target) || (event.target.closest && event.target.closest('form, [role="textbox"]'))) {
+        handleExternalImage(file, event);
+      }
     }
   }
 }, true);
 
 // 3. File Input Change (Clicking the + button)
 document.addEventListener('change', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.target.tagName === 'INPUT' && event.target.type === 'file') {
     if (event.target.files?.length > 0) {
       const file = event.target.files[0];
       if (file.type.startsWith('image/')) {
-        handleExternalImage(file, event);
+        // Try to identify if the file input is part of an AI chat context
+        const closestChatContainer = event.target.closest && event.target.closest('[contenteditable="true"], textarea, input[type="text"], .ProseMirror, form');
+        if (closestChatContainer || isAIChatInput(event.target)) {
+          handleExternalImage(file, event);
+        }
       }
     }
   }
@@ -1307,18 +1281,16 @@ document.addEventListener('change', (event) => {
  */
 async function handleDirectFile(file, event) {
   try {
-    const settings = await getSettings();
+    const settings = await getSettingsFast();
     if (!settings.enabled) return;
 
     // Check Pro Status
     const isPro = await getProStatus();
     if (!isPro) {
-      if (confirm('📷 Image PII Detection is a Pro Feature. Upgrade now?')) {
-        window.open(chrome.runtime.getURL('html/popup.html?view=license'), '_blank');
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      return;
+      // For non-Pro users, we shouldn't block the upload aggressively without giving them a choice,
+      // otherwise it breaks core website functionality. We alert once, but let it through.
+      console.log('[PII Guardian] Image OCR ignored - Pro feature required.');
+      return; // Do NOT preventDefault, just return and let upload proceed
     }
 
     console.log('[PII Guardian] Processing image upload via offscreen proxy...');
