@@ -172,6 +172,17 @@ import { redactImage } from '../utils/imageRedact.js';
 const debounceTimers = new WeakMap();
 const DEBOUNCE_DELAY = 300; // ms
 
+// List of allowed AI domains
+const ALLOWED_AI_DOMAINS = [
+  'chat.openai.com',
+  'chatgpt.com',
+  'claude.ai',
+  'gemini.google.com',
+  'www.perplexity.ai',
+  'x.com',
+  'twitter.com'
+];
+
 // Track monitored elements
 const monitoredElements = new WeakSet();
 const monitoredHistory = new WeakSet();
@@ -299,9 +310,12 @@ async function safeSendMessage(message) {
  * @returns {boolean}
  */
 function isAIChatInput(element) {
-  if (!element) return false;
+  // Validate that the node is a proper element
+  if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+    return false;
+  }
 
-  const tagName = element.tagName.toLowerCase();
+  const tagName = element.tagName ? element.tagName.toLowerCase() : '';
 
   // Check for contenteditable divs (common in modern chat UIs)
   if (element.contentEditable === 'true') {
@@ -1064,6 +1078,13 @@ function cleanupPreviousInstances() {
  * Initialize monitoring
  */
 async function initialize() {
+  // Domain Check: Early exit if not an allowed AI platform
+  const currentHostname = window.location.hostname;
+  if (!ALLOWED_AI_DOMAINS.includes(currentHostname)) {
+    console.log(`[PII Guardian] Extension inactive on non-target domain: ${currentHostname}`);
+    return;
+  }
+
   // Safety check: Ensure chrome APIs are available
   if (typeof chrome === 'undefined' || !chrome.storage) {
     console.error('PII Guardian: Chrome APIs not available, retrying in 100ms...');
@@ -1210,8 +1231,14 @@ const handleExternalImage = (file, event) => {
   handleDirectFile(file, event);
 };
 
+// Helper to guard global events
+function isAllowedDomain() {
+  return ALLOWED_AI_DOMAINS.includes(window.location.hostname);
+}
+
 // 1. Paste
 document.addEventListener('paste', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.clipboardData?.files?.length > 0 && event.clipboardData.files[0].type === 'image/') {
     if (isAIChatInput(event.target)) {
       handlePaste(event);
@@ -1221,10 +1248,11 @@ document.addEventListener('paste', (event) => {
 
 // 2. Drag & Drop
 document.addEventListener('drop', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.dataTransfer?.files?.length > 0) {
     const file = event.dataTransfer.files[0];
     if (file.type.startsWith('image/')) {
-      if (isAIChatInput(event.target) || event.target.closest('form, [role="textbox"]')) {
+      if (isAIChatInput(event.target) || (event.target.closest && event.target.closest('form, [role="textbox"]'))) {
         handleExternalImage(file, event);
       }
     }
@@ -1233,12 +1261,13 @@ document.addEventListener('drop', (event) => {
 
 // 3. File Input Change (Clicking the + button)
 document.addEventListener('change', (event) => {
+  if (!isAllowedDomain()) return;
   if (event.target.tagName === 'INPUT' && event.target.type === 'file') {
     if (event.target.files?.length > 0) {
       const file = event.target.files[0];
       if (file.type.startsWith('image/')) {
         // Try to identify if the file input is part of an AI chat context
-        const closestChatContainer = event.target.closest('[contenteditable="true"], textarea, input[type="text"], .ProseMirror, form');
+        const closestChatContainer = event.target.closest && event.target.closest('[contenteditable="true"], textarea, input[type="text"], .ProseMirror, form');
         if (closestChatContainer || isAIChatInput(event.target)) {
           handleExternalImage(file, event);
         }

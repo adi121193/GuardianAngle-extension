@@ -36,6 +36,7 @@
         "https://twitter.com/*"
       ],
       "js": [
+        "content/detectText.js",
         "content/monitorInputs.js"
       ],
       "run_at": "document_idle"
